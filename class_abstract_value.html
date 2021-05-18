@@ -75,9 +75,10 @@ Inheritance diagram for AbstractValue:</div>
  <div class="center">
   <img src="class_abstract_value.png" usemap="#AbstractValue_map" alt=""/>
   <map id="AbstractValue_map" name="AbstractValue_map">
-<area href="class_abstract_ciphertext.html" alt="AbstractCiphertext" shape="rect" coords="0,56,116,80"/>
-<area href="class_i_cleartext.html" title="This class serves as a common base class for all Cleartext&lt;T&gt; classes." alt="ICleartext" shape="rect" coords="126,56,242,80"/>
-<area href="class_cleartext.html" alt="Cleartext&lt; T &gt;" shape="rect" coords="126,112,242,136"/>
+<area href="class_abstract_ciphertext.html" alt="AbstractCiphertext" shape="rect" coords="0,56,208,80"/>
+<area href="class_i_cleartext.html" title="This class serves as a common base class for all Cleartext&lt;T&gt; classes." alt="ICleartext" shape="rect" coords="218,56,426,80"/>
+<area href="class_abstract_noise_measuring_ciphertext.html" alt="AbstractNoiseMeasuringCiphertext" shape="rect" coords="0,112,208,136"/>
+<area href="class_cleartext.html" alt="Cleartext&lt; T &gt;" shape="rect" coords="218,112,426,136"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -87,60 +88,60 @@ Public Member Functions</h2></td></tr>
 virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_abstract_value.html#a78cee326766dd7a794f0a849d0dfbe21">~AbstractValue</a> ()=default</td></tr>
 <tr class="memdesc:a78cee326766dd7a794f0a849d0dfbe21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default destructor. <br /></td></tr>
 <tr class="separator:a78cee326766dd7a794f0a849d0dfbe21"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a417cd694781976c84db38d0ff2c14bff"><td class="memItemLeft" align="right" valign="top"><a id="a417cd694781976c84db38d0ff2c14bff"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>add</b> (<a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
-<tr class="separator:a417cd694781976c84db38d0ff2c14bff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd692fcbc282e9267bc141843348f2dc"><td class="memItemLeft" align="right" valign="top"><a id="afd692fcbc282e9267bc141843348f2dc"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>subtract</b> (<a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
-<tr class="separator:afd692fcbc282e9267bc141843348f2dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5fb68d66661faf6f15966cffcc3f07fb"><td class="memItemLeft" align="right" valign="top"><a id="a5fb68d66661faf6f15966cffcc3f07fb"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>multiply</b> (<a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
-<tr class="separator:a5fb68d66661faf6f15966cffcc3f07fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade87aa804bd2313effe33ca1159e995e"><td class="memItemLeft" align="right" valign="top"><a id="ade87aa804bd2313effe33ca1159e995e"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>divide</b> (<a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
-<tr class="separator:ade87aa804bd2313effe33ca1159e995e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac934c0adb2b5ed58587da72cc8e6be2a"><td class="memItemLeft" align="right" valign="top"><a id="ac934c0adb2b5ed58587da72cc8e6be2a"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>modulo</b> (<a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
-<tr class="separator:ac934c0adb2b5ed58587da72cc8e6be2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e20c809e21faee8d5c21d469cf5e616"><td class="memItemLeft" align="right" valign="top"><a id="a4e20c809e21faee8d5c21d469cf5e616"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>logicalAnd</b> (<a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
-<tr class="separator:a4e20c809e21faee8d5c21d469cf5e616"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af95be7d3f3244286f5ac5a67c3d0f623"><td class="memItemLeft" align="right" valign="top"><a id="af95be7d3f3244286f5ac5a67c3d0f623"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>logicalOr</b> (<a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
-<tr class="separator:af95be7d3f3244286f5ac5a67c3d0f623"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a378a0734c31a2385846cd4ff0b97a701"><td class="memItemLeft" align="right" valign="top"><a id="a378a0734c31a2385846cd4ff0b97a701"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>logicalLess</b> (<a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
-<tr class="separator:a378a0734c31a2385846cd4ff0b97a701"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a183e078336255ffc0679fd68bf6c82ab"><td class="memItemLeft" align="right" valign="top"><a id="a183e078336255ffc0679fd68bf6c82ab"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>logicalLessEqual</b> (<a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
-<tr class="separator:a183e078336255ffc0679fd68bf6c82ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac13538e98b8dc2cca8ed84ee9d8004ff"><td class="memItemLeft" align="right" valign="top"><a id="ac13538e98b8dc2cca8ed84ee9d8004ff"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>logicalGreater</b> (<a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
-<tr class="separator:ac13538e98b8dc2cca8ed84ee9d8004ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa03d97e269daa5c9a3cb5eadc4d88d1"><td class="memItemLeft" align="right" valign="top"><a id="aaa03d97e269daa5c9a3cb5eadc4d88d1"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>logicalGreaterEqual</b> (<a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
-<tr class="separator:aaa03d97e269daa5c9a3cb5eadc4d88d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2310b1e86317beda51c1130c6fdc10f0"><td class="memItemLeft" align="right" valign="top"><a id="a2310b1e86317beda51c1130c6fdc10f0"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>logicalEqual</b> (<a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
-<tr class="separator:a2310b1e86317beda51c1130c6fdc10f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9e756ff1d318689a7f11833326a02ad3"><td class="memItemLeft" align="right" valign="top"><a id="a9e756ff1d318689a7f11833326a02ad3"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>logicalNotEqual</b> (<a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
-<tr class="separator:a9e756ff1d318689a7f11833326a02ad3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f816a7355558e1f56358b26f281b50e"><td class="memItemLeft" align="right" valign="top"><a id="a0f816a7355558e1f56358b26f281b50e"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>logicalNot</b> ()=0</td></tr>
-<tr class="separator:a0f816a7355558e1f56358b26f281b50e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00adfe8e5207c91f3b51a85b2ba9e98d"><td class="memItemLeft" align="right" valign="top"><a id="a00adfe8e5207c91f3b51a85b2ba9e98d"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>bitwiseAnd</b> (<a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
-<tr class="separator:a00adfe8e5207c91f3b51a85b2ba9e98d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a7e3f525cef216116b409561af5c274"><td class="memItemLeft" align="right" valign="top"><a id="a9a7e3f525cef216116b409561af5c274"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>bitwiseXor</b> (<a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
-<tr class="separator:a9a7e3f525cef216116b409561af5c274"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a814f741711e4a0f9fef159787704a2a2"><td class="memItemLeft" align="right" valign="top"><a id="a814f741711e4a0f9fef159787704a2a2"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>bitwiseOr</b> (<a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
-<tr class="separator:a814f741711e4a0f9fef159787704a2a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1182b21afb583add50c5490d70cb5a2b"><td class="memItemLeft" align="right" valign="top"><a id="a1182b21afb583add50c5490d70cb5a2b"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>bitwiseNot</b> ()=0</td></tr>
-<tr class="separator:a1182b21afb583add50c5490d70cb5a2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b48c52c509353c317534832a9e24297"><td class="memItemLeft" align="right" valign="top"><a id="a5b48c52c509353c317534832a9e24297"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>add_inplace</b> (const <a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
+<tr class="separator:a5b48c52c509353c317534832a9e24297"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acabd5c8a961b8b44680a1672b2e9347b"><td class="memItemLeft" align="right" valign="top"><a id="acabd5c8a961b8b44680a1672b2e9347b"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>subtract_inplace</b> (const <a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
+<tr class="separator:acabd5c8a961b8b44680a1672b2e9347b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9e380c5e07b2afd475b4543a9729359"><td class="memItemLeft" align="right" valign="top"><a id="aa9e380c5e07b2afd475b4543a9729359"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>multiply_inplace</b> (const <a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
+<tr class="separator:aa9e380c5e07b2afd475b4543a9729359"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc2f075a6e43e73f1fcb3d1d2a2b8ef2"><td class="memItemLeft" align="right" valign="top"><a id="abc2f075a6e43e73f1fcb3d1d2a2b8ef2"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>divide_inplace</b> (const <a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
+<tr class="separator:abc2f075a6e43e73f1fcb3d1d2a2b8ef2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bab3acc8092d2262708febb65723aeb"><td class="memItemLeft" align="right" valign="top"><a id="a3bab3acc8092d2262708febb65723aeb"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>modulo_inplace</b> (const <a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
+<tr class="separator:a3bab3acc8092d2262708febb65723aeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e2c4e531250cf8e3c95bfe1cf2703bb"><td class="memItemLeft" align="right" valign="top"><a id="a4e2c4e531250cf8e3c95bfe1cf2703bb"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>logicalAnd_inplace</b> (const <a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
+<tr class="separator:a4e2c4e531250cf8e3c95bfe1cf2703bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f128a3ac74bfa37bd11f876298bcbe2"><td class="memItemLeft" align="right" valign="top"><a id="a6f128a3ac74bfa37bd11f876298bcbe2"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>logicalOr_inplace</b> (const <a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
+<tr class="separator:a6f128a3ac74bfa37bd11f876298bcbe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a436572b7cea712f76b6123e475f58753"><td class="memItemLeft" align="right" valign="top"><a id="a436572b7cea712f76b6123e475f58753"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>logicalLess_inplace</b> (const <a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
+<tr class="separator:a436572b7cea712f76b6123e475f58753"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7df592f86f83c61d3fee4b231016d06"><td class="memItemLeft" align="right" valign="top"><a id="ad7df592f86f83c61d3fee4b231016d06"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>logicalLessEqual_inplace</b> (const <a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
+<tr class="separator:ad7df592f86f83c61d3fee4b231016d06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04ace0e2cf9c924b723a584fc96b41a1"><td class="memItemLeft" align="right" valign="top"><a id="a04ace0e2cf9c924b723a584fc96b41a1"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>logicalGreater_inplace</b> (const <a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
+<tr class="separator:a04ace0e2cf9c924b723a584fc96b41a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef8483e5b5ef560e73d13b8ffe16e938"><td class="memItemLeft" align="right" valign="top"><a id="aef8483e5b5ef560e73d13b8ffe16e938"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>logicalGreaterEqual_inplace</b> (const <a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
+<tr class="separator:aef8483e5b5ef560e73d13b8ffe16e938"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affc3d39d006236a3d80a8a3457c02a47"><td class="memItemLeft" align="right" valign="top"><a id="affc3d39d006236a3d80a8a3457c02a47"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>logicalEqual_inplace</b> (const <a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
+<tr class="separator:affc3d39d006236a3d80a8a3457c02a47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5739040d07a864e4d62b441ce235914"><td class="memItemLeft" align="right" valign="top"><a id="ac5739040d07a864e4d62b441ce235914"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>logicalNotEqual_inplace</b> (const <a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
+<tr class="separator:ac5739040d07a864e4d62b441ce235914"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5a379f3bf0a5cd0b7fd70de63d92b57"><td class="memItemLeft" align="right" valign="top"><a id="af5a379f3bf0a5cd0b7fd70de63d92b57"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>logicalNot_inplace</b> ()=0</td></tr>
+<tr class="separator:af5a379f3bf0a5cd0b7fd70de63d92b57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5368c92fab427bdaf5a0f5995cfd0393"><td class="memItemLeft" align="right" valign="top"><a id="a5368c92fab427bdaf5a0f5995cfd0393"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>bitwiseAnd_inplace</b> (const <a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
+<tr class="separator:a5368c92fab427bdaf5a0f5995cfd0393"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a456715da2d1066ee6877d9821d5341"><td class="memItemLeft" align="right" valign="top"><a id="a4a456715da2d1066ee6877d9821d5341"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>bitwiseXor_inplace</b> (const <a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
+<tr class="separator:a4a456715da2d1066ee6877d9821d5341"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a980148af2b8d2ca7dd2ccf89e86270f6"><td class="memItemLeft" align="right" valign="top"><a id="a980148af2b8d2ca7dd2ccf89e86270f6"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>bitwiseOr_inplace</b> (const <a class="el" href="class_abstract_value.html">AbstractValue</a> &amp;other)=0</td></tr>
+<tr class="separator:a980148af2b8d2ca7dd2ccf89e86270f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa19026649ace8b7b0283406a6d7bbd33"><td class="memItemLeft" align="right" valign="top"><a id="aa19026649ace8b7b0283406a6d7bbd33"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>bitwiseNot_inplace</b> ()=0</td></tr>
+<tr class="separator:aa19026649ace8b7b0283406a6d7bbd33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>include/ast_opt/visitor/runtime/<a class="el" href="_abstract_value_8h_source.html">AbstractValue.h</a></li>

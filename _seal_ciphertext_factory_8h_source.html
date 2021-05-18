@@ -87,11 +87,11 @@ $(function() {
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  std::unique_ptr&lt;seal::SecretKey&gt; secretKey;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  std::unique_ptr&lt;seal::PublicKey&gt; publicKey;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  std::unique_ptr&lt;seal::PublicKey&gt; publicKey = std::make_unique&lt;seal::PublicKey&gt;();</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  std::unique_ptr&lt;seal::GaloisKeys&gt; galoisKeys;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  std::unique_ptr&lt;seal::GaloisKeys&gt; galoisKeys = std::make_unique&lt;seal::GaloisKeys&gt;();</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  std::unique_ptr&lt;seal::RelinKeys&gt; relinKeys;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  std::unique_ptr&lt;seal::RelinKeys&gt; relinKeys = std::make_unique&lt;seal::RelinKeys&gt;();</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  std::unique_ptr&lt;seal::BatchEncoder&gt; encoder;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
@@ -104,10 +104,10 @@ $(function() {
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordtype">void</span> setupSealContext();</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  std::vector&lt;T&gt; expandVector(<span class="keyword">const</span> std::vector&lt;T&gt; &amp;values);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  std::vector&lt;T&gt; expandVector(<span class="keyword">const</span> std::vector&lt;T&gt; &amp;values) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  SealCiphertextFactory() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  SealCiphertextFactory();</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keyword">explicit</span> SealCiphertextFactory(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> numElementsPerCiphertextSlot);</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
@@ -119,38 +119,41 @@ $(function() {
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  SealCiphertextFactory &amp;operator=(SealCiphertextFactory &amp;&amp;other) noexcept;  <span class="comment">// move assignment</span></div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  [[nodiscard]] <span class="keyword">const</span> seal::RelinKeys &amp;getRelinKeys() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  [[nodiscard]] <span class="keyword">const</span> seal::GaloisKeys &amp;getGaloisKeys() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  [[nodiscard]] <span class="keyword">const</span> seal::SEALContext &amp;getContext() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  [[nodiscard]] <span class="keyword">const</span> seal::RelinKeys &amp;getRelinKeys() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  [[nodiscard]] seal::Evaluator &amp;getEvaluator() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  [[nodiscard]] <span class="keyword">const</span> seal::GaloisKeys &amp;getGaloisKeys() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  [[nodiscard]] <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getCiphertextSlotSize() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  [[nodiscard]] seal::Evaluator &amp;getEvaluator() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  std::unique_ptr&lt;seal::Plaintext&gt; createPlaintext(<span class="keyword">const</span> std::vector&lt;int&gt; &amp;value);</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  std::unique_ptr&lt;seal::Plaintext&gt; createPlaintext(<span class="keyword">const</span> std::vector&lt;int64_t&gt; &amp;value);</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160; </div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  std::unique_ptr&lt;seal::Plaintext&gt; createPlaintext(int64_t value);</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160; </div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  std::unique_ptr&lt;AbstractCiphertext&gt; createCiphertext(<span class="keyword">const</span> std::vector&lt;int64_t&gt; &amp;data) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160; </div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  std::unique_ptr&lt;AbstractCiphertext&gt; createCiphertext(int64_t data) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  [[nodiscard]] <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getCiphertextSlotSize() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  std::unique_ptr&lt;seal::Plaintext&gt; createPlaintext(<span class="keyword">const</span> std::vector&lt;int&gt; &amp;value) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  std::unique_ptr&lt;seal::Plaintext&gt; createPlaintext(<span class="keyword">const</span> std::vector&lt;int64_t&gt; &amp;value) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  std::unique_ptr&lt;seal::Plaintext&gt; createPlaintext(int64_t value) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160; </div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keywordtype">void</span> decryptCiphertext(<a class="code" href="class_abstract_ciphertext.html">AbstractCiphertext</a> &amp;abstractCiphertext, std::vector&lt;int64_t&gt; &amp;ciphertextData) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  std::unique_ptr&lt;AbstractCiphertext&gt; createCiphertext(<span class="keyword">const</span> std::vector&lt;int64_t&gt; &amp;data) <span class="keyword">const override</span>;</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160; </div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  std::string getString(<a class="code" href="class_abstract_ciphertext.html">AbstractCiphertext</a> &amp;abstractCiphertext) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  std::unique_ptr&lt;AbstractCiphertext&gt; createCiphertext(int64_t data) <span class="keyword">const override</span>;</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160; </div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  std::unique_ptr&lt;AbstractCiphertext&gt; createCiphertext(std::unique_ptr&lt;AbstractValue&gt; &amp;&amp;abstractValue) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <span class="keywordtype">void</span> decryptCiphertext(<a class="code" href="class_abstract_ciphertext.html">AbstractCiphertext</a> &amp;abstractCiphertext, std::vector&lt;int64_t&gt; &amp;ciphertextData) <span class="keyword">const override</span>;</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160; </div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  std::unique_ptr&lt;AbstractCiphertext&gt; createCiphertext(<span class="keyword">const</span> std::vector&lt;int&gt; &amp;data) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;};</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; </div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160; </div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//GRAPHNODE_H_INCLUDE_AST_OPT_VISITOR_RUNTIME_SEALCIPHERTEXTFACTORY_H_</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  std::string getString(<a class="code" href="class_abstract_ciphertext.html">AbstractCiphertext</a> &amp;abstractCiphertext) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160; </div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  std::unique_ptr&lt;AbstractCiphertext&gt; createCiphertext(std::unique_ptr&lt;AbstractValue&gt; &amp;&amp;abstractValue) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160; </div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  std::unique_ptr&lt;AbstractCiphertext&gt; createCiphertext(<span class="keyword">const</span> std::vector&lt;int&gt; &amp;data) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  <span class="keyword">const</span> seal::SecretKey &amp;getSecretKey() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;};</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160; </div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160; </div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//GRAPHNODE_H_INCLUDE_AST_OPT_VISITOR_RUNTIME_SEALCIPHERTEXTFACTORY_H_</span></div>
 <div class="ttc" id="aclass_abstract_ciphertext_factory_html"><div class="ttname"><a href="class_abstract_ciphertext_factory.html">AbstractCiphertextFactory</a></div><div class="ttdef"><b>Definition:</b> AbstractCiphertextFactory.h:12</div></div>
-<div class="ttc" id="aclass_abstract_ciphertext_html"><div class="ttname"><a href="class_abstract_ciphertext.html">AbstractCiphertext</a></div><div class="ttdef"><b>Definition:</b> AbstractCiphertext.h:13</div></div>
+<div class="ttc" id="aclass_abstract_ciphertext_html"><div class="ttname"><a href="class_abstract_ciphertext.html">AbstractCiphertext</a></div><div class="ttdef"><b>Definition:</b> AbstractCiphertext.h:12</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
