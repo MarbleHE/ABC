@@ -20,11 +20,16 @@ void SpecialPrintVisitor::visit(AbstractNode &elem) {
   std::string curNodeString = elem.toString(false);
 
   // Output current node at required indentation
-  os << "NODE VISITED: " << getIndentation() <<curNodeString;
+  os << "NODE VISITED: " << getIndentation() << curNodeString;
+  if (elem.hasParent()) {
+    os << getIndentation() << "parent: " << elem.getParent().getUniqueNodeId() << std::endl;
+  } else {
+    os << getIndentation() << "parent: nullptr" << std::endl;
+  }
 
   // increment indentation level and visit children, decrement afterwards
   ++indentation_level;
-  for(AbstractNode &c: elem) {
+  for (AbstractNode &c: elem) {
     c.accept(*this);
   }
   --indentation_level;

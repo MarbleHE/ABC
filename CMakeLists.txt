@@ -117,6 +117,7 @@ set(SOURCE_FILES
         ${ast_optimizer_SOURCE_DIR}/src/utilities/ScopedVisitor.cpp
         ${ast_optimizer_SOURCE_DIR}/src/visitor/CompileTimeExpressionSimplifier.cpp
         ${ast_optimizer_SOURCE_DIR}/src/visitor/HashVisitor.cpp
+        ${ast_optimizer_SOURCE_DIR}/src/visitor/ParentSettingVisitor.cpp
         ${ast_optimizer_SOURCE_DIR}/src/visitor/PrintVisitor.cpp
         ${ast_optimizer_SOURCE_DIR}/src/visitor/ProgramPrintVisitor.cpp
         ${ast_optimizer_SOURCE_DIR}/src/visitor/SecretBranchingVisitor.cpp
@@ -183,6 +184,7 @@ set(PUBLIC_HEADERS
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/utilities/VariableMap.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/visitor/CompileTimeExpressionSimplifier.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/visitor/HashVisitor.h
+        ${ast_optimizer_SOURCE_DIR}/include/ast_opt/visitor/ParentSettingVisitor.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/visitor/PrintVisitor.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/visitor/ProgramPrintVisitor.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/visitor/SecretBranchingVisitor.h

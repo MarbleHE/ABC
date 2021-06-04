@@ -25,6 +25,7 @@
 #include "ast_opt/parser/Parser.h"
 #include "ast_opt/parser/PushBackStream.h"
 #include "../../test/parser/ParserTestHelpers.h"
+#include "ast_opt/visitor/ParentSettingVisitor.h"
 
 using std::to_string;
 
@@ -46,6 +47,10 @@ std::unique_ptr<AbstractNode> Parser::parse(std::string s) {
     auto statement = std::unique_ptr<AbstractStatement>(parseStatement(it));
     block->appendStatement(std::move(statement));
   }
+
+  // TODO: Remove this workaround once parser sets parents properly
+  ParentSettingVisitor p;
+  block->accept(p);
 
   return std::move(block);
 }
