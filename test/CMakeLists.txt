@@ -59,6 +59,7 @@ set(TEST_FILES
         runtime/DummyCiphertextFactoryTest.cpp
         runtime/RuntimeVisitorTest.cpp
         runtime/SealCiphertextFactoryTest.cpp
+        visitor/CompileTimeExpressionSimplifierTest.cpp
         visitor/ControlFlowGraphVisitorTest.cpp
         visitor/PrintVisitorTest.cpp
  		visitor/ProgramPrintVisitorTest.cpp
