@@ -60,12 +60,10 @@ set(TEST_FILES
         runtime/RuntimeVisitorTest.cpp
         runtime/SealCiphertextFactoryTest.cpp
         visitor/ControlFlowGraphVisitorTest.cpp
-        visitor/ExpressionBatcherTest.cpp
         visitor/PrintVisitorTest.cpp
  		visitor/ProgramPrintVisitorTest.cpp
         visitor/SecretBranchingVisitorTest.cpp
         visitor/TypeCheckingVisitorTest.cpp
-        visitor/VectorizerTest.cpp
         visitor/VisitorTest.cpp
         )
 

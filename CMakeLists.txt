@@ -110,20 +110,16 @@ set(SOURCE_FILES
         ${ast_optimizer_SOURCE_DIR}/src/runtime/RuntimeVisitor.cpp
         ${ast_optimizer_SOURCE_DIR}/src/runtime/SealCiphertext.cpp
         ${ast_optimizer_SOURCE_DIR}/src/runtime/SealCiphertextFactory.cpp
-        ${ast_optimizer_SOURCE_DIR}/src/utilities/BatchingConstraint.cpp
-        ${ast_optimizer_SOURCE_DIR}/src/utilities/ComplexValue.cpp
         ${ast_optimizer_SOURCE_DIR}/src/utilities/Datatype.cpp
         ${ast_optimizer_SOURCE_DIR}/src/utilities/Operator.cpp
         ${ast_optimizer_SOURCE_DIR}/src/utilities/PlainVisitor.cpp
         ${ast_optimizer_SOURCE_DIR}/src/utilities/Scope.cpp
         ${ast_optimizer_SOURCE_DIR}/src/utilities/ScopedVisitor.cpp
-        ${ast_optimizer_SOURCE_DIR}/src/visitor/ExpressionBatcher.cpp
         ${ast_optimizer_SOURCE_DIR}/src/visitor/HashVisitor.cpp
         ${ast_optimizer_SOURCE_DIR}/src/visitor/PrintVisitor.cpp
         ${ast_optimizer_SOURCE_DIR}/src/visitor/ProgramPrintVisitor.cpp
         ${ast_optimizer_SOURCE_DIR}/src/visitor/SecretBranchingVisitor.cpp
         ${ast_optimizer_SOURCE_DIR}/src/visitor/TypeCheckingVisitor.cpp
-        ${ast_optimizer_SOURCE_DIR}/src/visitor/Vectorizer.cpp
         ${ast_optimizer_SOURCE_DIR}/src/visitor/controlFlowGraph/ControlFlowGraphVisitor.cpp
         ${ast_optimizer_SOURCE_DIR}/src/visitor/controlFlowGraph/GraphNode.cpp
         ${ast_optimizer_SOURCE_DIR}/src/visitor/controlFlowGraph/NodeRelationship.cpp
@@ -177,8 +173,6 @@ set(PUBLIC_HEADERS
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/runtime/RuntimeVisitor.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/runtime/SealCiphertext.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/runtime/SealCiphertextFactory.h
-        ${ast_optimizer_SOURCE_DIR}/include/ast_opt/utilities/BatchingConstraint.h
-        ${ast_optimizer_SOURCE_DIR}/include/ast_opt/utilities/ComplexValue.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/utilities/Datatype.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/utilities/IVisitor.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/utilities/Operator.h
@@ -186,13 +180,11 @@ set(PUBLIC_HEADERS
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/utilities/Scope.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/utilities/ScopedVisitor.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/utilities/VariableMap.h
-        ${ast_optimizer_SOURCE_DIR}/include/ast_opt/visitor/ExpressionBatcher.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/visitor/HashVisitor.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/visitor/PrintVisitor.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/visitor/ProgramPrintVisitor.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/visitor/SecretBranchingVisitor.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/visitor/TypeCheckingVisitor.h
-        ${ast_optimizer_SOURCE_DIR}/include/ast_opt/visitor/Vectorizer.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/visitor/controlFlowGraph/ControlFlowGraphVisitor.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/visitor/controlFlowGraph/NodeRelationship.h
         )

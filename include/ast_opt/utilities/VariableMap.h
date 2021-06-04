@@ -3,7 +3,6 @@
 
 #include <unordered_map>
 #include <unordered_set>
-#include "ast_opt/utilities/ComplexValue.h"
 #include "ast_opt/utilities/Scope.h"
 
 template<typename T>
