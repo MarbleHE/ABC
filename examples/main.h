@@ -5,6 +5,6 @@
 #include <iostream>
 
 /// Program's entry point.
-int main();
+int main(int argc, char** argv);
 
 #endif //MASTER_THESIS_CODE_MAIN_H
