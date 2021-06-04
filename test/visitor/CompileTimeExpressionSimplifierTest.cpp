@@ -770,8 +770,6 @@ TEST_F(CompileTimeExpressionSimplifierTest, return_multipleReturnValues_expected
 
 TEST_F(CompileTimeExpressionSimplifierTest,
        ifStmt_conditionValueIsKnown_thenIsAlwaysExecutedNoElseIsPresent_expectedIfRemoval) {
-  //TODO: Update Test
-
   //  -- input --
   //  int compute() {
   //    int a = 512;
@@ -788,7 +786,12 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   /// Input program
   const char *programCode = R""""(
    public int compute() {
-
+    int a = 512;
+    int b = 22;
+    if (b+12 > 20) {
+      a = a*2;
+    }
+    return a*32;
    }
 )"""";
   auto code = std::string(programCode);
@@ -808,7 +811,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 {
   int compute()
   {
-    return;
+    return 32768;
   }
 }
 )"""";
@@ -819,8 +822,6 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 
 TEST_F(CompileTimeExpressionSimplifierTest,
        ifStmt_conditionValueIsKnown_thenIsAlwaysExecutedAndElseIsPresent_expectedIfRemoval) {
-  //TODO: Update Test
-
   //  -- input --
   //  int compute() {
   //    int a = 512;
@@ -839,7 +840,14 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   /// Input program
   const char *programCode = R""""(
    public int compute() {
-
+      int a = 512;
+      int b = 22;
+      if (b+12 > 20) {
+        a = a*2;
+      } else {
+        a = 1;
+      }
+      return a*32;
    }
 )"""";
   auto code = std::string(programCode);
@@ -859,7 +867,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 {
   int compute()
   {
-    return;
+    return 32768;
   }
 }
 )"""";
@@ -870,8 +878,6 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 
 TEST_F(CompileTimeExpressionSimplifierTest,
        ifStmt_conditionValueIsKnown_elseIsAlwaysExecuted_expectedIfRemoval) {
-  //TODO: Update Test
-
   //  -- input --
   //  int compute() {
   //    int a = 512;
@@ -890,7 +896,14 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   /// Input program
   const char *programCode = R""""(
    public int compute() {
-
+    int a = 512;
+    int b = 22;
+    if (b+12 < 20) {
+      a = a*2;
+    } else {
+      a = 1;
+    }
+    return a*32;
    }
 )"""";
   auto code = std::string(programCode);
@@ -910,7 +923,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 {
   int compute()
   {
-    return;
+    return 32;
   }
 }
 )"""";
@@ -921,9 +934,6 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 
 TEST_F(CompileTimeExpressionSimplifierTest,
        ifStmt_conditionValueIsUnknown_thenBranchOnlyExists_thenBranchEvaluable_expectedRewriting) {
-
-  //TODO: Update Test
-
   //  -- input --
   //  int compute(int a) {
   //    int b = 22;
@@ -939,7 +949,11 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   /// Input program
   const char *programCode = R""""(
    public int compute() {
-
+      int b = 22;
+      if (a > 20) {
+        b = 2*b;
+      }
+      return b;
    }
 )"""";
   auto code = std::string(programCode);
@@ -957,9 +971,9 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute()
+  int compute(int a)
   {
-    return;
+    return (((a > 20) *** 44) + ((1 - (a > 20)) *** 22));
   }
 }
 )"""";
@@ -970,7 +984,6 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 
 TEST_F(CompileTimeExpressionSimplifierTest,
        ifStmt_conditionValueIsUnknown_thenBranchOnlyExists_expectedRemovalOfElseClauseInResultBecauseVariableBIsNull) {
-  //TODO: Update Test
 
   //  -- input --
   //  int compute(int a) {
@@ -987,8 +1000,13 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   //  }
   /// Input program
   const char *programCode = R""""(
-   public int compute() {
-
+   public int compute(int a) {
+      int b = 0;
+      if (a > 20) {
+        int c = 642;
+        b = 2*c-1;
+      }
+      return b;
    }
 )"""";
   auto code = std::string(programCode);
@@ -1006,9 +1024,9 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute()
+  int compute(int a)
   {
-    return;
+    return ((a > 20) *** 1283);
   }
 }
 )"""";
@@ -1019,7 +1037,6 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 
 TEST_F(CompileTimeExpressionSimplifierTest,
        ifStmt_conditionValueIsUnknown_thenBranchOnlyExists_varDeclInThenBranch_expectedRewritingOfIfStatement) {
-  //TODO: Update Test
 
   //  -- input --
   //  int compute(int a) {
@@ -1036,8 +1053,13 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   //  }
   /// Input program
   const char *programCode = R""""(
-   public int compute() {
-
+   public int compute(int a) {
+      int b = 42;
+      if (a > 20) {
+        int c = 642;
+        b = 2*c-1;
+      }
+      return b;
    }
 )"""";
   auto code = std::string(programCode);
@@ -1057,7 +1079,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 {
   int compute()
   {
-    return;
+    return (((a > 20) *** 1283) + ((1 - (a > 20)) *** 42));
   }
 }
 )"""";
@@ -1068,7 +1090,6 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 
 TEST_F(CompileTimeExpressionSimplifierTest,
        ifStmt_conditionValueIsUnknown_thenAndElseExists_returnValueIsInputVariable_expectedRewritingOfIfStatement) {
-  //TODO: Update Test
 
   //  -- input --
   //  int compute(int factor, int threshold) {
@@ -1086,8 +1107,14 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   //  }
   /// Input program
   const char *programCode = R""""(
-   public int compute() {
-
+   public int compute(int factor, int threshold) {
+      int b;
+      if (threshold < 11) {
+        b = 2*factor;
+      } else {
+        b = factor;
+      }
+      return b;
    }
 )"""";
   auto code = std::string(programCode);
@@ -1107,7 +1134,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 {
   int compute()
   {
-    return;
+    return (((threshold < 11) *** (2 * factor)) + ((1 - (threshold < 11)) * factor));
   }
 }
 )"""";
@@ -1140,7 +1167,16 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   /// Input program
   const char *programCode = R""""(
    public int compute() {
-
+    int b = 99;
+    if (threshold > 11) {
+        b = b/3;
+      if (factor > 9) {
+        b = b*2*factor;
+      } else {
+        b = b*factor;
+      }
+    }
+    return b;
    }
 )"""";
   auto code = std::string(programCode);
@@ -1155,12 +1191,13 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
+  // TODO: still in old style
   /// Expected program
   const char *expectedCode = R""""(
 {
   int compute()
   {
-    return;
+    return [factor>9]*[threshold>11]*66*factor + [1-[factor>9]]*[threshold>11]*33*factor + [1-[threshold>11]]*99;
   }
 }
 )"""";
@@ -1170,7 +1207,6 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 }
 
 TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_partiallyEvaluableOnly) {
-  //TODO: Update Test
 
   //  -- input --
   // int f(int x) {
@@ -1184,8 +1220,10 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_partiallyEvaluableOnly
   // }
   /// Input program
   const char *programCode = R""""(
-   public int compute() {
-
+   public int compute(int x) {
+       int y = 42;
+       x = x+29;
+       return x+y;
    }
 )"""";
   auto code = std::string(programCode);
@@ -1203,9 +1241,9 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_partiallyEvaluableOnly
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute()
+  int compute(int x)
   {
-    return;
+    return x+71;
   }
 }
 )"""";
@@ -1215,7 +1253,6 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_partiallyEvaluableOnly
 }
 
 TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_includingOperatorExprs) {
-  //TODO: Update Test
 
   //  -- input --
   // int f(int x, int a) {
@@ -1230,7 +1267,9 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_includingOperatorExprs
   /// Input program
   const char *programCode = R""""(
    public int compute() {
-
+      int y = 42+34+x+a;
+      int x = 11+29;
+      return x+y;
    }
 )"""";
   auto code = std::string(programCode);
@@ -1250,7 +1289,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_includingOperatorExprs
 {
   int compute()
   {
-    return;
+    return  +(116, x, a);
   }
 }
 )"""";
@@ -1260,7 +1299,6 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_includingOperatorExprs
 }
 
 TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedDivisionOperator) {
-  //TODO: Update Test
 
   //  -- input --
   // int f(int a) {
@@ -1272,8 +1310,8 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedDivisionOperator
   // }
   /// Input program
   const char *programCode = R""""(
-   public int compute() {
-
+   public int compute(int a) {
+      return 9 + (34 + (22 / (a / (11 * 42))));
    }
 )"""";
   auto code = std::string(programCode);
@@ -1291,9 +1329,9 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedDivisionOperator
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute()
+  int compute(int a)
   {
-    return;
+    return  (43 + (22 / (a / 462)));
   }
 }
 )"""";
@@ -1303,7 +1341,6 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedDivisionOperator
 }
 
 TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedOperatorsSimplifiableOnOneSideOnly) {
-  //TODO: Update Test
 
   //  -- input --
   // int f(int a) {
@@ -1316,7 +1353,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedOperatorsSimplif
   /// Input program
   const char *programCode = R""""(
    public int compute() {
-
+      return (4 + (3 + 8) - (a / (2 * 4)));
    }
 )"""";
   auto code = std::string(programCode);
@@ -1336,7 +1373,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedOperatorsSimplif
 {
   int compute()
   {
-    return;
+    return (15 - (a / 8));
   }
 }
 )"""";
@@ -1346,7 +1383,6 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedOperatorsSimplif
 }
 
 TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedLogicalOperators) {
-  //TODO: Update Test
 
   //  -- input --
   // int f(secret bool a, bool b, secret bool c) {
@@ -1358,8 +1394,8 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedLogicalOperators
   // }
   /// Input program
   const char *programCode = R""""(
-   public int compute() {
-
+   public int compute(secret bool a, bool b, secret bool c) {
+    return (a ^ (b ^ false)) && ((true || false) || true);
    }
 )"""";
   auto code = std::string(programCode);
@@ -1377,9 +1413,9 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedLogicalOperators
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute()
+  int compute(secret bool a, bool b, secret bool c)
   {
-    return;
+    return (a ^ b);
   }
 }
 )"""";
@@ -1389,7 +1425,6 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedLogicalOperators
 }
 
 TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplification_ANDtrue) {
-  //TODO: Update Test
 
   //  -- input --
   // int f(secret bool a, bool b) {
@@ -1401,8 +1436,8 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   // }
   /// Input program
   const char *programCode = R""""(
-   public int compute() {
-
+   public int compute(secret bool a, bool b) {
+    return a && (true && b);
    }
 )"""";
   auto code = std::string(programCode);
@@ -1420,9 +1455,9 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute()
+  int compute(secret bool a, bool b)
   {
-    return;
+    return (a && b);
   }
 }
 )"""";
@@ -1431,8 +1466,6 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
 }
 
 TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplification_ANDfalse) {
-  //TODO: Update Test
-
   //  -- input --
   // int f(secret bool a, bool b) {
   //  return a && (false && b);
@@ -1443,8 +1476,8 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   // }
   /// Input program
   const char *programCode = R""""(
-   public int compute() {
-
+   public int compute(secret bool a, bool b) {
+      return a && (false && b);
    }
 )"""";
   auto code = std::string(programCode);
@@ -1462,9 +1495,9 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute()
+  int compute(secret bool a, bool b)
   {
-    return;
+    return false;
   }
 }
 )"""";
@@ -1473,7 +1506,6 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
 }
 
 TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplification_ORfalse) {
-  //TODO: Update Test
 
   //  -- input --
   // int f(secret bool a, bool b) {
@@ -1485,8 +1517,8 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   // }
   /// Input program
   const char *programCode = R""""(
-   public int compute() {
-
+   public int compute(secret bool a, bool b) {
+      return a || (b || false);
    }
 )"""";
   auto code = std::string(programCode);
@@ -1504,9 +1536,9 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute()
+  int compute(secret bool a, bool b)
   {
-    return;
+    return (a || b);
   }
 }
 )"""";
@@ -1527,8 +1559,8 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   // }
   /// Input program
   const char *programCode = R""""(
-   public int compute() {
-
+   public int compute(secret bool a, bool b) {
+      return a || (b || true);
    }
 )"""";
   auto code = std::string(programCode);
@@ -1546,9 +1578,9 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute()
+  int compute(int a, bool b)
   {
-    return;
+    return true;
   }
 }
 )"""";
@@ -1557,7 +1589,6 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
 }
 
 TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplification_XORtrue) {
-  //TODO: Update Test
 
   //  -- input --
   // int f(secret bool a, bool b) {
@@ -1569,8 +1600,8 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   // }
   /// Input program
   const char *programCode = R""""(
-   public int compute() {
-
+   public int compute(secret bool a, bool b) {
+      return a ^ (b ^ true);
    }
 )"""";
   auto code = std::string(programCode);
@@ -1588,9 +1619,9 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute()
+  int compute(secret bool a, bool b)
   {
-    return;
+    return (a ^ !b);
   }
 }
 )"""";
@@ -1599,7 +1630,6 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
 }
 
 TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplification_XORfalse) {
-  //TODO: Update Test
 
   //  -- input --
   // int f(secret bool a, bool b) {
@@ -1611,8 +1641,8 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   // }
   /// Input program
   const char *programCode = R""""(
-   public int compute() {
-
+   public int compute(secret bool a, bool b) {
+      return a ^ (b ^ false);
    }
 )"""";
   auto code = std::string(programCode);
@@ -1630,9 +1660,9 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute()
+  int compute(secret bool a, bool b)
   {
-    return;
+    return (a ^ b);
   }
 }
 )"""";
@@ -1641,7 +1671,6 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
 }
 
 TEST_F(CompileTimeExpressionSimplifierTest, WhileLoop_compileTimeKnownExpression_removalExpected) {
-  //TODO: Update Test
 
   //  -- input --
   // int f(int a) {
@@ -1658,8 +1687,13 @@ TEST_F(CompileTimeExpressionSimplifierTest, WhileLoop_compileTimeKnownExpression
   // }
   /// Input program
   const char *programCode = R""""(
-   public int compute() {
-
+   public int compute(int a) {
+      int i = 2;
+      while (i > 10) {
+        a = a * a;
+        i = i-1;
+      }
+      return a;
    }
 )"""";
   auto code = std::string(programCode);
@@ -1677,9 +1711,9 @@ TEST_F(CompileTimeExpressionSimplifierTest, WhileLoop_compileTimeKnownExpression
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute()
+  int compute(int a)
   {
-    return;
+    return a;
   }
 }
 )"""";
@@ -1687,9 +1721,8 @@ TEST_F(CompileTimeExpressionSimplifierTest, WhileLoop_compileTimeKnownExpression
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, Call_inliningExpected) {
-  //TODO: Update Test
-
+TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_Call_inliningExpected) {
+  // TODO: Calls are currently not supported by the compiler
   //  -- input --
   // int f(int a) {
   //  return computeX(a);       --> int computeX(int x) { return x + 111; }
@@ -1700,8 +1733,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, Call_inliningExpected) {
   // }
   /// Input program
   const char *programCode = R""""(
-   public int compute() {
+   public int computeX(int x) {
+      return x + 111;
+   }
 
+   public int compute() {
+      return computeX(a);
    }
 )"""";
   auto code = std::string(programCode);
@@ -1719,9 +1756,9 @@ TEST_F(CompileTimeExpressionSimplifierTest, Call_inliningExpected) {
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute()
+  int compute(int a)
   {
-    return;
+    return (a + 11);
   }
 }
 )"""";
@@ -1770,8 +1807,8 @@ TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_Call_inliningExpected2) {
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, Rotate_executionExpected) {
-  //TODO: Update Test
+TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_Rotate_executionExpected) {
+  //TODO: Rotation syntax has changed, update once its done!
 
   //  -- input --
   // rotateVec(int inputA) {
@@ -1784,8 +1821,9 @@ TEST_F(CompileTimeExpressionSimplifierTest, Rotate_executionExpected) {
   // }
   /// Input program
   const char *programCode = R""""(
-   public int compute() {
-
+   public int compute(int inputA) {
+      int sumVec = {{1, 7, 3}};
+      return sumVec.rotate(1);
    }
 )"""";
   auto code = std::string(programCode);
@@ -1805,7 +1843,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, Rotate_executionExpected) {
 {
   int compute()
   {
-    return;
+    return {{3, 1, 7}};
   }
 }
 )"""";
@@ -1813,8 +1851,8 @@ TEST_F(CompileTimeExpressionSimplifierTest, Rotate_executionExpected) {
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, transpose) {
-  //TODO: Update Test
+TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_transpose) {
+  //TODO: Matrices currently not supported
 
   //  -- input --
   // transposeMatrix() {
@@ -1855,8 +1893,8 @@ TEST_F(CompileTimeExpressionSimplifierTest, transpose) {
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, getMatrixElementSimpleBool) {
-  //TODO: Update Test
+TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_getMatrixElementSimpleBool) {
+  //TODO: Matrices currently not supported
 
   // -- input –-
   // extractArbitraryMatrixElements() {
@@ -1901,8 +1939,8 @@ TEST_F(CompileTimeExpressionSimplifierTest, getMatrixElementSimpleBool) {
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, partiallySimplifiableMatrix) {
-  //TODO: Update Test
+TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_partiallySimplifiableMatrix) {
+  //TODO: Matrices currently not supported
 
   // -- input –-
   // extractArbitraryMatrixElements(bool y {
