@@ -26,11 +26,20 @@ class SpecialCompileTimeExpressionSimplifier : public ScopedVisitor {
   /// If this is set to something other than nullptr
   /// after a child node has been visited
   /// then the child node should be replaced with this node
-  std::unique_ptr<AbstractExpression> replacementNode;
+  std::unique_ptr<AbstractExpression> replacementExpression;
+
+  /// This fakes "returns" from the visit calls
+  /// This is only used for AbstractStatements
+  /// If this is set to true
+  /// after a child node has been visited
+  /// then the child node should be removed
+  bool removeStatement;
 
  public:
 
   void visit(Function& elem);
+
+  void visit(Block& elem);
 
   void visit(VariableDeclaration &elem);
 
@@ -39,6 +48,8 @@ class SpecialCompileTimeExpressionSimplifier : public ScopedVisitor {
   void visit(Variable& elem);
 
   void visit(BinaryExpression &elem);
+
+  void visit(UnaryExpression& elem);
 
   void visit(Return& elem);
 };

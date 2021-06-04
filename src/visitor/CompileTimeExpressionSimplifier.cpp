@@ -88,12 +88,12 @@ std::string SpecialCompileTimeExpressionSimplifier::printProgram(AbstractNode &n
 void SpecialCompileTimeExpressionSimplifier::visit(BinaryExpression &elem) {
   std::string original_code = printProgram(elem);
   elem.getLeft().accept(*this);
-  if (replacementNode) {
-    elem.setLeft(std::move(replacementNode));
+  if (replacementExpression) {
+    elem.setLeft(std::move(replacementExpression));
   }
   elem.getRight().accept(*this);
-  if (replacementNode) {
-    elem.setRight(std::move(replacementNode));
+  if (replacementExpression) {
+    elem.setRight(std::move(replacementExpression));
   }
 
   // Try out all possible types of literal we could combine
@@ -105,29 +105,57 @@ void SpecialCompileTimeExpressionSimplifier::visit(BinaryExpression &elem) {
   if (auto lit_lhs_ptr = (dynamic_cast<LiteralInt *>(lhs_ptr))) {
     if (auto lit_rhs_ptr = (dynamic_cast<LiteralInt *>(rhs_ptr))) {
       auto v = applyOperator(lit_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
-      replacementNode = std::make_unique<LiteralInt>(v);
+      replacementExpression = std::make_unique<LiteralInt>(v);
     }
   } else if (auto lit_lhs_ptr = (dynamic_cast<LiteralBool *>(lhs_ptr))) {
     if (auto lit_rhs_ptr = (dynamic_cast<LiteralBool *>(rhs_ptr))) {
       auto v = applyOperator(lit_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
-      replacementNode = std::make_unique<LiteralBool>(v);
+      replacementExpression = std::make_unique<LiteralBool>(v);
     }
   } else if (auto lit_lhs_ptr = (dynamic_cast<LiteralChar *>(lhs_ptr))) {
     if (auto lit_rhs_ptr = (dynamic_cast<LiteralChar *>(rhs_ptr))) {
       auto v = applyOperator(lit_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
-      replacementNode = std::make_unique<LiteralChar>(v);
+      replacementExpression = std::make_unique<LiteralChar>(v);
     }
   } else if (auto lit_lhs_ptr = (dynamic_cast<LiteralFloat *>(lhs_ptr))) {
     if (auto lit_rhs_ptr = (dynamic_cast<LiteralFloat *>(rhs_ptr))) {
       auto v = applyOperator(lit_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
-      replacementNode = std::make_unique<LiteralFloat>(v);
+      replacementExpression = std::make_unique<LiteralFloat>(v);
     }
   } else if (auto lit_lhs_ptr = (dynamic_cast<LiteralDouble *>(lhs_ptr))) {
     if (auto lit_rhs_ptr = (dynamic_cast<LiteralDouble *>(rhs_ptr))) {
       auto v = applyOperator(lit_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
-      replacementNode = std::make_unique<LiteralDouble>(v);
+      replacementExpression = std::make_unique<LiteralDouble>(v);
     }
   } // else: nothing needs to be done
+}
+
+void SpecialCompileTimeExpressionSimplifier::visit(UnaryExpression &elem) {
+
+  // visit children
+  elem.getOperand().accept(*this);
+  if(replacementExpression) {
+    elem.setOperand(std::move(replacementExpression));
+  }
+
+  // try to apply the operator
+  if (elem.getOperator()==Operator(LOGICAL_NOT)) {
+    if(auto bool_ptr = dynamic_cast<LiteralBool*>(&elem.getOperand())){
+      replacementExpression = std::make_unique<LiteralBool>(!bool_ptr->getValue());
+    }
+  } else if (elem.getOperator()==Operator(BITWISE_NOT)) {
+    if(auto bool_ptr = dynamic_cast<LiteralBool*>(&elem.getOperand())){
+      replacementExpression = std::make_unique<LiteralBool>(~bool_ptr->getValue());
+    } else if(auto char_ptr = dynamic_cast<LiteralChar*>(&elem.getOperand())){
+      replacementExpression = std::make_unique<LiteralChar>(~char_ptr->getValue());
+    }else if(auto int_ptr = dynamic_cast<LiteralInt*>(&elem.getOperand())){
+      replacementExpression = std::make_unique<LiteralInt>(~int_ptr->getValue());
+    }
+  }
+  // for all "else" case above: don't do anything
+  // if the program is valid (type checked)
+  // this will never happen anyway
+
 }
 
 void SpecialCompileTimeExpressionSimplifier::visit(VariableDeclaration &elem) {
@@ -136,8 +164,8 @@ void SpecialCompileTimeExpressionSimplifier::visit(VariableDeclaration &elem) {
   if (elem.hasValue()) {
     // visit the expression to simplify it
     elem.getValue().accept(*this);
-    if (replacementNode) {
-      expr_ptr = std::move(replacementNode);
+    if (replacementExpression) {
+      expr_ptr = std::move(replacementExpression);
     } else {
       // Note: Since we're deleting this VariableDeclaration at the end of this call,
       // we can "move" the expression into the map, setting elem.target = nullptr
@@ -154,8 +182,9 @@ void SpecialCompileTimeExpressionSimplifier::visit(VariableDeclaration &elem) {
   // Register the Variable in the current scope
   getCurrentScope().addIdentifier(elem.getTarget().getIdentifier());
 
-  // TODO: This VariableDeclaration is now redundant and needs to be removed from the program.
+  // This VariableDeclaration is now redundant and needs to be removed from the program.
   // However, our parent visit(Block&) will have to handle this
+  removeStatement = true;
 }
 
 void SpecialCompileTimeExpressionSimplifier::visit(Assignment &elem) {
@@ -163,8 +192,8 @@ void SpecialCompileTimeExpressionSimplifier::visit(Assignment &elem) {
   std::unique_ptr<AbstractExpression> expr_ptr = nullptr;
   // visit the expression to simplify it
   elem.getValue().accept(*this);
-  if (replacementNode) {
-    expr_ptr = std::move(replacementNode);
+  if (replacementExpression) {
+    expr_ptr = std::move(replacementExpression);
   } else {
     // Note: Since we're deleting this VariableDeclaration at the end of this call,
     // we can "move" the expression into the map, setting elem.target = nullptr
@@ -185,10 +214,9 @@ void SpecialCompileTimeExpressionSimplifier::visit(Assignment &elem) {
     throw std::runtime_error("Assignment to vector indices not yet supported.");
   }
 
-
-
-  // TODO: This VariableDeclaration is now redundant and needs to be removed from the program.
+  // This VariableDeclaration is now redundant and needs to be removed from the program.
   // However, our parent visit(Block&) will have to handle this
+  removeStatement = true;
 }
 
 void SpecialCompileTimeExpressionSimplifier::visit(Variable &elem) {
@@ -203,7 +231,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(Variable &elem) {
   if (variableMap.at(scopedIdentifier)!=nullptr) {
     // Make the parent replace this node with (a copy of) the current value
     // NOTE: Copy-on-Write (COW) would be a useful optimization here
-    replacementNode = std::move(variableMap.at(scopedIdentifier)->clone(&elem.getParent()));
+    replacementExpression = std::move(variableMap.at(scopedIdentifier)->clone(&elem.getParent()));
   }
 
 }
@@ -228,11 +256,31 @@ void SpecialCompileTimeExpressionSimplifier::visit(Function &elem) {
   exitScope();
 }
 
+void SpecialCompileTimeExpressionSimplifier::visit(Block &elem) {
+  enterScope(elem);
+
+  // Iterate through statements
+  auto &statements = elem.getStatementPointers();
+  removeStatement = false;
+  for (auto & statement : statements) {
+    statement->accept(*this);
+    if(removeStatement) { /*NOLINT NOT always false */
+      // Don't remove yet, since that would invalidate iterators
+      statement = nullptr;
+      removeStatement = false;
+    }
+  }
+  // Now let the Block itself perform actual removal
+  elem.removeNullStatements();
+
+  exitScope();
+}
+
 void SpecialCompileTimeExpressionSimplifier::visit(Return &elem) {
   if (elem.hasValue()) {
     elem.getValue().accept(*this);
-    if (replacementNode) {
-      elem.setValue(std::move(replacementNode));
+    if (replacementExpression) {
+      elem.setValue(std::move(replacementExpression));
     }
   }
 }

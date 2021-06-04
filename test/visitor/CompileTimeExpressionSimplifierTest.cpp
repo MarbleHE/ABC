@@ -25,7 +25,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, arithmeticExpr_literalsOnly_fullyEva
   public int compute() {
     return 22 * 11;
   }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -55,7 +55,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, arithmeticExpr_variableUnknown_rhsOp
   public int compute(secret int encryptedA) {
     return encryptedA * (4*7);
   }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -89,7 +89,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, arithmeticExpr_variableKnown_fullyEv
      int parameterA = 43;
      return parameterA * (4*7);
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -105,12 +105,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, arithmeticExpr_variableKnown_fullyEv
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
+  int compute()
   {
     return 1204;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -122,7 +122,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, arithmeticExpr_variablesUnknown_notA
   public int compute(secret int encryptedA, int plaintextB) {
       return encryptedA * (4*plaintextB);
   }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -155,7 +155,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, logicalExpr_literalsOnly_fullyEvalua
   public int compute() {
     return true && false;
   }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -189,7 +189,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, logicalExpr_variableUnknown_lhsOpera
   public int compute(secret bool encryptedA) {
     return (true ^ false) || encryptedA;
   }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -205,12 +205,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, logicalExpr_variableUnknown_lhsOpera
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute(secret bool encryptedA)
+  int compute(secret bool encryptedA)
   {
-      return true;
+    return true;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -222,7 +222,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, logicalExpr_variableKnown_fullyEvalu
     bool parameterA = true;
     return parameterA || (false && true);
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -238,12 +238,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, logicalExpr_variableKnown_fullyEvalu
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
+  int compute()
   {
-      return true;
+    return true;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -252,16 +252,16 @@ TEST_F(CompileTimeExpressionSimplifierTest, logicalExpr_variableKnown_fullyEvalu
 TEST_F(CompileTimeExpressionSimplifierTest, logicalExpr_variablesUnknown_notAnythingEvaluable) {
   //  -- input --
   // public int compute(secret bool encryptedA, bool paramB) {
-  //  bool alpha = encryptedA && (true ^ encryptedB);
+  //  bool alpha = encryptedA && (true ^ paramB);
   // }
   //  -- expected --
-  // variableValues['alpha'] = encryptedA && (true ^ encryptedB)
+  // variableValues['alpha'] = encryptedA && (true ^ paramB)
   /// Input program
   const char *programCode = R""""(
    public int compute(secret bool encryptedA, bool paramB) {
-      return encryptedA && (true ^ encryptedB);
+      return encryptedA && (true ^ paramB);
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -277,12 +277,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, logicalExpr_variablesUnknown_notAnyt
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute(secret bool encryptedA, bool paramB)
-  {   
-    return (encryptedA && (true ^ encryptedB));
+  int compute(secret bool encryptedA, bool paramB)
+  {
+    return (encryptedA && (true ^ paramB));
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -297,7 +297,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, unaryExpr_literalsOnly_fullyEvaluabl
    public int compute() {
       return !false;
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -313,12 +313,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, unaryExpr_literalsOnly_fullyEvaluabl
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return true;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -336,7 +336,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, unaryExpr_variableKnown_fullyEvaluab
       bool alpha = true;
       return !alpha;
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -352,12 +352,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, unaryExpr_variableKnown_fullyEvaluab
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return false;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -371,7 +371,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, unaryExpr_variableUnknown_notEvaluab
    public int compute(bool paramA) {
     return !paramA;
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -387,12 +387,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, unaryExpr_variableUnknown_notEvaluab
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute(bool paramA)
-  {   
+  int compute(bool paramA)
+  {
     return !paramA;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -413,7 +413,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, varAssignm_variablesKnown_fullyEvalu
       float beta = alpha;
       return beta;
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -429,12 +429,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, varAssignm_variablesKnown_fullyEvalu
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return 2.75;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -453,7 +453,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, varAssignm_previouslyDeclaredNonInit
       alpha = 2.95;
       return alpha;
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -469,12 +469,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, varAssignm_previouslyDeclaredNonInit
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return 2.95;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -491,7 +491,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, varAssignm_assignmentToParameter) {
       alpha = 42.24;
       return alpha;
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -507,12 +507,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, varAssignm_assignmentToParameter) {
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute(float alpha)
+  {
     return 42.24;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -533,11 +533,11 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   /// Input program
   const char *programCode = R""""(
    public int compute(int x, int y) {
-      x = y+3
-      y = x+2
-      return x+y
+      x = y+3;
+      y = x+2;
+      return x+y;
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -553,12 +553,12 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute(int x, int y)
-  {   
+  int compute(int x, int y)
+  {
     return +(y, y, 8);
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -575,7 +575,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, return_literalOnly_expectedNoChange)
    public int compute() {
     return 42.24;
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -591,12 +591,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, return_literalOnly_expectedNoChange)
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
+  int compute()
   {
     return 42.24;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -618,7 +618,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
       int b = 23;
       return b;
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -634,12 +634,12 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return 23;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -661,7 +661,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
     int b = 23;
     return b + 99;
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -677,12 +677,12 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return 122;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -699,7 +699,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, return_variableUnknown_expectedNoCha
    public int compute(int b) {
       return b + 99;
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -715,12 +715,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, return_variableUnknown_expectedNoCha
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute(int b)
+  {
     return (b + 99);
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -741,7 +741,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, return_multipleReturnValues_expected
     int b = 3 + 4;
     return a*b, 2-b, 21;
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -757,12 +757,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, return_multipleReturnValues_expected
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -790,7 +790,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -806,12 +806,12 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -841,7 +841,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -857,12 +857,12 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -892,7 +892,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -908,12 +908,12 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -941,7 +941,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -957,12 +957,12 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -990,7 +990,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1006,12 +1006,12 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -1039,7 +1039,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1055,12 +1055,12 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -1089,7 +1089,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1105,12 +1105,12 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -1142,7 +1142,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1158,12 +1158,12 @@ TEST_F(CompileTimeExpressionSimplifierTest,
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -1187,7 +1187,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_partiallyEvaluableOnly
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1203,12 +1203,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_partiallyEvaluableOnly
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -1232,7 +1232,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_includingOperatorExprs
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1248,12 +1248,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_includingOperatorExprs
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -1275,7 +1275,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedDivisionOperator
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1291,12 +1291,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedDivisionOperator
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -1318,7 +1318,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedOperatorsSimplif
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1334,12 +1334,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedOperatorsSimplif
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -1361,7 +1361,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedLogicalOperators
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1377,12 +1377,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedLogicalOperators
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 
@@ -1404,7 +1404,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1420,12 +1420,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -1446,7 +1446,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1462,12 +1462,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -1488,7 +1488,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1504,12 +1504,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -1530,7 +1530,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1546,12 +1546,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -1572,7 +1572,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1588,12 +1588,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -1614,7 +1614,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1630,12 +1630,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -1661,7 +1661,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, WhileLoop_compileTimeKnownExpression
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1677,12 +1677,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, WhileLoop_compileTimeKnownExpression
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -1703,7 +1703,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, Call_inliningExpected) {
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1719,12 +1719,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, Call_inliningExpected) {
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -1744,7 +1744,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_Call_inliningExpected2) {
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1760,12 +1760,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_Call_inliningExpected2) {
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -1787,7 +1787,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, Rotate_executionExpected) {
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1803,12 +1803,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, Rotate_executionExpected) {
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -1829,7 +1829,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, transpose) {
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1845,12 +1845,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, transpose) {
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -1875,7 +1875,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, getMatrixElementSimpleBool) {
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1891,12 +1891,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, getMatrixElementSimpleBool) {
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -1920,7 +1920,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, partiallySimplifiableMatrix) {
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1936,12 +1936,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, partiallySimplifiableMatrix) {
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -1979,7 +1979,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, partialforLoopUnrolling) {
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -1995,12 +1995,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, partialforLoopUnrolling) {
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -2036,7 +2036,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, fullForLoopUnrolling) {
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -2052,12 +2052,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, fullForLoopUnrolling) {
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -2100,7 +2100,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, fourNestedLoopsLaplacianSharpeningFi
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -2116,12 +2116,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, fourNestedLoopsLaplacianSharpeningFi
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -2142,7 +2142,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, trivialLoop) {
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -2158,12 +2158,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, trivialLoop) {
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -2185,7 +2185,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, trivialNestedLoops) {
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -2201,12 +2201,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, trivialNestedLoops) {
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -2268,7 +2268,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
    public int compute() {
 
    }
-  )"""";
+)"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
 
@@ -2284,12 +2284,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
-  {   
+  int compute()
+  {
     return;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
