@@ -27,6 +27,8 @@ env:
   instance-termination-timeout: 180
   # the number of test runs to be executed for each tool
   NUM_RUNS: 10
+  # directory where plotting scripts can be found
+  PLOT_SCRIPTS_DIR: "scripts/paper_plots"
 
 jobs:
   # A job that creates a unique timestamp for each benchmark run. This is only executed once over all benchmarks so that
@@ -51,7 +53,7 @@ jobs:
     # the strategy executes this job (i.e., all steps of it) in parallel for each of the given tools
     strategy:
       matrix:
-        # this must match the tool's directory name in the SoK repo
+        # this must be an accepted argument by our ABC program
         tool: [SEAL, Cingulata, SEALion, TFHE, nGraph-HE, E3, EVA, PALISADE]
     steps:
       # create a AWS EC2 instance and wait until it is ready to accept SSM commands
@@ -81,13 +83,14 @@ jobs:
           working-directory: /root
           command: |
             echo "sudo halt" | at now + ${{ env.instance-termination-timeout }} minutes
-            cd /root/SoK/${{ matrix.tool }}
+            cd /root/ABC/
             docker run -e S3_URL=${{ env.s3-repository-url }} \
               -e S3_FOLDER=${{ needs.setup.outputs.ts }}__${{ github.run_id }} \
               -e AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID }} \
               -e AWS_SECRET_ACCESS_KEY=${{ env.AWS_SECRET_ACCESS_KEY }} \
               -e AWS_DEFAULT_REGION=${{ env.AWS_DEFAULT_REGION }} \
-              -e NUM_RUNS=${{ env.NUM_RUNS }} $(docker build -q .); \
+              -e NUM_RUNS=${{ env.NUM_RUNS }} \
+              ${{ matrix.tool }} $(docker build -q .); \
             shutdown -h now
       # print command ID that is helpful to debug execution of SSH command (alternatively, connect to VM via web session as it does not have a SSH key)
       - name: Print command ID
@@ -102,7 +105,7 @@ jobs:
             echo "Docker containers running: ${CONTAINERS_RUNNING}"
             if [ "$COUNTER" -eq "${{ env.instance-termination-timeout }}" ]; then
               echo "Timeout: Instance did not stop after ${{ env.instance-termination-timeout }} minutes. Ignoring and continuing workflow run."
-              curl -F $'text=⚠ *Benchmarking Status*\nVM ${{ github.run_id }}-${{ matrix.tool }} reached timeout! Please check status on EC2 Dashboard and manually terminate the VM.' -F channel=github-sok -H "Authorization: Bearer ${{ secrets.SLACK_APP_TOKEN }}" https://slack.com/api/chat.postMessage
+              curl -F $'text=⚠ *Benchmarking Status*\nVM ${{ github.run_id }}-${{ matrix.tool }} reached timeout! Please check status on EC2 Dashboard and manually terminate the VM.' -F channel=github-batching-compiler -H "Authorization: Bearer ${{ secrets.SLACK_APP_TOKEN }}" https://slack.com/api/chat.postMessage
               break
             fi
             sleep 60
@@ -113,13 +116,11 @@ jobs:
     # wait until all benchmark runs finish
     needs: [setup, run-benchmarks]
     runs-on: ubuntu-20.04
-    env:
-      PLOT_SCRIPTS_DIR: "scripts/paper_plots"
     steps:
-      - name: Check out the SoK repository and cd into repository folder
+      - name: Check out the ABC repository and cd into repository folder
         uses: actions/checkout@v2
       - name: Upload plotting scripts from repository to S3
-        run: aws s3 cp --recursive ${PLOT_SCRIPTS_DIR} ${{ env.s3-repository-url }}/${{ needs.setup.outputs.ts }}__${{ github.run_id }}/plot/ --include "*.py"
+        run: aws s3 cp --recursive ${env.PLOT_SCRIPTS_DIR} ${{ env.s3-repository-url }}/${{ needs.setup.outputs.ts }}__${{ github.run_id }}/plot/ --include "*.py"
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
         with:
@@ -130,19 +131,25 @@ jobs:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
           # Look to see if there is a cache hit for the corresponding requirements file
-          key: ${{ runner.os }}-pip-${{ hashFiles('${PLOT_SCRIPTS_DIR}/requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('${env.PLOT_SCRIPTS_DIR}/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
       - name: Install LaTeX as plotting scripts require it
         run: sudo apt-get install texlive texlive-latex-extra texlive-fonts-recommended dvipng cm-super
       - name: Install plotting script dependencies
-        run: pip install -r ${PLOT_SCRIPTS_DIR}/requirements.txt
+        run: pip install -r ${env.PLOT_SCRIPTS_DIR}/requirements.txt
       - name: Generate plots, upload plots to S3 and post to Slack channel
         run: |
-          python ${PLOT_SCRIPTS_DIR}/plot_all.py
+          python ${env.PLOT_SCRIPTS_DIR}/plot_all.py
           for filename in *.png
           do
             benchmark=$(echo ${filename%.png} | sed 's/plot_//g' | tr [a-z] [A-Z])
-            curl -F file=@${filename} -F "title=Benchmark Result: ${benchmark}" -F $'initial_comment=🚀 *New Benchmark Results available!*\nRun ID: <https://github.com/MarbleHE/SoK/actions/runs/${{ github.run_id }}|${{ github.run_id }}>\nGit commit: <https://github.com/MarbleHE/SoK/tree/${{ github.sha }}|${{ github.sha }}>' -F channels=github-sok -H "Authorization: Bearer ${{ secrets.SLACK_APP_TOKEN }}" https://slack.com/api/files.upload
+            curl -F file=@${filename} -F "title=Benchmark Result: ${benchmark}" -F $'initial_comment=🚀 *New Benchmark Results available!*\nRun ID: <https://github.com/MarbleHE/ABC/actions/runs/${{ github.run_id }}|${{ github.run_id }}>\nGit commit: <https://github.com/MarbleHE/ABC/tree/${{ github.sha }}|${{ github.sha }}>' -F channels=github-batching-compiler -H "Authorization: Bearer ${{ secrets.SLACK_APP_TOKEN }}" https://slack.com/api/files.upload
           done
+
+
+# TODO
+# add rudimentary argument parsing
+# add simple demo code producing some numbers in CSV format
+# add simple plotting code to plot_all.py that plots some bars

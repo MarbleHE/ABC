@@ -30,4 +30,4 @@ RUN cd ABC; \
     make -j$(nproc)
 
 ###### run the passed benchmark
-ENTRYPOINT ["/ABC/build/ast_demo", "-bench", "$1"]
+ENTRYPOINT ["/ABC/build/ast_demo", "$1"]
