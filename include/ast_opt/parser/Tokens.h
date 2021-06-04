@@ -105,7 +105,10 @@ enum struct reservedTokens {
 
   kw_public,
 
-  kw_rotate
+  kw_rotate,
+
+  kw_true,
+  kw_false
 };
 
 class PushBackStream;

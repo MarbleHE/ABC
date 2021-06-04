@@ -148,7 +148,8 @@ bool isPostFixOperator(const stork::tokens_iterator &it) {
 }
 
 bool isLiteral(stork::tokens_iterator &it) {
-  return it->isBool() || it->isChar() || it->isFloat() || it->isDouble() || it->isInteger() || it->isString();
+  return it->isBool() || it->isChar() || it->isFloat() || it->isDouble() || it->isInteger() || it->isString()
+      || it->hasValue(stork::reservedTokens::kw_true) || it->hasValue(stork::reservedTokens::kw_false);
 }
 
 AbstractExpression *Parser::parseExpression(stork::tokens_iterator &it) {
@@ -358,6 +359,10 @@ AbstractExpression *Parser::parseLiteral(stork::tokens_iterator &it, bool isNega
     } else {
       l = (isNegative) ? new LiteralInt(-it->getInteger()) : new LiteralInt(it->getInteger());
     }
+  } else if (it->hasValue(stork::reservedTokens::kw_true)) {
+    l = new LiteralBool(true);
+  } else if (it->hasValue(stork::reservedTokens::kw_false)) {
+    l = new LiteralBool(false);
   } else {
     throw stork::unexpectedSyntaxError(to_string(it->getValue()), it->getLineNumber(), it->getCharIndex());
   }

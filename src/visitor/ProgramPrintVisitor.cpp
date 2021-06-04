@@ -85,7 +85,8 @@ void SpecialProgramPrintVisitor::visit(IndexAccess &elem) {
   os << "]";
 }
 void SpecialProgramPrintVisitor::visit(LiteralBool &elem) {
-  os << elem.getValue();
+ if(elem.getValue()) os << "true";
+ else os << "false";
 }
 void SpecialProgramPrintVisitor::visit(LiteralChar &elem) {
   os << elem.getValue();

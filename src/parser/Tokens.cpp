@@ -109,7 +109,10 @@ const Lookup<std::string_view, reservedTokens> keyword_token_map{
 
     {"public", reservedTokens::kw_public},
 
-    {"rotate", reservedTokens::kw_rotate}
+    {"rotate", reservedTokens::kw_rotate},
+
+    {"true", reservedTokens::kw_true},
+    {"false", reservedTokens::kw_false}
 };
 
 const Lookup<reservedTokens, std::string_view> token_string_map = ([]() {
