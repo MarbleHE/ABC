@@ -83,6 +83,10 @@ class VariableDeclaration : public AbstractStatement {
   /// \throws std::runtime_error if no target exists
   const Variable &getTarget() const;
 
+  /// Transfer ownership of Target
+  /// \return A unique_ptr that owns the AST that was previously this.target
+  std::unique_ptr<AbstractExpression> takeTarget();
+
   /// Get (a reference to) the datatype (if it exists)
   /// \return A reference to the target variable
   /// \throws std::runtime_error if no target exists
@@ -102,6 +106,10 @@ class VariableDeclaration : public AbstractStatement {
   /// \return A reference to the value variable
   /// \throws std::runtime_error if no value exists
   const AbstractExpression &getValue() const;
+
+  /// Transfer ownership of Value
+  /// \return A unique_ptr that owns the AST that was previously this.value
+  std::unique_ptr<AbstractExpression> takeValue();
 
   /// Set the target to newTarget, taking ownership of newTarget
   /// This will delete the previous target!

@@ -1,5 +1,164 @@
 #include "ast_opt/visitor/CompileTimeExpressionSimplifier.h"
+#include <stdexcept>
+#include "ast_opt/visitor/ProgramPrintVisitor.h"
 
+template<typename T>
+/// This function goes through all possible types of operator,
+/// selects the correct on and tries to apply it to the operands
+/// \tparam T Type of the Operands
+/// \param lhsOperand
+/// \param rhsOperand
+/// \param op
+/// \return result of computing "lhs op rhs"
+T applyOperator(T lhsOperand, T rhsOperand, Operator op) {
+  auto operatorEqualsAnyOf = [&](std::initializer_list<OperatorVariant> list) -> bool {
+    return std::any_of(list.begin(), list.end(), [&op](OperatorVariant oper) { return op==Operator(oper); });
+  };
+  auto operatorEquals = [&op](OperatorVariant oper) -> bool { return op==Operator(oper); };
+  if (operatorEqualsAnyOf({ADDITION, FHE_ADDITION})) {
+    return (lhsOperand + rhsOperand);
+  } else if (operatorEqualsAnyOf({SUBTRACTION, FHE_SUBTRACTION})) {
+    return (lhsOperand - rhsOperand);
+  } else if (operatorEqualsAnyOf({MULTIPLICATION, FHE_MULTIPLICATION})) {
+    return (lhsOperand*rhsOperand);
+  } else if (operatorEquals(DIVISION)) {
+    return (lhsOperand/rhsOperand);
+  } else if (operatorEquals(MODULO)) {
+    if constexpr (std::is_integral<T>::value) {
+      return (lhsOperand%rhsOperand);
+    } else {
+      throw std::runtime_error("Cannot perform modulo (%) and on non-integral types.");
+    }
+  } else if (operatorEquals(LOGICAL_AND)) {
+    return (lhsOperand && rhsOperand);
+  } else if (operatorEquals(LOGICAL_OR)) {
+    return (lhsOperand || rhsOperand);
+  } else if (operatorEquals(LESS)) {
+    return (lhsOperand < rhsOperand);
+  } else if (operatorEquals(LESS_EQUAL)) {
+    return (lhsOperand <= rhsOperand);
+  } else if (operatorEquals(GREATER)) {
+    return (lhsOperand > rhsOperand);
+  } else if (operatorEquals(GREATER_EQUAL)) {
+    return (lhsOperand >= rhsOperand);
+  } else if (operatorEquals(EQUAL)) {
+    return (lhsOperand==rhsOperand);
+  } else if (operatorEquals(NOTEQUAL)) {
+    return (lhsOperand!=rhsOperand);
+  } else if (operatorEquals(BITWISE_AND)) {
+    if constexpr (std::is_integral<T>::value) {
+      return (lhsOperand & rhsOperand);
+    } else {
+      throw std::runtime_error("Cannot perform bitwise AND on non-integral types.");
+    }
+  } else if (operatorEquals(BITWISE_XOR)) {
+    if constexpr (std::is_integral<T>::value) {
+      return (lhsOperand ^ rhsOperand);
+    } else {
+      throw std::runtime_error("Cannot perform bitwise XOR on non-integral types.");
+    }
+  } else if (operatorEquals(BITWISE_OR)) {
+    if constexpr (std::is_integral<T>::value) {
+      return (lhsOperand | rhsOperand);
+    } else {
+      throw std::runtime_error("Cannot perform bitwise OR on non-integral types.");
+    }
+  } else {
+    throw std::runtime_error("Unknown binary operator encountered. Cannot continue!");
+  }
+}
+
+//template<typename TO, typename FROM>
+///// \tparam TO Target Type
+///// \tparam FROM Source Type
+///// \param old Pointer to convert, needs to be std::move()'d in
+///// \return
+//std::unique_ptr<TO> dynamic_cast_unique_ptr (std::unique_ptr<FROM>&& old){
+//  return std::unique_ptr<TO>{dynamic_cast<TO*>(old.release())};
+//  //conversion: unique_ptr<FROM>->FROM*->TO*->unique_ptr<TO>
+//}
+
+std::string SpecialCompileTimeExpressionSimplifier::printProgram(AbstractNode &node) {
+  std::stringstream ss;
+  ProgramPrintVisitor ppv(ss);
+  node.accept(ppv);
+  return ss.str();
+}
+
+void SpecialCompileTimeExpressionSimplifier::visit(BinaryExpression &elem) {
+  std::string original_code = printProgram(elem);
+  elem.getLeft().accept(*this);
+  if (replacementNode) {
+    elem.setLeft(std::move(replacementNode));
+  }
+  elem.getRight().accept(*this);
+  if (replacementNode) {
+    elem.setRight(std::move(replacementNode));
+  }
+
+  // Try out all possible types of literal we could combine
+  // if "lhs op rhs" can be computed at compile time
+  // then we replace elem with a literal
+  // does not use apply when implicit conversions would be required, because handling them is messy
+  AbstractNode *lhs_ptr = &elem.getLeft();
+  AbstractNode *rhs_ptr = &elem.getRight();
+  if (auto lit_lhs_ptr = (dynamic_cast<LiteralInt *>(lhs_ptr))) {
+    if (auto lit_rhs_ptr = (dynamic_cast<LiteralInt *>(rhs_ptr))) {
+      auto v = applyOperator(lit_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
+      replacementNode = std::make_unique<LiteralInt>(v);
+    }
+  } else if (auto lit_lhs_ptr = (dynamic_cast<LiteralBool *>(lhs_ptr))) {
+    if (auto lit_rhs_ptr = (dynamic_cast<LiteralBool *>(rhs_ptr))) {
+      auto v = applyOperator(lit_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
+      replacementNode = std::make_unique<LiteralBool>(v);
+    }
+  } else if (auto lit_lhs_ptr = (dynamic_cast<LiteralChar *>(lhs_ptr))) {
+    if (auto lit_rhs_ptr = (dynamic_cast<LiteralChar *>(rhs_ptr))) {
+      auto v = applyOperator(lit_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
+      replacementNode = std::make_unique<LiteralChar>(v);
+    }
+  } else if (auto lit_lhs_ptr = (dynamic_cast<LiteralFloat *>(lhs_ptr))) {
+    if (auto lit_rhs_ptr = (dynamic_cast<LiteralFloat *>(rhs_ptr))) {
+      auto v = applyOperator(lit_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
+      replacementNode = std::make_unique<LiteralFloat>(v);
+    }
+  } else if (auto lit_lhs_ptr = (dynamic_cast<LiteralDouble *>(lhs_ptr))) {
+    if (auto lit_rhs_ptr = (dynamic_cast<LiteralDouble *>(rhs_ptr))) {
+      auto v = applyOperator(lit_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
+      replacementNode = std::make_unique<LiteralDouble>(v);
+    }
+  } // else: nothing needs to be done
+}
+
+void SpecialCompileTimeExpressionSimplifier::visit(VariableDeclaration &elem) {
+  // Get the value, if it exists
+  std::unique_ptr<AbstractExpression> expr_ptr = nullptr;
+  if (elem.hasValue()) {
+    // visit the expression to simplify it
+    elem.getValue().accept(*this);
+    // Note: Since we're deleting this VariableDeclaration at the end of this call,
+    // we can "move" the expression into the map, setting elem.target = nullptr
+    expr_ptr = elem.takeValue();
+  }
+
+  // Register the Variable in the variableMap
+  auto scopedIdentifier = ScopedIdentifier(this->getCurrentScope(), elem.getTarget().getIdentifier());
+  if (variableMap.has(scopedIdentifier))
+    throw std::runtime_error("Redeclaration of a variable that already exists in this scope: " + printProgram(elem));
+  variableMap.insert_or_assign(scopedIdentifier, std::move(expr_ptr));
+
+  // This VariableDeclaration is now redundant and needs to be removed from the program.
+  // However, our parent visit(Block&) will have to handle this
+}
+
+void SpecialCompileTimeExpressionSimplifier::visit(Return &elem) {
+  if(elem.hasValue()) {
+    elem.getValue().accept(*this);
+    if(replacementNode) {
+      elem.setValue(std::move(replacementNode));
+    }
+  }
+}
 
 // BELOW IS OLD CODE FOR REFERENCE!
 //#include <climits>

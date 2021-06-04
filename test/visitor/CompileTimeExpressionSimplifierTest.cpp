@@ -39,12 +39,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, arithmeticExpr_literalsOnly_fullyEva
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
+  int compute()
   {
     return 242;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -71,12 +71,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, arithmeticExpr_variableUnknown_rhsOp
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute(secret int encryptedA)
+  int compute(secret int encryptedA)
   {
-    return (encryptedA * (28));
+    return (encryptedA * 28);
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -138,12 +138,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, arithmeticExpr_variablesUnknown_notA
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute(secret int encryptedA, int plaintextB)
+  int compute(secret int encryptedA, int plaintextB)
   {
-      return encryptedA * (4*plaintextB);
+    return (encryptedA * (4 * plaintextB));
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
@@ -171,12 +171,12 @@ TEST_F(CompileTimeExpressionSimplifierTest, logicalExpr_literalsOnly_fullyEvalua
   /// Expected program
   const char *expectedCode = R""""(
 {
-  void compute()
+  int compute()
   {
-      return false;
+    return false;
   }
 }
-  )"""";
+)"""";
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 

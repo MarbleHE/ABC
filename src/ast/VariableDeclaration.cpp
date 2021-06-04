@@ -58,6 +58,9 @@ const Variable &VariableDeclaration::getTarget() const {
     throw std::runtime_error("Cannot get null target.");
   }
 }
+std::unique_ptr<AbstractExpression> VariableDeclaration::takeTarget() {
+  return std::move(this->target);
+}
 
 Datatype &VariableDeclaration::getDatatype() {
   return datatype;
@@ -81,6 +84,10 @@ const AbstractExpression &VariableDeclaration::getValue() const {
   } else {
     throw std::runtime_error("Cannot get null value.");
   }
+}
+
+std::unique_ptr<AbstractExpression> VariableDeclaration::takeValue() {
+  return std::move(this->value);
 }
 
 void VariableDeclaration::setTarget(std::unique_ptr<Variable> newTarget) {
