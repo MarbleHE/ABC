@@ -8,15 +8,16 @@
 
 #include "ast_opt/ast/AbstractNode.h"
 #include "ast_opt/utilities/Visitor.h"
+#include "ast_opt/utilities/PlainVisitor.h"
 
 
 /// Forward declaration of the class that will actually implement the PrintVisitor's logic
 class SpecialPrintVisitor;
 
 /// PrintVisitor uses the Visitor<T> template to allow specifying default behaviour
-typedef Visitor<SpecialPrintVisitor> PrintVisitor;
+typedef Visitor<SpecialPrintVisitor, PlainVisitor> PrintVisitor;
 
-class SpecialPrintVisitor : public ScopedVisitor {
+class SpecialPrintVisitor : public PlainVisitor {
  private:
   /// Reference to the stream to which we write the output
   std::ostream& os;
