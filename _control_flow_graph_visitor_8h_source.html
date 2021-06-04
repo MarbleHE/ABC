@@ -76,7 +76,7 @@ $(function() {
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;iostream&gt;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;set&gt;</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;ast_opt/ast/AbstractStatement.h&quot;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;ast_opt/utilities/Visitor.h&quot;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;ast_opt/utilities/ScopedVisitor.h&quot;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;ast_opt/visitor/controlFlowGraph/GraphNode.h&quot;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">// Forward declaration</span></div>
@@ -156,7 +156,7 @@ $(function() {
 <div class="ttc" id="aclass_if_html"><div class="ttname"><a href="class_if.html">If</a></div><div class="ttdef"><b>Definition:</b> If.h:12</div></div>
 <div class="ttc" id="aclass_return_html"><div class="ttname"><a href="class_return.html">Return</a></div><div class="ttdoc">A Return statement has an (optional) value (AbstractExpression)</div><div class="ttdef"><b>Definition:</b> Return.h:12</div></div>
 <div class="ttc" id="aclass_scoped_identifier_html"><div class="ttname"><a href="class_scoped_identifier.html">ScopedIdentifier</a></div><div class="ttdef"><b>Definition:</b> Scope.h:11</div></div>
-<div class="ttc" id="aclass_scoped_visitor_html"><div class="ttname"><a href="class_scoped_visitor.html">ScopedVisitor</a></div><div class="ttdef"><b>Definition:</b> ScopedVisitor.h:10</div></div>
+<div class="ttc" id="aclass_scoped_visitor_html"><div class="ttname"><a href="class_scoped_visitor.html">ScopedVisitor</a></div><div class="ttdef"><b>Definition:</b> ScopedVisitor.h:13</div></div>
 <div class="ttc" id="aclass_special_control_flow_graph_visitor_html"><div class="ttname"><a href="class_special_control_flow_graph_visitor.html">SpecialControlFlowGraphVisitor</a></div><div class="ttdef"><b>Definition:</b> ControlFlowGraphVisitor.h:16</div></div>
 <div class="ttc" id="aclass_special_control_flow_graph_visitor_html_a8b511883895123467f2b129e57349693"><div class="ttname"><a href="class_special_control_flow_graph_visitor.html#a8b511883895123467f2b129e57349693">SpecialControlFlowGraphVisitor::storeAccessedVariables</a></div><div class="ttdeci">void storeAccessedVariables(GraphNode &amp;graphNode)</div><div class="ttdef"><b>Definition:</b> ControlFlowGraphVisitor.cpp:309</div></div>
 <div class="ttc" id="aclass_special_control_flow_graph_visitor_html_a90b53eb67e9a316426ffda3c17dd3233"><div class="ttname"><a href="class_special_control_flow_graph_visitor.html#a90b53eb67e9a316426ffda3c17dd3233">SpecialControlFlowGraphVisitor::buildDataflowGraph</a></div><div class="ttdeci">void buildDataflowGraph()</div><div class="ttdef"><b>Definition:</b> ControlFlowGraphVisitor.cpp:355</div></div>
@@ -165,7 +165,7 @@ $(function() {
 <div class="ttc" id="aclass_special_control_flow_graph_visitor_html_ab7432c2ec585ecdd4e060f7c699da3cc"><div class="ttname"><a href="class_special_control_flow_graph_visitor.html#ab7432c2ec585ecdd4e060f7c699da3cc">SpecialControlFlowGraphVisitor::markVariableAccess</a></div><div class="ttdeci">void markVariableAccess(const ScopedIdentifier &amp;scopedIdentifier, VariableAccessType accessType)</div><div class="ttdef"><b>Definition:</b> ControlFlowGraphVisitor.cpp:326</div></div>
 <div class="ttc" id="aclass_variable_declaration_html"><div class="ttname"><a href="class_variable_declaration.html">VariableDeclaration</a></div><div class="ttdef"><b>Definition:</b> VariableDeclaration.h:13</div></div>
 <div class="ttc" id="aclass_variable_html"><div class="ttname"><a href="class_variable.html">Variable</a></div><div class="ttdef"><b>Definition:</b> Variable.h:9</div></div>
-<div class="ttc" id="aclass_visitor_html"><div class="ttname"><a href="class_visitor.html">Visitor</a></div><div class="ttdef"><b>Definition:</b> Visitor.h:84</div></div>
+<div class="ttc" id="aclass_visitor_html"><div class="ttname"><a href="class_visitor.html">Visitor</a></div><div class="ttdef"><b>Definition:</b> ScopedVisitor.h:137</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
