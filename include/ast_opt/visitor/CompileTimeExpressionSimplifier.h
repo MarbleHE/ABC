@@ -30,7 +30,13 @@ class SpecialCompileTimeExpressionSimplifier : public ScopedVisitor {
 
  public:
 
+  void visit(Function& elem);
+
   void visit(VariableDeclaration &elem);
+
+  void visit(Assignment &elem);
+
+  void visit(Variable& elem);
 
   void visit(BinaryExpression &elem);
 

@@ -136,9 +136,13 @@ void SpecialCompileTimeExpressionSimplifier::visit(VariableDeclaration &elem) {
   if (elem.hasValue()) {
     // visit the expression to simplify it
     elem.getValue().accept(*this);
-    // Note: Since we're deleting this VariableDeclaration at the end of this call,
-    // we can "move" the expression into the map, setting elem.target = nullptr
-    expr_ptr = elem.takeValue();
+    if (replacementNode) {
+      expr_ptr = std::move(replacementNode);
+    } else {
+      // Note: Since we're deleting this VariableDeclaration at the end of this call,
+      // we can "move" the expression into the map, setting elem.target = nullptr
+      expr_ptr = elem.takeValue();
+    }
   }
 
   // Register the Variable in the variableMap
@@ -147,14 +151,87 @@ void SpecialCompileTimeExpressionSimplifier::visit(VariableDeclaration &elem) {
     throw std::runtime_error("Redeclaration of a variable that already exists in this scope: " + printProgram(elem));
   variableMap.insert_or_assign(scopedIdentifier, std::move(expr_ptr));
 
-  // This VariableDeclaration is now redundant and needs to be removed from the program.
+  // Register the Variable in the current scope
+  getCurrentScope().addIdentifier(elem.getTarget().getIdentifier());
+
+  // TODO: This VariableDeclaration is now redundant and needs to be removed from the program.
   // However, our parent visit(Block&) will have to handle this
 }
 
+void SpecialCompileTimeExpressionSimplifier::visit(Assignment &elem) {
+  // Get the value
+  std::unique_ptr<AbstractExpression> expr_ptr = nullptr;
+  // visit the expression to simplify it
+  elem.getValue().accept(*this);
+  if (replacementNode) {
+    expr_ptr = std::move(replacementNode);
+  } else {
+    // Note: Since we're deleting this VariableDeclaration at the end of this call,
+    // we can "move" the expression into the map, setting elem.target = nullptr
+    expr_ptr = elem.takeValue();
+  }
+
+  // Update the Variable in the variableMap & Scope (if necessary)
+  if (auto var_ptr = dynamic_cast<Variable *>(&elem.getTarget())) {
+    auto scopedIdentifier = ScopedIdentifier(this->getCurrentScope(), var_ptr->getIdentifier());
+    variableMap.insert_or_assign(scopedIdentifier, std::move(expr_ptr));
+
+    // Register the Variable in the current scope, if it didn't exist yet
+    if (!getCurrentScope().identifierIsLocal(var_ptr->getIdentifier())) {
+      getCurrentScope().addIdentifier(var_ptr->getIdentifier());
+    }
+  } else {
+    // TODO: Support assignment to individual vector assignments
+    throw std::runtime_error("Assignment to vector indices not yet supported.");
+  }
+
+
+
+  // TODO: This VariableDeclaration is now redundant and needs to be removed from the program.
+  // However, our parent visit(Block&) will have to handle this
+}
+
+void SpecialCompileTimeExpressionSimplifier::visit(Variable &elem) {
+  // take scope into account
+  auto scopedIdentifier = getCurrentScope().resolveIdentifier(elem.getIdentifier());
+
+  // check  if variable has been declared and error if not
+  if (!variableMap.has(scopedIdentifier))
+    throw std::runtime_error("Variable not declared: " + printProgram(elem) + " in " + printProgram(elem.getParent()));
+
+  // check if variable has a value and ask the parent to replace it with this, if yes
+  if (variableMap.at(scopedIdentifier)!=nullptr) {
+    // Make the parent replace this node with (a copy of) the current value
+    // NOTE: Copy-on-Write (COW) would be a useful optimization here
+    replacementNode = std::move(variableMap.at(scopedIdentifier)->clone(&elem.getParent()));
+  }
+
+}
+
+void SpecialCompileTimeExpressionSimplifier::visit(Function &elem) {
+  enterScope(elem);
+
+  // Register the Variables from the parameters in the variableMap & scope
+  for (auto &p : elem.getParameters()) {
+    auto scopedIdentifier = ScopedIdentifier(this->getCurrentScope(), p.get().getIdentifier());
+    if (variableMap.has(scopedIdentifier))
+      throw std::runtime_error("Redeclaration of a variable that already exists in this scope: " + printProgram(elem));
+    variableMap.insert_or_assign(scopedIdentifier, nullptr);
+    getCurrentScope().addIdentifier(p.get().getIdentifier());
+  }
+
+  // Visit the Body
+  if (elem.hasBody()) {
+    elem.getBody().accept(*this);
+  }
+
+  exitScope();
+}
+
 void SpecialCompileTimeExpressionSimplifier::visit(Return &elem) {
-  if(elem.hasValue()) {
+  if (elem.hasValue()) {
     elem.getValue().accept(*this);
-    if(replacementNode) {
+    if (replacementNode) {
       elem.setValue(std::move(replacementNode));
     }
   }

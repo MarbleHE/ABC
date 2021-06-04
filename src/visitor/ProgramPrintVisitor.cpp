@@ -9,9 +9,9 @@ SpecialProgramPrintVisitor::SpecialProgramPrintVisitor(std::ostream &os) : os(os
 
 void SpecialProgramPrintVisitor::visit(BinaryExpression &elem) {
   os << "(";
-  if(elem.hasLeft()) elem.getLeft().accept(*this);
-  os << " " <<  elem.getOperator().toString() << " ";
-  if(elem.hasRight()) elem.getRight().accept(*this);
+  if (elem.hasLeft()) elem.getLeft().accept(*this);
+  os << " " << elem.getOperator().toString() << " ";
+  if (elem.hasRight()) elem.getRight().accept(*this);
   os << ")";
 }
 void SpecialProgramPrintVisitor::visit(Block &elem) {
@@ -24,11 +24,11 @@ void SpecialProgramPrintVisitor::visit(Block &elem) {
   os << getIndentation() << "}\n";
 }
 void SpecialProgramPrintVisitor::visit(Call &elem) {
-  os  << elem.getIdentifier() << "(";
+  os << elem.getIdentifier() << "(";
   auto args = elem.getArguments();
-  if(!args.empty()) {
+  if (!args.empty()) {
     args[0].get().accept(*this);
-    for(size_t i = 1; i < args.size(); ++i) {
+    for (size_t i = 1; i < args.size(); ++i) {
       os << ", ";
       args[i].get().accept(*this);
     }
@@ -85,8 +85,8 @@ void SpecialProgramPrintVisitor::visit(IndexAccess &elem) {
   os << "]";
 }
 void SpecialProgramPrintVisitor::visit(LiteralBool &elem) {
- if(elem.getValue()) os << "true";
- else os << "false";
+  if (elem.getValue()) os << "true";
+  else os << "false";
 }
 void SpecialProgramPrintVisitor::visit(LiteralChar &elem) {
   os << elem.getValue();
@@ -144,8 +144,10 @@ void SpecialProgramPrintVisitor::visit(Assignment &elem) {
 void SpecialProgramPrintVisitor::visit(VariableDeclaration &elem) {
   os << getIndentation() << elem.getDatatype().toString() << " ";
   elem.getTarget().accept(*this);
-  os << " = ";
-  elem.getValue().accept(*this);
+  if (elem.hasValue()) {
+    os << " = ";
+    elem.getValue().accept(*this);
+  }
   os << ";\n";
 }
 void SpecialProgramPrintVisitor::visit(Variable &elem) {

@@ -60,6 +60,10 @@ const AbstractTarget &Assignment::getTarget() const {
   }
 }
 
+std::unique_ptr<AbstractExpression> Assignment::takeTarget() {
+  return std::move(target);
+}
+
 AbstractExpression &Assignment::getValue() {
   if (hasValue()) {
     return *value;
@@ -76,6 +80,10 @@ const AbstractExpression &Assignment::getValue() const {
   }
 }
 
+std::unique_ptr<AbstractExpression> Assignment::takeValue() {
+  return std::move(value);
+}
+
 void Assignment::setTarget(std::unique_ptr<AbstractTarget> newTarget) {
   target = std::move(newTarget);
 }
@@ -89,7 +97,7 @@ void Assignment::setValue(std::unique_ptr<AbstractExpression> newValue) {
 ///////////////////////////////////////////////
 Assignment *Assignment::clone_impl(AbstractNode *parent_) const {
   auto p = new Assignment(*this);
-  if(parent_) {p->setParent(*parent_);}
+  if (parent_) { p->setParent(*parent_); }
   return p;
 }
 

@@ -20,7 +20,7 @@ class Assignment : public AbstractStatement {
   /// Creates a deep copy of the current node
   /// Should be used only by Nodes' clone()
   /// \return a copy of the current node
-  Assignment *clone_impl(AbstractNode* parent_) const override;
+  Assignment *clone_impl(AbstractNode *parent_) const override;
 
  public:
   /// Destructor
@@ -37,7 +37,7 @@ class Assignment : public AbstractStatement {
 
   /// Move constructor
   /// \param other Assignment to copy
-  Assignment(Assignment &&other) noexcept ;
+  Assignment(Assignment &&other) noexcept;
 
   /// Copy assignment
   /// \param other Assignment to copy
@@ -47,11 +47,11 @@ class Assignment : public AbstractStatement {
   /// Move assignment
   /// \param other Assignment to move
   /// \return This object
-  Assignment &operator=(Assignment &&other)  noexcept;
+  Assignment &operator=(Assignment &&other) noexcept;
 
   /// Deep copy of the current node
   /// \return A deep copy of the current node
-  std::unique_ptr<Assignment> clone(AbstractNode* parent = nullptr) const;
+  std::unique_ptr<Assignment> clone(AbstractNode *parent = nullptr) const;
 
   /// Does this assignment have its target set?
   /// \return true iff the assignment has the target set
@@ -71,6 +71,10 @@ class Assignment : public AbstractStatement {
   /// \throws std::runtime_error if no target exists
   const AbstractTarget &getTarget() const;
 
+  /// Transfer ownership of Target
+  /// \return A unique_ptr that owns the AST that was previously this.target
+  std::unique_ptr<AbstractExpression> takeTarget();
+
   /// Get (a reference to) the value (if it exists)
   /// \return A reference to the value variable
   /// \throws std::runtime_error if no value exists
@@ -80,6 +84,10 @@ class Assignment : public AbstractStatement {
   /// \return A reference to the value variable
   /// \throws std::runtime_error if no value exists
   const AbstractExpression &getValue() const;
+
+  /// Transfer ownership of Value
+  /// \return A unique_ptr that owns the AST that was previously this.value
+  std::unique_ptr<AbstractExpression> takeValue();
 
   /// Set the target to newTarget, taking ownership of newTarget
   /// This will delete the previous target!
@@ -135,7 +143,7 @@ class AssignmentIteratorImpl : public PositionIteratorImpl<T, Assignment> {
   }
 
   std::unique_ptr<BaseIteratorImpl<T>> clone() override {
-    return std::make_unique<AssignmentIteratorImpl>(this->node,this->position);
+    return std::make_unique<AssignmentIteratorImpl>(this->node, this->position);
   }
 };
 
