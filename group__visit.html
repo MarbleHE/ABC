@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ABC: A Batching Compiler for FHE: Modules</title>
+<title>ABC: A Batching Compiler for FHE: Methods implementing the logic of the visitor for each node type.</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -63,17 +63,10 @@ $(function() {
 
 <div class="header">
   <div class="headertitle">
-<div class="title">Modules</div>  </div>
+<div class="title">Methods implementing the logic of the visitor for each node type.</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock">Here is a list of all modules:</div><div class="directory">
-<table class="directory">
-<tr id="row_0_" class="even"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="group___d_a_g.html" target="_self">Methods for handling parent/child relationship</a></td><td class="desc"></td></tr>
-<tr id="row_1_"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="group__output.html" target="_self">Methods for output</a></td><td class="desc"></td></tr>
-<tr id="row_2_" class="even"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="group__node_i_d.html" target="_self">Methods to support unique node ids</a></td><td class="desc"></td></tr>
-<tr id="row_3_"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><a class="el" href="group__visit.html" target="_self">Methods implementing the logic of the visitor for each node type.</a></td><td class="desc"></td></tr>
-</table>
-</div><!-- directory -->
+<p>A counter that keeps track of the nesting level while visiting For-loops. The first value indicates the depth of the currently visiting loop body. The second value the depth of the deepest loop. <a class="el" href="class_for.html">For</a> example: ... for (...) { // currentLoopDepth_maxLoopDepth = (1,1) ... for (...) { // currentLoopDepth_maxLoopDepth = (2,2) ... } // currentLoopDepth_maxLoopDepth = (1,2) } // currentLoopDepth_maxLoopDepth = (0,0) ... A method to be called immediately after entering the For-loop's visit method. updates currentLoopDepth_maxLoopDepth A method to be called before leaving the For-loop's visit method. updates currentLoopDepth_maxLoopDepth Stores the latest value of a variable while traversing through the AST. Entries in this map consist of a key (pair) that is made of a variable identifier (first) and the scope where the variable was declared in (second). The entry of the variableValues map is the current value of the associated variable. Contains pointer to those nodes for which full or partial evaluation could be performed and hence can be deleted at the end of this simplification traversal. <a class="el" href="class_for.html">For</a> example, the arithmetic expression represented by ArithmeticExpr( LiteralInt(12), OpSymb::add, LiteralInt(42)) will be evaluated to 12+42=54. The node ArithmeticExpr (and all of its children) will be deleted and replaced by a new node LiteralInt(54). </p>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
