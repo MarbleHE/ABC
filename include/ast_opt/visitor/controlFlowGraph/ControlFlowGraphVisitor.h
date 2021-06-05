@@ -15,8 +15,8 @@ typedef Visitor<SpecialControlFlowGraphVisitor> ControlFlowGraphVisitor;
 
 class SpecialControlFlowGraphVisitor : public ScopedVisitor {
  private:
-  // A list of all GraphNodes belonging to this CFG/DFG and created by this ControlFlowGraphVisitor.
-  // Node at index 0 is the root node.
+  /// A list of all GraphNodes belonging to this CFG/DFG and created by this ControlFlowGraphVisitor.
+  /// Node at index 0 is the root node.
   std::vector<std::unique_ptr<GraphNode>> nodes;
 
   /// The nodes that were created most recently. Those are the parent nodes of the next node to be created.
@@ -125,6 +125,8 @@ class SpecialControlFlowGraphVisitor : public ScopedVisitor {
   /// respective node reads a variable. If yes, we lookup when the respective variable was written the last time (i.e.,
   /// in which node) and add an backward edge (last_written_node -> read_node).
   void buildDataFlowGraph();
+
+  std::unordered_set<ScopedIdentifier> getVariablesReadAndWritten() const;
 };
 
 #endif //AST_OPTIMIZER_SRC_VISITOR_CONTROLFLOWGRAPHVISITOR_H_

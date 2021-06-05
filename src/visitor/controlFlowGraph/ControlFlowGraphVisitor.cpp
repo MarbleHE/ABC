@@ -1,14 +1,4 @@
 #include "ast_opt/visitor/controlFlowGraph/ControlFlowGraphVisitor.h"
-#include "ast_opt/ast/IndexAccess.h"
-#include "ast_opt/utilities/Scope.h"
-#include "ast_opt/ast/Assignment.h"
-#include "ast_opt/ast/Block.h"
-#include "ast_opt/ast/For.h"
-#include "ast_opt/ast/Function.h"
-#include "ast_opt/ast/If.h"
-#include "ast_opt/ast/Return.h"
-#include "ast_opt/ast/VariableDeclaration.h"
-
 #include <deque>
 
 void SpecialControlFlowGraphVisitor::checkEntrypoint(AbstractNode &node) {
@@ -443,8 +433,14 @@ void SpecialControlFlowGraphVisitor::buildDataFlowGraph() {
     } else {
       // merge the nodes already existing in uniqueNodeId_variable_writeNodes with those newly collected
       for (auto &[varIdentifier, gNodeSet] : varsLastWritten) {
-        auto &vec = uniqueNodeId_variable_writeNodes.at(currentNode_id).at(varIdentifier);
-        vec.insert(gNodeSet.begin(), gNodeSet.end());
+        auto &ignm = uniqueNodeId_variable_writeNodes.at(currentNode_id);
+        if (ignm.find(varIdentifier)!=ignm.end()) {
+          auto &vec = ignm.at(varIdentifier);
+          vec.insert(gNodeSet.begin(), gNodeSet.end());
+        } else {
+          // This variable hasn't been encountered before (maybe defined outside of subtree CFGV was called on)
+          ignm.insert_or_assign(varIdentifier, gNodeSet);
+        }
       }
     }
 
@@ -503,4 +499,12 @@ void SpecialControlFlowGraphVisitor::buildDataFlowGraph() {
 
   }
 
+}
+
+std::unordered_set<ScopedIdentifier> SpecialControlFlowGraphVisitor::getVariablesReadAndWritten() const {
+ std::unordered_set<ScopedIdentifier> set;
+ for(auto& [sv, acctype]: variableAccesses) {
+   set.insert(sv);
+ }
+ return set;
 }

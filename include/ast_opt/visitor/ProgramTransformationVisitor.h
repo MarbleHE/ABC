@@ -75,8 +75,7 @@ class SpecialProgramTransformationVisitor : public ScopedVisitor {
   /// \param forLoop The for loop to investigate
   /// \param VariableValues Initial VariableValues BEFORE the block
   /// \return Variables, with their associated scopes, that match the criteria
-  std::unordered_set<ScopedIdentifier> identifyReadWriteVariables(For &forLoop,
-                                                                  TypedVariableValueMap &variableValues);
+  std::unordered_set<ScopedIdentifier> identifyReadWriteVariables(For &forLoop);
 
   /// TODO: Document this.
   /// \param variable

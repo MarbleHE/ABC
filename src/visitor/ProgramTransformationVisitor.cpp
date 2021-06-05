@@ -389,7 +389,7 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
   // Now, int i = 0 and similar things might have been deleted from AST and are in VariableValuesMap
 
   /// Loop Variables are variables that are both written to and read from during the loop
-  auto loopVariables = identifyReadWriteVariables(elem, variableMap);
+  auto loopVariables = identifyReadWriteVariables(elem);
 
   // The CFGV also returns variables that are read&written in inner loops, which we might not yet be aware of
   std::unordered_set<ScopedIdentifier> filteredLoopVariables;
@@ -589,22 +589,14 @@ bool SpecialProgramTransformationVisitor::isUnrollLoopAllowed() const {
 }
 
 std::unordered_set<ScopedIdentifier>
-SpecialProgramTransformationVisitor::identifyReadWriteVariables(For &forLoop,
-                                                                TypedVariableValueMap &variableValues) {
+SpecialProgramTransformationVisitor::identifyReadWriteVariables(For &forLoop) {
 
   /// Visitor to create Control- and Data-Flow Graphs used to analyze which variables are read and written in Block
   ControlFlowGraphVisitor cfgv;
 
-
-
   // Temporarily "give away" our scope hierarchy to the CFGV
   cfgv.setRootScope(std::move(takeRootScope()));
   cfgv.overrideCurrentScope(&getCurrentScope());
-  // TODO: Why did we pass the current variable values in?
-  //  I assume so that we could check if a variable had a "hidden" dependency,
-  //  i.e., if x = (i + 1) was in the for loop initializer and "z = x;" appears later in program?
-  // cfgv.forceVariableValues(variableValues);
-  variableValues;// just so it's used for MSVC Warning Avoidance
 
   // Create Control-Flow Graph for blockStmt
   cfgv.visit(forLoop);
@@ -612,14 +604,10 @@ SpecialProgramTransformationVisitor::identifyReadWriteVariables(For &forLoop,
   // Build Data-Flow Graph from Control-Flow Graph.
   cfgv.buildDataFlowGraph();
 
-  //TODO: Get the variables that have been read and written
-  // return cfgv.getVariablesReadAndWritten();
-
   // Take back our scope hierarchy from the CFGV
   setRootScope(std::move(cfgv.takeRootScope()));
 
-
-  return std::unordered_set<ScopedIdentifier>();
+  return cfgv.getVariablesReadAndWritten();
 }
 
 std::unique_ptr<AbstractStatement> SpecialProgramTransformationVisitor::generateVariableDeclarationOrAssignment(const ScopedIdentifier &variable,
