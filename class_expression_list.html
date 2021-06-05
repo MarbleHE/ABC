@@ -109,6 +109,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="separator:a2e9b900eda3d71efc997547cceaf8230"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0e410b0e89791cf4ed6436c65652356"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::reference_wrapper&lt; const <a class="el" href="class_abstract_expression.html">AbstractExpression</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_expression_list.html#ae0e410b0e89791cf4ed6436c65652356">getExpressions</a> () const</td></tr>
 <tr class="separator:ae0e410b0e89791cf4ed6436c65652356"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a604d7d8fa1a222ed4117dbf3c5b06d9a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::unique_ptr&lt; <a class="el" href="class_abstract_expression.html">AbstractExpression</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_expression_list.html#a604d7d8fa1a222ed4117dbf3c5b06d9a">takeExpressions</a> ()</td></tr>
+<tr class="separator:a604d7d8fa1a222ed4117dbf3c5b06d9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3baaafa8b7b418ed076bb6a7e91e1b6d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_expression_list.html#a3baaafa8b7b418ed076bb6a7e91e1b6d">appendExpression</a> (std::unique_ptr&lt; <a class="el" href="class_abstract_expression.html">AbstractExpression</a> &gt; expression)</td></tr>
 <tr class="separator:a3baaafa8b7b418ed076bb6a7e91e1b6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f4c8a9b07df7282e2bc0f0b74f23518"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_expression_list.html#a8f4c8a9b07df7282e2bc0f0b74f23518">prependExpression</a> (std::unique_ptr&lt; <a class="el" href="class_abstract_expression.html">AbstractExpression</a> &gt; expression)</td></tr>
@@ -522,6 +524,24 @@ typedef <a class="el" href="class_node_iterator.html">NodeIterator</a>&lt; const
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a604d7d8fa1a222ed4117dbf3c5b06d9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a604d7d8fa1a222ed4117dbf3c5b06d9a">&#9670;&nbsp;</a></span>takeExpressions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::unique_ptr&lt; <a class="el" href="class_abstract_expression.html">AbstractExpression</a> &gt; &gt; ExpressionList::takeExpressions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Take Ownership of all expressions, removing them from this ExpressionsList </p><dl class="section return"><dt>Returns</dt><dd>vector of all unique_ptrs to expressions </dd></dl>
 
 </div>
 </div>
