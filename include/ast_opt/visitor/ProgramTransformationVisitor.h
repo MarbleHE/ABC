@@ -103,7 +103,7 @@ class SpecialProgramTransformationVisitor : public ScopedVisitor {
 
   void visit(Return &elem);
 
-  void visit(For &elem);
+  void visit(For &expression);
 
   void visit(AbstractExpression &elem);
 };

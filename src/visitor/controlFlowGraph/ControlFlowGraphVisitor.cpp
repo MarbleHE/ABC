@@ -299,7 +299,6 @@ void SpecialControlFlowGraphVisitor::storeAccessedVariables(GraphNode &graphNode
 
 void SpecialControlFlowGraphVisitor::visit(Variable &node) {
   SpecialControlFlowGraphVisitor::checkEntrypoint(node);
-  ScopedVisitor::visit(node);
   if (getCurrentScope().identifierExists(node.getIdentifier()) || !ignoreNonDeclaredVariables) {
     markVariableAccess(getCurrentScope().resolveIdentifier(node.getIdentifier()), VariableAccessType::READ);
   }
@@ -334,7 +333,7 @@ SpecialControlFlowGraphVisitor::SpecialControlFlowGraphVisitor(bool ignoreNonDec
     : ignoreNonDeclaredVariables(ignoreNonDeclaredVariables) {
 }
 
-void SpecialControlFlowGraphVisitor::buildDataFlowGraph() {
+std::unordered_set<ScopedIdentifier> SpecialControlFlowGraphVisitor::buildDataFlowGraph() {
   // =================
   // STEP 1: Distribute knowledge about variable writes
   // Traverse the graph and store for each graph node where (i.e., at which node) all of the variables seen so far were
@@ -373,7 +372,7 @@ void SpecialControlFlowGraphVisitor::buildDataFlowGraph() {
     // extract required information from current node
     auto currentNode_id = currentNode.get().getAstNode().getUniqueNodeId();
     auto currentNode_parentNodes = currentNode.get().getControlFlowGraph().getParents();
-    
+
 
     // joint points a CFG nodes with multiple incoming edges (e.g., statement after a [return-free] If-Else statement)
     bool currentNode_isJointPoint = currentNode_parentNodes.size() > 1;
@@ -490,12 +489,28 @@ void SpecialControlFlowGraphVisitor::buildDataFlowGraph() {
 
   }
 
-}
+  // =================
+  // STEP 3:
+  // Traverse all graph nodes and collect all variable reads and writes to build variablesReadAndWritten
+  // =================
 
-std::unordered_set<ScopedIdentifier> SpecialControlFlowGraphVisitor::getVariablesReadAndWritten() const {
- std::unordered_set<ScopedIdentifier> set;
- for(auto& [sv, acctype]: variableAccesses) {
-   set.insert(sv);
- }
- return set;
+  /// Ugly hack: Variables in CFG that are both read and written to
+  std::unordered_set<ScopedIdentifier> variablesReadAndWritten;
+  std::unordered_set<ScopedIdentifier> written;
+  std::unordered_set<ScopedIdentifier> read;
+  for (auto &[name, node] : processedNodes) {
+    auto w = node.get().getVariableAccessesByType({VariableAccessType::WRITE});
+    for (auto &si: w) { written.insert(si); }
+    auto r = node.get().getVariableAccessesByType({VariableAccessType::READ});
+    for (auto &si: r) { read.insert(si); }
+  }
+
+  // determine the variables that were read and written (must be both!)
+  for (auto &w: written) {
+    if (read.find(w)!=read.end()) {
+      variablesReadAndWritten.insert(w);
+    }
+  }
+
+  return variablesReadAndWritten;
 }
