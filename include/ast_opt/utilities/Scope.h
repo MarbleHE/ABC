@@ -73,8 +73,8 @@ class Scope {
   /// \param abstractNode The node that creates this scope.
   explicit Scope(AbstractNode &abstractNode);
 
-  /// Copy Constructor
-  Scope(const Scope&) = delete;
+//  /// Copy Constructor
+//  Scope(const Scope&);
 
   /// Move Constructor
   /// \param other the scope to move

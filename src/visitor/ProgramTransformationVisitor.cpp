@@ -593,13 +593,18 @@ SpecialProgramTransformationVisitor::identifyReadWriteVariables(For &forLoop,
                                                                 TypedVariableValueMap &variableValues) {
 
   /// Visitor to create Control- and Data-Flow Graphs used to analyze which variables are read and written in Block
-  ControlFlowGraphVisitor cfgv(true);
+  ControlFlowGraphVisitor cfgv;
 
-  variableValues;// just so it's used for MSVC
 
-  // TODO: Pass current scope information, so that CFGV has correct starting point
-  //  cfgv.forceScope(stmtToScopeMapper, curScope);
-  //  cfgv.forceVariableValues(variableValues);
+
+  // Temporarily "give away" our scope hierarchy to the CFGV
+  cfgv.setRootScope(std::move(takeRootScope()));
+  cfgv.overrideCurrentScope(&getCurrentScope());
+  // TODO: Why did we pass the current variable values in?
+  //  I assume so that we could check if a variable had a "hidden" dependency,
+  //  i.e., if x = (i + 1) was in the for loop initializer and "z = x;" appears later in program?
+  // cfgv.forceVariableValues(variableValues);
+  variableValues;// just so it's used for MSVC Warning Avoidance
 
   // Create Control-Flow Graph for blockStmt
   cfgv.visit(forLoop);
@@ -609,6 +614,10 @@ SpecialProgramTransformationVisitor::identifyReadWriteVariables(For &forLoop,
 
   //TODO: Get the variables that have been read and written
   // return cfgv.getVariablesReadAndWritten();
+
+  // Take back our scope hierarchy from the CFGV
+  setRootScope(std::move(cfgv.takeRootScope()));
+
 
   return std::unordered_set<ScopedIdentifier>();
 }

@@ -69,6 +69,21 @@ void Scope::addNestedScope(std::unique_ptr<Scope> &&scope) {
 
 Scope::Scope(AbstractNode &abstractNode) : astNode(&abstractNode) {}
 
+//Scope::Scope(const Scope &other) : astNode(other.astNode), parent(other.parent) {
+//
+//  // Create copies of identifiers
+//  for (auto &si : other.identifiers) {
+//    identifiers.insert(std::make_unique<ScopedIdentifier>(*this, si->getId()));
+//  }
+//
+//  // Recursively copy nested scopes
+//  nestedScopes.reserve(other.nestedScopes.size());
+//  for (auto &s : other.nestedScopes) {
+//    nestedScopes.emplace_back(std::make_unique<Scope>(*s));
+//  }
+//
+//}
+
 bool Scope::identifierExists(const std::string &id) const {
   try {
     auto scopedIdentifier = resolveIdentifier(id);

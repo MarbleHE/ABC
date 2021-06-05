@@ -68,6 +68,8 @@ class ScopedVisitor : public IVisitor {
 
   Scope &getRootScope();
 
+  std::unique_ptr<Scope> takeRootScope();
+
   [[nodiscard]] const Scope &getRootScope() const;
 
   void setRootScope(std::unique_ptr<Scope> &&scope);
