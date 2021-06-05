@@ -60,15 +60,19 @@ class ExpressionList : public AbstractExpression {
   /// Since std::vector cannot directly handle references,
   /// a wrapper is used, but this can be used exactly like
   /// std::vector<AbstractStatement&> could, if it were possible
-  /// \return ExpressionList of (references to) all non-null expressions
+  /// \return vector of (references to) all non-null expressions
   std::vector<std::reference_wrapper<AbstractExpression>> getExpressions();
 
   /// Get (a vector of references to) all (non-null) expressions
   /// Since std::vector cannot directly handle references,
   /// a wrapper is used, but this can be used exactly like
   /// std::vector<AbstractStatement&> could, if it were possible
-  /// \return ExpressionList of (const references to) all non-null expressions
+  /// \return vector of (const references to) all non-null expressions
   std::vector<std::reference_wrapper<const AbstractExpression>> getExpressions() const;
+
+  /// Get (a vector of ptrs to) all expressions
+  /// \return vec of (pointers to) all expressions
+  std::vector<std::unique_ptr<AbstractExpression>>& getExpressionPtrs();
 
   /// Take Ownership of all expressions, removing them from this ExpressionsList
   /// \return vector of all unique_ptrs to expressions

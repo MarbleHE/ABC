@@ -95,6 +95,8 @@ class SpecialProgramTransformationVisitor : public ScopedVisitor {
 
   void visit(Variable &elem);
 
+  void visit(IndexAccess& elem);
+
   void visit(BinaryExpression &elem);
 
   void visit(UnaryExpression &elem);

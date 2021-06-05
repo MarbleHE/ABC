@@ -37,12 +37,20 @@ void SpecialProgramPrintVisitor::visit(Call &elem) {
 }
 void SpecialProgramPrintVisitor::visit(ExpressionList &elem) {
   os << "{";
-  auto es = elem.getExpressions();
-  if (!es.empty()) {
-    es[0].get().accept(*this);
-    for (size_t i = 1; i < es.size(); ++i) {
+  auto& vec = elem.getExpressionPtrs();
+  if (!vec.empty()) {
+    if (vec[0]) {
+      vec[0]->accept(*this);
+    } else {
+      os << "-";
+    }
+    for (size_t i = 1; i < vec.size(); ++i) {
       os << ", ";
-      es[i].get().accept(*this);
+      if (vec[i]) {
+        vec[i]->accept(*this);
+      } else {
+        os << "-";
+      }
     }
   }
   os << "}";
@@ -55,7 +63,7 @@ void SpecialProgramPrintVisitor::visit(For &elem) {
     auto temp_indentation_level = indentation_level;
     indentation_level = 0;
     for (auto &s: elem.getInitializer().getStatementPointers()) {
-      if(s) {
+      if (s) {
         s->accept(*this);
         os.seekp(-1, std::ostream::cur); //rewind stream to get rid of \n
       }

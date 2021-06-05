@@ -43,6 +43,10 @@ AbstractTarget &IndexAccess::getTarget() {
   }
 }
 
+std::unique_ptr<AbstractTarget> IndexAccess::takeTarget() {
+  return std::move(target);
+}
+
 const AbstractTarget &IndexAccess::getTarget() const {
   if (hasTarget()) {
     return *target;

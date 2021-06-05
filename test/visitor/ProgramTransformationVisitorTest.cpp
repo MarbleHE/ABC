@@ -732,6 +732,107 @@ TEST_F(ProgramTransformationVisitorTest, return_multipleReturnValues_expectedPar
 
 }
 
+
+TEST_F(ProgramTransformationVisitorTest, indexAccesses) {
+
+/// Input program
+  const char *programCode = R""""(
+  public int compute(int img) {
+    img[5] = 2;
+    return img[5];
+  }
+)"""";
+  auto code = std::string(programCode);
+  ast = Parser::parse(code);
+
+  // perform the compile-time expression simplification
+  ast->accept(ctes);
+
+  // get the transformed code
+  ast->accept(ppv);
+  std::cout << ss.str() << std::endl;
+
+  /// Expected program
+  const char *expectedCode = R""""(
+{
+  int compute(int img)
+  {
+    return 2;
+  }
+}
+)"""";
+
+  EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
+}
+
+
+TEST_F(ProgramTransformationVisitorTest, variableEliminated) {
+
+/// Input program
+  const char *programCode = R""""(
+  public int compute(int img) {
+    int img2;
+    img2[5] = 2 * img[1];
+    return img2;
+  }
+)"""";
+  auto code = std::string(programCode);
+  ast = Parser::parse(code);
+
+  // perform the compile-time expression simplification
+  ast->accept(ctes);
+
+  // get the transformed code
+  ast->accept(ppv);
+  std::cout << ss.str() << std::endl;
+
+  /// Expected program
+  const char *expectedCode = R""""(
+{
+  int compute(int img)
+  {
+    return {-, -, -, -, -, (2 * img[1])};
+  }
+}
+)"""";
+
+  EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
+}
+
+TEST_F(ProgramTransformationVisitorTest, complexVariableEliminated) {
+//TODO: Once we have a better way of dealing with declaration tracking, update this test
+/// Input program
+  const char *programCode = R""""(
+  public int compute(int img, int x) {
+    int img2;
+    img2[x] = 2 * img[x];
+    return img2;
+  }
+)"""";
+  auto code = std::string(programCode);
+  ast = Parser::parse(code);
+
+  // perform the compile-time expression simplification
+  ast->accept(ctes);
+
+  // get the transformed code
+  ast->accept(ppv);
+  std::cout << ss.str() << std::endl;
+
+  /// Expected program
+  const char *expectedCode = R""""(
+{
+  int compute(int img, int x)
+  {
+    img2[x] = (2 * img[x]);
+    return img2;
+  }
+}
+)"""";
+
+  EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
+}
+
 TEST_F(ProgramTransformationVisitorTest,
        DISABLED_ifStmt_conditionValueIsKnown_thenIsAlwaysExecutedNoElseIsPresent_expectedIfRemoval) {
   //TODO: Implement IfStatement rewriting
@@ -2034,7 +2135,7 @@ TEST_F(ProgramTransformationVisitorTest, fullForLoopUnrolling) {
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute()
+  int compute(int img, int imgSize, int x, int y)
   {
     return;
   }
@@ -2149,6 +2250,7 @@ TEST_F(ProgramTransformationVisitorTest, trivialLoop) {
 
 
 TEST_F(ProgramTransformationVisitorTest, complexLoop) {
+  //TODO: Once OperatorExpressions are implemented, this can be simplified even further
 
 /// Input program
   const char *programCode = R""""(
@@ -2176,9 +2278,9 @@ TEST_F(ProgramTransformationVisitorTest, complexLoop) {
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute()
+  int compute(int img, int imgSize, int x, int y)
   {
-    return 42;
+    return;
   }
 }
 )"""";

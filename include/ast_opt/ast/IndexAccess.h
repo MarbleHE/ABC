@@ -71,6 +71,10 @@ class IndexAccess : public AbstractTarget {
   /// \throws std::runtime_error if no target exists
   AbstractTarget& getTarget();
 
+  /// Take ownership of the target
+  /// \return the target
+  std::unique_ptr<AbstractTarget> takeTarget();
+
   /// Get the index, if it exists
   /// \return (a const reference to) the index
   /// \throws std::runtime_error if no index exists

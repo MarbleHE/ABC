@@ -220,7 +220,7 @@ void SpecialProgramTransformationVisitor::visit(Assignment &elem) {
 
     // For now, we only support a single level of index access, so target must be a variable
     // TODO: Support matrix accesses, i.e. x[i][j]!
-    if (auto ind_var_ptr = dynamic_cast<Variable *>(&elem.getTarget())) {
+    if (auto ind_var_ptr = dynamic_cast<Variable *>(&ind_ptr->getTarget())) {
       if (!getCurrentScope().identifierExists(ind_var_ptr->getIdentifier())) {
         throw std::runtime_error("Cannot assign to non-declared variable: " + printProgram(elem));
       }
@@ -233,9 +233,7 @@ void SpecialProgramTransformationVisitor::visit(Assignment &elem) {
         auto index = lit_ptr->getValue();
 
         // check if we have a value for this variable already
-        if (variableMap.has(scopedIdentifier)) { //update value
-          if (variableMap.get(scopedIdentifier).value==nullptr)
-            throw std::runtime_error("Found unexpected null value in variableMap!");
+        if (variableMap.has(scopedIdentifier) && variableMap.get(scopedIdentifier).value) { //update value
 
           // Create a copy of the value, since we sadly can't take it out of the variableMap :(
           // TODO: Consider finding or creating a more unique_ptr-friendly data structure?
@@ -263,20 +261,28 @@ void SpecialProgramTransformationVisitor::visit(Assignment &elem) {
                 "Cannot assign index of variable that is not vector valued already: " + printProgram(elem));
           }
 
-        } else { // no values stored so far -> no idea about data type!
+        } else if (variableMap.has(scopedIdentifier)) { // no values stored so far -> build a new one!
+          // let's build a new index_expression that's mostly "undefined" (nullptr)
+          // except at the index we are assigning to
+          std::vector<std::unique_ptr<AbstractExpression>> list(index + 1);
+          // Since we're removing this statement after this call, we can "steal" the expression from elem
+          list.at(index) = std::move(elem.takeValue());
+          // Now build the ExpressionList
+          auto exprlist = std::make_unique<ExpressionList>(std::move(list));
+          // and put it into the variableMap
+          variableMap.insert_or_assign(scopedIdentifier, {variableMap.get(scopedIdentifier).type, std::move(exprlist)});
+
+          // This VariableDeclaration is now redundant and needs to be removed from the program.
+          // However, our parent visit(Block&) will have to handle this
+          removeStatement = true;
+        } else {
           throw std::runtime_error(
               "Variable is assigned to but no information found in variableMap: " + printProgram(elem));
-          // // let's build a new index_expression that's mostly "undefined" (nullptr)
-          // // except at the index we are assigning to
-          // std::vector<std::unique_ptr<AbstractExpression>> list(index + 1);
-          // // Since we're removing this statement after this call, we can "steal" the expression from elem
-          // list.at(index) = std::move(elem.takeValue());
-          // // Now build the ExpressionList
-          // auto exprlist = std::make_unique<ExpressionList>(std::move(list));
-          // // and put it into the variableMap
-          // variableMap.insert_or_assign(scopedIdentifier, std::move(exprlist));
         }
-      } // if index is a more general expression, we can't do anything
+      } else {
+        // if index is a more general expression, we can't do anything
+        // TODO: Emit the declaration (ideally only if it hasn't been done before)
+      }
 
     } else {
       throw std::runtime_error("Cannot handle non-variable-target in index access: " + printProgram(elem));
@@ -300,6 +306,41 @@ void SpecialProgramTransformationVisitor::visit(Variable &elem) {
     // NOTE: Copy-on-Write (COW) would be a useful optimization here
     replacementExpression = std::move(variableMap.at(scopedIdentifier).value->clone(&elem.getParent()));
   }
+
+}
+
+void SpecialProgramTransformationVisitor::visit(IndexAccess &elem) {
+
+  // try to simplify the index
+  elem.getIndex().accept(*this);
+  if (replacementExpression) elem.setIndex(std::move(replacementExpression));
+
+  // check if the index is compile time known
+  if (auto lit_int_ptr = dynamic_cast<LiteralInt *>(&elem.getIndex())) {
+
+    // For now, we only support index access over variables
+    if (auto var_ptr = dynamic_cast<Variable *>(&elem.getTarget())) {
+
+      auto scopedIdentifier = getCurrentScope().resolveIdentifier(var_ptr->getIdentifier());
+
+      // check if variable has a value and ask the parent to replace it with the index-th element
+      if (variableMap.at(scopedIdentifier).value!=nullptr) {
+        auto &expr = variableMap.at(scopedIdentifier).value;
+        if (auto list_ptr = dynamic_cast<ExpressionList *>(&*expr)) {
+          auto &vec = list_ptr->getExpressionPtrs();
+          if (lit_int_ptr->getValue() < vec.size()) {
+            if (auto &expr_ptr = vec.at(lit_int_ptr->getValue())) {
+              replacementExpression = std::move(expr_ptr->clone(expr_ptr->getParentPtr()));
+            }
+          }
+        }
+      } // in all other cases: just leave this be
+
+    } else {
+      throw std::runtime_error("Index access must target a variable: " + printProgram(elem));
+    }
+
+  } // if it's not compile time known, we can't really simplify it
 
 }
 
