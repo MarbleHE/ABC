@@ -112,10 +112,14 @@ class AbstractNode {
   /// \return True if this node has a parent, otherwise returns False.
   bool hasParent() const;
 
-  /// Returns a pointer to the only parent node.
-  /// \return A pointer to the node's parent node.
+  /// Returns a reference to the only parent node.
+  /// \return A reference to the node's parent node.
   /// \throws std::runtime_error if the node has no parent
   AbstractNode &getParent();
+
+  /// Returns a pointer to the only parent node.
+  /// \return A pointer to the node's parent node.
+  AbstractNode* getParentPtr();
 
   /// Returns a pointer to the only parent node.
   /// \return A pointer to the node's parent node.

@@ -41,6 +41,10 @@ AbstractNode &AbstractNode::getParent() {
   }
 }
 
+AbstractNode *AbstractNode::getParentPtr() {
+  return parent;
+}
+
 const AbstractNode &AbstractNode::getParent() const {
   if (hasParent()) {
     return *parent;
