@@ -109,8 +109,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>visit</b> (<a class="
 <tr class="memitem:ab48901b05bb0b6d70b25f066ae16675a"><td class="memItemLeft" align="right" valign="top"><a id="ab48901b05bb0b6d70b25f066ae16675a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>visit</b> (<a class="el" href="class_return.html">Return</a> &amp;elem)</td></tr>
 <tr class="separator:ab48901b05bb0b6d70b25f066ae16675a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a163577650ded720449538f8f48bc7416"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_special_program_transformation_visitor.html#a163577650ded720449538f8f48bc7416">visit</a> (<a class="el" href="class_for.html">For</a> &amp;elem)</td></tr>
-<tr class="separator:a163577650ded720449538f8f48bc7416"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f856393f16da004bec0381517b1a8aa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_special_program_transformation_visitor.html#a4f856393f16da004bec0381517b1a8aa">visit</a> (<a class="el" href="class_for.html">For</a> &amp;expression)</td></tr>
+<tr class="separator:a4f856393f16da004bec0381517b1a8aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27a92cf31fce31173c4663fc10c818e6"><td class="memItemLeft" align="right" valign="top"><a id="a27a92cf31fce31173c4663fc10c818e6"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>visit</b> (<a class="el" href="class_abstract_expression.html">AbstractExpression</a> &amp;elem)</td></tr>
 <tr class="separator:a27a92cf31fce31173c4663fc10c818e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -183,8 +183,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>exitScope</b> ()</td>
 <tr class="separator:acffbc54a36dd89aaa64b8d832ac1bc19 inherit pub_methods_class_scoped_visitor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a163577650ded720449538f8f48bc7416"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a163577650ded720449538f8f48bc7416">&#9670;&nbsp;</a></span>visit()</h2>
+<a id="a4f856393f16da004bec0381517b1a8aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f856393f16da004bec0381517b1a8aa">&#9670;&nbsp;</a></span>visit()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -196,7 +196,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>exitScope</b> ()</td>
           <td class="memname">void SpecialProgramTransformationVisitor::visit </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="class_for.html">For</a> &amp;&#160;</td>
-          <td class="paramname"><em>elem</em></td><td>)</td>
+          <td class="paramname"><em>expression</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -206,12 +206,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>exitScope</b> ()</td>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Before we start simplifying stuff away, we need to let the CFGV do its thing Otherwise, we would delete, e.g. "int i = 0;" since it's put into the varMap as as i -&gt; LiteralInt(0)</p>
 <p>Loop Variables are variables that are both written to and read from during the loop</p>
-<p>A separate <a class="el" href="class_visitor.html">Visitor</a>, for isolation, brought up to date in terms of variables and scopes</p>
 <p>Do we have everything we need to evaluate the condition?</p>
 <p>Condition Execution Helper</p>
-<p><a class="el" href="class_block.html">Block</a> for stmts that cannot be compile-time evaluated but do not affect condition</p>
-<p>Helper for executing the loop (also deals with update, in case we ever change stmt inlining)</p>
+<p><a class="el" href="class_block.html">Block</a> for created unrolled Statements</p>
 <p>Track iterations</p>
 
 <p>Reimplemented from <a class="el" href="class_scoped_visitor.html">ScopedVisitor</a>.</p>
