@@ -16,18 +16,21 @@ RUN git clone --branch 3.6.5 https://github.com/microsoft/SEAL.git && \
 RUN apt-get update; \
     apt-get -y install nlohmann-json3-dev
 
-###### clone the ABC repository
-RUN git clone https://github.com/MarbleHE/ABC.git \
-    # TODO: remove these lines after debugging
-    && cd ABC \
-    && git checkout ec2-automation
+# ###### clone the ABC repository
+# RUN git clone https://github.com/MarbleHE/ABC.git \
+#     # TODO: remove these lines after debugging
+#     && cd ABC \
+#     && git checkout ec2-automation
 
-###### build ABC
-RUN cd ABC; \
-    mkdir build; \
-    cd build; \
-    cmake ..; \
-    make -j$(nproc)
+# ###### build ABC
+# RUN cd ABC; \
+#     mkdir build; \
+#     cd build; \
+#     cmake ..; \
+#     make -j$(nproc)
 
 ###### run the passed benchmark
-ENTRYPOINT ["/ABC/build/ast_demo", "$1"]
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["./entrypoint.sh"]
