@@ -247,7 +247,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(Assignment &elem) {
             vec.at(index) = elem.takeValue();
 
             // Put new_val into the variableMap
-            variableMap.insert_or_assign(scopedIdentifier,std::move(new_val));
+            variableMap.insert_or_assign(scopedIdentifier, std::move(new_val));
           } else {
             // This can occur if we had, e.g., int x = 6; x[7] = 8; which we don't allow for now
             throw std::runtime_error(
@@ -331,12 +331,33 @@ void SpecialCompileTimeExpressionSimplifier::visit(Block &elem) {
   exitScope();
 }
 
+void SpecialCompileTimeExpressionSimplifier::visit(ExpressionList &elem) {
+  // Temporarily steal the expression vector
+  auto vec = elem.takeExpressions();
+
+  // Simplify children
+  for (auto &expr : vec) {
+    expr->accept(*this);
+    if (replacementExpression) expr = std::move(replacementExpression);
+  }
+
+  // Return the expression vector
+  elem.setExpressions(std::move(vec));
+}
+
 void SpecialCompileTimeExpressionSimplifier::visit(Return &elem) {
   if (elem.hasValue()) {
     elem.getValue().accept(*this);
     if (replacementExpression) {
       elem.setValue(std::move(replacementExpression));
     }
+  }
+}
+
+void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
+  for (auto &c : elem) {
+    c.accept(*this);
+    replacementExpression = nullptr;
   }
 }
 

@@ -74,6 +74,10 @@ class ExpressionList : public AbstractExpression {
   /// \return vector of all unique_ptrs to expressions
   std::vector<std::unique_ptr<AbstractExpression>> takeExpressions();
 
+  /// Replace existing expression list with new one
+  /// \param expression Expressions to be set, ExpressionList will take ownership
+  void setExpressions(std::vector<std::unique_ptr<AbstractExpression>> new_expressions);
+
   /// Add an expression as the last expression
   /// \param expression Expression to be appended, ExpressionList will take ownership
   void appendExpression(std::unique_ptr<AbstractExpression> expression);

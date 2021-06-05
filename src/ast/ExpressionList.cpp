@@ -66,6 +66,9 @@ std::vector<std::unique_ptr<AbstractExpression>> ExpressionList::takeExpressions
   return std::move(expressions);
 }
 
+void ExpressionList::setExpressions(std::vector<std::unique_ptr<AbstractExpression>> new_expressions) {
+  expressions = std::move(new_expressions);
+}
 void ExpressionList::appendExpression(std::unique_ptr<AbstractExpression> expression) {
   expressions.emplace_back(std::move(expression));
 }

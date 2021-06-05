@@ -51,7 +51,11 @@ class SpecialCompileTimeExpressionSimplifier : public ScopedVisitor {
 
   void visit(UnaryExpression& elem);
 
+  void visit(ExpressionList& elem);
+
   void visit(Return& elem);
+
+  void visit(AbstractExpression& elem);
 };
 
 //  /// Determines whether the number of total allowed loop unrollings is already exhausted.

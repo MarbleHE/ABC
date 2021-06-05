@@ -739,7 +739,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, return_multipleReturnValues_expected
   const char *programCode = R""""(
    public int compute(int a) {
     int b = 3 + 4;
-    return a*b, 2-b, 21;
+    return {a*b, 2-b, 21};
    }
 )"""";
   auto code = std::string(programCode);
@@ -757,9 +757,9 @@ TEST_F(CompileTimeExpressionSimplifierTest, return_multipleReturnValues_expected
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute()
+  int compute(int a)
   {
-    return;
+    return {(a * 7), -5, 21};
   }
 }
 )"""";
