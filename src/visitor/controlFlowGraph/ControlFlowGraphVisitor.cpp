@@ -31,7 +31,7 @@ void SpecialControlFlowGraphVisitor::checkEntrypoint(AbstractNode &node) {
 
 void SpecialControlFlowGraphVisitor::visit(Assignment &node) {
   SpecialControlFlowGraphVisitor::checkEntrypoint(node);
-  std::cout << "Visiting Assignment (" << node.getUniqueNodeId() << ")" << std::endl;
+  std::cout << "CFGV Visiting Assignment (" << node.getUniqueNodeId() << ")" << std::endl;
   GraphNode &graphNode = createGraphNodeAndAppendToCfg(node);
 
   std::string identifier;
@@ -54,7 +54,7 @@ void SpecialControlFlowGraphVisitor::visit(Assignment &node) {
 
 void SpecialControlFlowGraphVisitor::visit(Block &node) {
   SpecialControlFlowGraphVisitor::checkEntrypoint(node);
-  std::cout << "Visiting Block (" << node.getUniqueNodeId() << ")" << std::endl;
+  std::cout << "CFGV Visiting Block (" << node.getUniqueNodeId() << ")" << std::endl;
   GraphNode &graphNode = createGraphNodeAndAppendToCfg(node);
   ScopedVisitor::visit(node);
   storeAccessedVariables(graphNode);
@@ -96,7 +96,7 @@ void SpecialControlFlowGraphVisitor::visit(Block &node) {
 // information which variables are accessed.
 void SpecialControlFlowGraphVisitor::visit(For &node) {
   SpecialControlFlowGraphVisitor::checkEntrypoint(node);
-  std::cout << "Visiting For (" << node.getUniqueNodeId() << ")" << std::endl;
+  std::cout << "CFGV Visiting For (" << node.getUniqueNodeId() << ")" << std::endl;
   [[maybe_unused]] auto &graphNode = createGraphNodeAndAppendToCfg(node);
 
   ScopedVisitor::enterScope(node);
@@ -144,7 +144,7 @@ void SpecialControlFlowGraphVisitor::visit(For &node) {
 
 void SpecialControlFlowGraphVisitor::visit(Function &node) {
   SpecialControlFlowGraphVisitor::checkEntrypoint(node);
-  std::cout << "Visiting Function (" << node.getUniqueNodeId() << ")" << std::endl;
+  std::cout << "CFGV Visiting Function (" << node.getUniqueNodeId() << ")" << std::endl;
   GraphNode &graphNode = createGraphNodeAndAppendToCfg(node);
 
   ScopedVisitor::enterScope(node);
@@ -164,7 +164,7 @@ void SpecialControlFlowGraphVisitor::visit(Function &node) {
 void SpecialControlFlowGraphVisitor::visit(FunctionParameter &node) {
   SpecialControlFlowGraphVisitor::checkEntrypoint(node);
   ScopedVisitor::visit(node);
-  std::cout << "Visiting FunctionParameter (" << node.getUniqueNodeId() << ")" << std::endl;
+  std::cout << "CFGV Visiting FunctionParameter (" << node.getUniqueNodeId() << ")" << std::endl;
   if (getCurrentScope().identifierExists(node.getIdentifier()) || !ignoreNonDeclaredVariables) {
     markVariableAccess(getCurrentScope().resolveIdentifier(node.getIdentifier()), VariableAccessType::WRITE);
   }
@@ -215,7 +215,7 @@ void SpecialControlFlowGraphVisitor::visit(FunctionParameter &node) {
 //
 void SpecialControlFlowGraphVisitor::visit(If &node) {
   SpecialControlFlowGraphVisitor::checkEntrypoint(node);
-  std::cout << "Visiting If (" << node.getUniqueNodeId() << ")" << std::endl;
+  std::cout << "CFGV Visiting If (" << node.getUniqueNodeId() << ")" << std::endl;
   GraphNode &graphNode = createGraphNodeAndAppendToCfg(node);
   auto lastStatementIf = lastCreatedNodes;
 
@@ -249,7 +249,7 @@ void SpecialControlFlowGraphVisitor::visit(If &node) {
 
 void SpecialControlFlowGraphVisitor::visit(Return &node) {
   SpecialControlFlowGraphVisitor::checkEntrypoint(node);
-  std::cout << "Visiting Return (" << node.getUniqueNodeId() << ")" << std::endl;
+  std::cout << "CFGV Visiting Return (" << node.getUniqueNodeId() << ")" << std::endl;
   GraphNode &graphNode = createGraphNodeAndAppendToCfg(node);
   ScopedVisitor::visit(node);
   storeAccessedVariables(graphNode);
@@ -257,7 +257,7 @@ void SpecialControlFlowGraphVisitor::visit(Return &node) {
 
 void SpecialControlFlowGraphVisitor::visit(VariableDeclaration &node) {
   SpecialControlFlowGraphVisitor::checkEntrypoint(node);
-  std::cout << "Visiting VariableDeclaration (" << node.getUniqueNodeId() << ")" << std::endl;
+  std::cout << "CFGV Visiting VariableDeclaration (" << node.getUniqueNodeId() << ")" << std::endl;
   GraphNode &graphNode = createGraphNodeAndAppendToCfg(node);
 
   // We do not use ScopedVisitor::visit here as this would visit all children, including the Variable on the left-hand

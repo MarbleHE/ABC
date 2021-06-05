@@ -23,13 +23,13 @@ T applyOperator(T lhsOperand, T rhsOperand, Operator op) {
   } else if (operatorEqualsAnyOf({MULTIPLICATION, FHE_MULTIPLICATION})) {
     return (lhsOperand*rhsOperand);
   } else if (operatorEquals(DIVISION)) {
-    if constexpr (!std::is_same<T,bool>::value) {
+    if constexpr (!std::is_same<T, bool>::value) {
       return (lhsOperand/rhsOperand);
     } else {
       throw std::runtime_error("Cannot perform modulo (%) on bool.");
     }
   } else if (operatorEquals(MODULO)) {
-    if constexpr (std::is_integral<T>::value && !std::is_same<T,bool>::value) {
+    if constexpr (std::is_integral<T>::value && !std::is_same<T, bool>::value) {
       return (lhsOperand%rhsOperand);
     } else {
       throw std::runtime_error("Cannot perform modulo (%) and on non-integral types.");
@@ -52,7 +52,7 @@ T applyOperator(T lhsOperand, T rhsOperand, Operator op) {
     return (lhsOperand!=rhsOperand);
   } else if (operatorEquals(BITWISE_AND)) {
     if constexpr (std::is_integral<T>::value) {
-      return (lhsOperand & rhsOperand && !std::is_same<T,bool>::value);
+      return (lhsOperand & rhsOperand && !std::is_same<T, bool>::value);
     } else {
       throw std::runtime_error("Cannot perform bitwise AND on non-integral types.");
     }
@@ -442,9 +442,7 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
   // At this point, the loop has been visited and some parts have been simplified.
   // Now we are ready to analyze if this loop can additionally also be unrolled:
   // Are we even set to do unrolling at this LoopDepth?
-  if (!isUnrollLoopAllowed()) {
-    //TODO: Any further steps necessary?
-  } else {
+  if (isUnrollLoopAllowed()) {
     // We cannot know if the loop can be fully unrolled without evaluating it
     // So we speculatively unroll the loop until its either too long or we cannot determine something at compile time
 
@@ -595,7 +593,7 @@ SpecialProgramTransformationVisitor::identifyReadWriteVariables(For &forLoop,
                                                                 TypedVariableValueMap &variableValues) {
 
   /// Visitor to create Control- and Data-Flow Graphs used to analyze which variables are read and written in Block
-  ControlFlowGraphVisitor cfgv;
+  ControlFlowGraphVisitor cfgv(true);
 
   variableValues;// just so it's used for MSVC
 

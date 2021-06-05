@@ -2133,10 +2133,7 @@ TEST_F(ProgramTransformationVisitorTest, trivialLoop) {
 {
   int compute()
   {
-    x = 42;
-    x = 42;
-    x = 42;
-    return x;
+    return 42;
   }
 }
 )"""";
