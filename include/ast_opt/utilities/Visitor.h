@@ -83,6 +83,9 @@ constexpr bool has_visit = is_visit_available<T, Args...>::value;
 template<typename SpecialVisitor, typename DefaultVisitor = ScopedVisitor>
 class Visitor : public SpecialVisitor {
  public:
+  /// Allow the SpecialVisitor class to operate on Visitor<SpecialVisitor> as if it was a SpecialVisitor
+  friend SpecialVisitor;
+
   /// Ensure that SpecialVisitor is actually a visitor
   static_assert(std::is_base_of<IVisitor, SpecialVisitor>::value);
 
