@@ -2254,14 +2254,11 @@ TEST_F(ProgramTransformationVisitorTest, complexLoop) {
 
 /// Input program
   const char *programCode = R""""(
-  public int compute(int img, int imgSize, int x, int y) {
-    int weightMatrix = {1, 1, 1, 1, -8, 1, 1, 1, 1};
+  public int compute(int img, int imgSize) {
     int img2;
-    int value = 0;
-    for (int i = -1; i < 2; i = i + 1) {
-      value = value + weightMatrix[(i+1)*3 + 1] * img[imgSize*(x+i)+y];
+    for (int i = 0; i < 2; i = i + 1) {
+      img2[i] = img[i+1];
     }
-    img2[imgSize*x+y] = 2 * img[imgSize*x+y] - (value);
     return img2;
   }
 )"""";
@@ -2278,9 +2275,11 @@ TEST_F(ProgramTransformationVisitorTest, complexLoop) {
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute(int img, int imgSize, int x, int y)
+  int compute(int img, int imgSize)
   {
-    return;
+    img2[0] = img[1];
+    img2[1] = img[2];
+    return img2;
   }
 }
 )"""";
