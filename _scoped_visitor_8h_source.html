@@ -139,15 +139,17 @@ $(function() {
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keywordtype">void</span> setRootScope(std::unique_ptr&lt;Scope&gt; &amp;&amp;scope);</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordtype">void</span> visitChildren(<a class="code" href="class_abstract_node.html">AbstractNode</a> &amp;elem);</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordtype">void</span> overrideCurrentScope(<a class="code" href="class_scope.html">Scope</a>* scope);</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordtype">void</span> enterScope(<a class="code" href="class_abstract_node.html">AbstractNode</a> &amp;node);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordtype">void</span> visitChildren(<a class="code" href="class_abstract_node.html">AbstractNode</a> &amp;elem);</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordtype">void</span> exitScope();</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;};</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//AST_OPTIMIZER_INCLUDE_AST_OPT_UTILITIES_SCOPEDVISITOR_H_</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordtype">void</span> enterScope(<a class="code" href="class_abstract_node.html">AbstractNode</a> &amp;node);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordtype">void</span> exitScope();</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;};</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//AST_OPTIMIZER_INCLUDE_AST_OPT_UTILITIES_SCOPEDVISITOR_H_</span></div>
 <div class="ttc" id="aclass_abstract_node_html"><div class="ttname"><a href="class_abstract_node.html">AbstractNode</a></div><div class="ttdef"><b>Definition:</b> AbstractNode.h:43</div></div>
 <div class="ttc" id="aclass_assignment_html"><div class="ttname"><a href="class_assignment.html">Assignment</a></div><div class="ttdef"><b>Definition:</b> Assignment.h:12</div></div>
 <div class="ttc" id="aclass_binary_expression_html"><div class="ttname"><a href="class_binary_expression.html">BinaryExpression</a></div><div class="ttdoc">A BinaryExpression has two Operands (left and right) and an Operator.</div><div class="ttdef"><b>Definition:</b> BinaryExpression.h:11</div></div>

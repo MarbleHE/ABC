@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ABC: A Batching Compiler for FHE: ComputationOperator Class Reference</title>
+<title>ABC: A Batching Compiler for FHE: Methods implementing the logic of the visitor for each node type.</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -46,6 +46,7 @@ $(function() {
 });
 /* @license-end */</script>
 <div id="main-nav"></div>
+</div><!-- top -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -60,31 +61,12 @@ $(function() {
 </iframe>
 </div>
 
-</div><!-- top -->
 <div class="header">
-  <div class="summary">
-<a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="class_computation_operator-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">ComputationOperator Class Reference</div>  </div>
+<div class="title">Methods implementing the logic of the visitor for each node type.</div>  </div>
 </div><!--header-->
 <div class="contents">
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
-Public Member Functions</h2></td></tr>
-<tr class="memitem:aef546d3045baf8cfcbf211e5f7753d48"><td class="memItemLeft" align="right" valign="top"><a id="aef546d3045baf8cfcbf211e5f7753d48"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ComputationOperator</b> (const <a class="el" href="class_operator.html">Operator</a> &amp;op, bool batched=false)</td></tr>
-<tr class="separator:aef546d3045baf8cfcbf211e5f7753d48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a056c7f19f92fd0a40942487ba77a7b91"><td class="memItemLeft" align="right" valign="top"><a id="a056c7f19f92fd0a40942487ba77a7b91"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isBatched</b> ()</td></tr>
-<tr class="separator:a056c7f19f92fd0a40942487ba77a7b91"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa596ca3f0dbf5f57c23b235c7c9ac411"><td class="memItemLeft" align="right" valign="top"><a id="aa596ca3f0dbf5f57c23b235c7c9ac411"></a>
-<a class="el" href="class_operator.html">Operator</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getOp</b> ()</td></tr>
-<tr class="separator:aa596ca3f0dbf5f57c23b235c7c9ac411"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-<hr/>The documentation for this class was generated from the following file:<ul>
-<li>src/visitor/ExpressionBatcher.cpp</li>
-</ul>
+<p>A method to be called immediately after entering the For-loop's visit method. updates currentLoopDepth_maxLoopDepth A method to be called before leaving the For-loop's visit method. updates currentLoopDepth_maxLoopDepth Stores the latest value of a variable while traversing through the AST. Entries in this map consist of a key (pair) that is made of a variable identifier (first) and the scope where the variable was declared in (second). The entry of the variableValues map is the current value of the associated variable. Contains pointer to those nodes for which full or partial evaluation could be performed and hence can be deleted at the end of this simplification traversal. <a class="el" href="class_for.html">For</a> example, the arithmetic expression represented by ArithmeticExpr( LiteralInt(12), OpSymb::add, LiteralInt(42)) will be evaluated to 12+42=54. The node ArithmeticExpr (and all of its children) will be deleted and replaced by a new node LiteralInt(54). </p>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

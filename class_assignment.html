@@ -107,10 +107,14 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:abe364264d71675dba5fe909b7dd23a2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad653443e902af8a2a88a93f789dbab39"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_abstract_target.html">AbstractTarget</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_assignment.html#ad653443e902af8a2a88a93f789dbab39">getTarget</a> () const</td></tr>
 <tr class="separator:ad653443e902af8a2a88a93f789dbab39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a045075f10b40965a8f8629b9e1ace23a"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="class_abstract_expression.html">AbstractExpression</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_assignment.html#a045075f10b40965a8f8629b9e1ace23a">takeTarget</a> ()</td></tr>
+<tr class="separator:a045075f10b40965a8f8629b9e1ace23a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa4a5f94bcd3d80cc29f4fb5964eed1a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_abstract_expression.html">AbstractExpression</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_assignment.html#afa4a5f94bcd3d80cc29f4fb5964eed1a">getValue</a> ()</td></tr>
 <tr class="separator:afa4a5f94bcd3d80cc29f4fb5964eed1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff9f449cd57059754284b3578ee338ef"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_abstract_expression.html">AbstractExpression</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_assignment.html#aff9f449cd57059754284b3578ee338ef">getValue</a> () const</td></tr>
 <tr class="separator:aff9f449cd57059754284b3578ee338ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6093e8727f33c0e4ba8062b903de77a7"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="class_abstract_expression.html">AbstractExpression</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_assignment.html#a6093e8727f33c0e4ba8062b903de77a7">takeValue</a> ()</td></tr>
+<tr class="separator:a6093e8727f33c0e4ba8062b903de77a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ed4b11275a3d182be36b22752720481"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_assignment.html#a6ed4b11275a3d182be36b22752720481">setTarget</a> (std::unique_ptr&lt; <a class="el" href="class_abstract_target.html">AbstractTarget</a> &gt; newTarget)</td></tr>
 <tr class="separator:a6ed4b11275a3d182be36b22752720481"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0d4be0c78c33f47d79d0b212c9a5ae9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_assignment.html#aa0d4be0c78c33f47d79d0b212c9a5ae9">setValue</a> (std::unique_ptr&lt; <a class="el" href="class_abstract_expression.html">AbstractExpression</a> &gt; newValue)</td></tr>
@@ -625,6 +629,42 @@ typedef <a class="el" href="class_node_iterator.html">NodeIterator</a>&lt; const
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a045075f10b40965a8f8629b9e1ace23a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a045075f10b40965a8f8629b9e1ace23a">&#9670;&nbsp;</a></span>takeTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="class_abstract_expression.html">AbstractExpression</a> &gt; Assignment::takeTarget </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Transfer ownership of Target </p><dl class="section return"><dt>Returns</dt><dd>A unique_ptr that owns the AST that was previously this.target </dd></dl>
+
+</div>
+</div>
+<a id="a6093e8727f33c0e4ba8062b903de77a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6093e8727f33c0e4ba8062b903de77a7">&#9670;&nbsp;</a></span>takeValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="class_abstract_expression.html">AbstractExpression</a> &gt; Assignment::takeValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Transfer ownership of Value </p><dl class="section return"><dt>Returns</dt><dd>A unique_ptr that owns the AST that was previously this.value </dd></dl>
 
 </div>
 </div>

@@ -77,15 +77,13 @@ Inheritance diagram for ScopedVisitor:</div>
  <div class="center">
   <img src="class_scoped_visitor.png" usemap="#ScopedVisitor_map" alt=""/>
   <map id="ScopedVisitor_map" name="ScopedVisitor_map">
-<area href="class_i_visitor.html" alt="IVisitor" shape="rect" coords="0,0,193,24"/>
-<area href="class_special_control_flow_graph_visitor.html" alt="SpecialControlFlowGraphVisitor" shape="rect" coords="203,112,396,136"/>
-<area href="class_special_expression_batcher.html" alt="SpecialExpressionBatcher" shape="rect" coords="203,168,396,192"/>
-<area href="class_special_hash_visitor.html" alt="SpecialHashVisitor" shape="rect" coords="203,224,396,248"/>
-<area href="class_special_print_visitor.html" alt="SpecialPrintVisitor" shape="rect" coords="203,280,396,304"/>
-<area href="class_special_runtime_visitor.html" alt="SpecialRuntimeVisitor" shape="rect" coords="203,336,396,360"/>
-<area href="class_special_secret_branching_visitor.html" alt="SpecialSecretBranchingVisitor" shape="rect" coords="203,392,396,416"/>
-<area href="class_special_type_checking_visitor.html" alt="SpecialTypeCheckingVisitor" shape="rect" coords="203,448,396,472"/>
-<area href="class_special_vectorizer.html" alt="SpecialVectorizer" shape="rect" coords="203,504,396,528"/>
+<area href="class_i_visitor.html" alt="IVisitor" shape="rect" coords="580,0,802,24"/>
+<area href="class_special_control_flow_graph_visitor.html" alt="SpecialControlFlowGraphVisitor" shape="rect" coords="0,112,222,136"/>
+<area href="class_special_hash_visitor.html" alt="SpecialHashVisitor" shape="rect" coords="232,112,454,136"/>
+<area href="class_special_program_transformation_visitor.html" alt="SpecialProgramTransformationVisitor" shape="rect" coords="464,112,686,136"/>
+<area href="class_special_runtime_visitor.html" alt="SpecialRuntimeVisitor" shape="rect" coords="696,112,918,136"/>
+<area href="class_special_secret_branching_visitor.html" alt="SpecialSecretBranchingVisitor" shape="rect" coords="928,112,1150,136"/>
+<area href="class_special_type_checking_visitor.html" alt="SpecialTypeCheckingVisitor" shape="rect" coords="1160,112,1382,136"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -172,6 +170,9 @@ const <a class="el" href="class_scope.html">Scope</a> &amp;&#160;</td><td class=
 <tr class="memitem:add25ecfd10630f138cf8ad32428add1a"><td class="memItemLeft" align="right" valign="top"><a id="add25ecfd10630f138cf8ad32428add1a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setRootScope</b> (std::unique_ptr&lt; <a class="el" href="class_scope.html">Scope</a> &gt; &amp;&amp;scope)</td></tr>
 <tr class="separator:add25ecfd10630f138cf8ad32428add1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f9c44209f499713d2638bb17fb3c5b5"><td class="memItemLeft" align="right" valign="top"><a id="a1f9c44209f499713d2638bb17fb3c5b5"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>overrideCurrentScope</b> (<a class="el" href="class_scope.html">Scope</a> *scope)</td></tr>
+<tr class="separator:a1f9c44209f499713d2638bb17fb3c5b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ffcb22215d238174d3d49babddeda20"><td class="memItemLeft" align="right" valign="top"><a id="a9ffcb22215d238174d3d49babddeda20"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>visitChildren</b> (<a class="el" href="class_abstract_node.html">AbstractNode</a> &amp;elem)</td></tr>
 <tr class="separator:a9ffcb22215d238174d3d49babddeda20"><td class="memSeparator" colspan="2">&#160;</td></tr>

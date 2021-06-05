@@ -122,8 +122,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>visit</b> (<a class="
 <tr class="separator:a9664e48d41c0b3ef758db072934afbdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab35b2c221b2701c3ab2dd2f1ec41cf08"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_special_control_flow_graph_visitor.html#ab35b2c221b2701c3ab2dd2f1ec41cf08">checkEntrypoint</a> (<a class="el" href="class_abstract_node.html">AbstractNode</a> &amp;node)</td></tr>
 <tr class="separator:ab35b2c221b2701c3ab2dd2f1ec41cf08"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a90b53eb67e9a316426ffda3c17dd3233"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_special_control_flow_graph_visitor.html#a90b53eb67e9a316426ffda3c17dd3233">buildDataflowGraph</a> ()</td></tr>
-<tr class="separator:a90b53eb67e9a316426ffda3c17dd3233"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56a4949dfa6e3442fccdefa8dcb33dbf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_special_control_flow_graph_visitor.html#a56a4949dfa6e3442fccdefa8dcb33dbf">buildDataFlowGraph</a> ()</td></tr>
+<tr class="separator:a56a4949dfa6e3442fccdefa8dcb33dbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_scoped_visitor"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_scoped_visitor')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_scoped_visitor.html">ScopedVisitor</a></td></tr>
 <tr class="memitem:ab05a2e1e0227aa745108c3e2e60df3e7 inherit pub_methods_class_scoped_visitor"><td class="memItemLeft" align="right" valign="top"><a id="ab05a2e1e0227aa745108c3e2e60df3e7"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>visit</b> (<a class="el" href="class_binary_expression.html">BinaryExpression</a> &amp;elem) override</td></tr>
@@ -179,6 +179,9 @@ const <a class="el" href="class_scope.html">Scope</a> &amp;&#160;</td><td class=
 <tr class="memitem:add25ecfd10630f138cf8ad32428add1a inherit pub_methods_class_scoped_visitor"><td class="memItemLeft" align="right" valign="top"><a id="add25ecfd10630f138cf8ad32428add1a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setRootScope</b> (std::unique_ptr&lt; <a class="el" href="class_scope.html">Scope</a> &gt; &amp;&amp;scope)</td></tr>
 <tr class="separator:add25ecfd10630f138cf8ad32428add1a inherit pub_methods_class_scoped_visitor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f9c44209f499713d2638bb17fb3c5b5 inherit pub_methods_class_scoped_visitor"><td class="memItemLeft" align="right" valign="top"><a id="a1f9c44209f499713d2638bb17fb3c5b5"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>overrideCurrentScope</b> (<a class="el" href="class_scope.html">Scope</a> *scope)</td></tr>
+<tr class="separator:a1f9c44209f499713d2638bb17fb3c5b5 inherit pub_methods_class_scoped_visitor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ffcb22215d238174d3d49babddeda20 inherit pub_methods_class_scoped_visitor"><td class="memItemLeft" align="right" valign="top"><a id="a9ffcb22215d238174d3d49babddeda20"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>visitChildren</b> (<a class="el" href="class_abstract_node.html">AbstractNode</a> &amp;elem)</td></tr>
 <tr class="separator:a9ffcb22215d238174d3d49babddeda20 inherit pub_methods_class_scoped_visitor"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -190,14 +193,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>exitScope</b> ()</td>
 <tr class="separator:acffbc54a36dd89aaa64b8d832ac1bc19 inherit pub_methods_class_scoped_visitor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a90b53eb67e9a316426ffda3c17dd3233"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a90b53eb67e9a316426ffda3c17dd3233">&#9670;&nbsp;</a></span>buildDataflowGraph()</h2>
+<a id="a56a4949dfa6e3442fccdefa8dcb33dbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56a4949dfa6e3442fccdefa8dcb33dbf">&#9670;&nbsp;</a></span>buildDataFlowGraph()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void SpecialControlFlowGraphVisitor::buildDataflowGraph </td>
+          <td class="memname">void SpecialControlFlowGraphVisitor::buildDataFlowGraph </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
