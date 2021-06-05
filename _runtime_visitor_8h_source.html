@@ -76,7 +76,7 @@ $(function() {
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;stack&gt;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;Cleartext.h&quot;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;ast_opt/utilities/Visitor.h&quot;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;ast_opt/utilities/ScopedVisitor.h&quot;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;AbstractCiphertext.h&quot;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;ast_opt/visitor/TypeCheckingVisitor.h&quot;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;ast_opt/utilities/VariableMap.h&quot;</span></div>
@@ -185,7 +185,7 @@ $(function() {
 <div class="ttc" id="aclass_literal_html"><div class="ttname"><a href="class_literal.html">Literal</a></div><div class="ttdoc">Literals contain a scalar value (of type bool, char, int, float, double, string, etc)</div><div class="ttdef"><b>Definition:</b> Literal.h:38</div></div>
 <div class="ttc" id="aclass_operator_expression_html"><div class="ttname"><a href="class_operator_expression.html">OperatorExpression</a></div><div class="ttdoc">A OperatorExpression has two Operands (left and right) and an Operator.</div><div class="ttdef"><b>Definition:</b> OperatorExpression.h:11</div></div>
 <div class="ttc" id="aclass_return_html"><div class="ttname"><a href="class_return.html">Return</a></div><div class="ttdoc">A Return statement has an (optional) value (AbstractExpression)</div><div class="ttdef"><b>Definition:</b> Return.h:12</div></div>
-<div class="ttc" id="aclass_scoped_visitor_html"><div class="ttname"><a href="class_scoped_visitor.html">ScopedVisitor</a></div><div class="ttdef"><b>Definition:</b> ScopedVisitor.h:10</div></div>
+<div class="ttc" id="aclass_scoped_visitor_html"><div class="ttname"><a href="class_scoped_visitor.html">ScopedVisitor</a></div><div class="ttdef"><b>Definition:</b> ScopedVisitor.h:13</div></div>
 <div class="ttc" id="aclass_special_runtime_visitor_html"><div class="ttname"><a href="class_special_runtime_visitor.html">SpecialRuntimeVisitor</a></div><div class="ttdef"><b>Definition:</b> RuntimeVisitor.h:30</div></div>
 <div class="ttc" id="aclass_special_runtime_visitor_html_a11784f775e9327e21540370812fa8f94"><div class="ttname"><a href="class_special_runtime_visitor.html#a11784f775e9327e21540370812fa8f94">SpecialRuntimeVisitor::visitHelper</a></div><div class="ttdeci">void visitHelper(Literal&lt; T &gt; &amp;elem)</div><div class="ttdef"><b>Definition:</b> RuntimeVisitor.h:82</div></div>
 <div class="ttc" id="aclass_special_runtime_visitor_html_a4c24d9abc2aa897aeaaa942febbfe8b3"><div class="ttname"><a href="class_special_runtime_visitor.html#a4c24d9abc2aa897aeaaa942febbfe8b3">SpecialRuntimeVisitor::executeAst</a></div><div class="ttdeci">void executeAst(AbstractNode &amp;rootNode)</div><div class="ttdef"><b>Definition:</b> RuntimeVisitor.cpp:481</div></div>
@@ -197,8 +197,8 @@ $(function() {
 <div class="ttc" id="aclass_unary_expression_html"><div class="ttname"><a href="class_unary_expression.html">UnaryExpression</a></div><div class="ttdoc">A UnaryExpression has a single Operands and an Operator.</div><div class="ttdef"><b>Definition:</b> UnaryExpression.h:9</div></div>
 <div class="ttc" id="aclass_variable_declaration_html"><div class="ttname"><a href="class_variable_declaration.html">VariableDeclaration</a></div><div class="ttdef"><b>Definition:</b> VariableDeclaration.h:13</div></div>
 <div class="ttc" id="aclass_variable_html"><div class="ttname"><a href="class_variable.html">Variable</a></div><div class="ttdef"><b>Definition:</b> Variable.h:9</div></div>
-<div class="ttc" id="aclass_variable_map_html"><div class="ttname"><a href="class_variable_map.html">VariableMap</a></div><div class="ttdef"><b>Definition:</b> VariableMap.h:9</div></div>
-<div class="ttc" id="aclass_visitor_html"><div class="ttname"><a href="class_visitor.html">Visitor</a></div><div class="ttdef"><b>Definition:</b> Visitor.h:84</div></div>
+<div class="ttc" id="aclass_variable_map_html"><div class="ttname"><a href="class_variable_map.html">VariableMap</a></div><div class="ttdef"><b>Definition:</b> VariableMap.h:10</div></div>
+<div class="ttc" id="aclass_visitor_html"><div class="ttname"><a href="class_visitor.html">Visitor</a></div><div class="ttdef"><b>Definition:</b> ScopedVisitor.h:137</div></div>
 <div class="ttc" id="astruct_return_statement_reached_html"><div class="ttname"><a href="struct_return_statement_reached.html">ReturnStatementReached</a></div><div class="ttdef"><b>Definition:</b> RuntimeVisitor.h:19</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
