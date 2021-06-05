@@ -481,9 +481,17 @@ std::unordered_set<ScopedIdentifier> SpecialControlFlowGraphVisitor::buildDataFl
         // DEFAULT CASE: Node has READ to variable
         // Add an bilateral edge <last node that wrote to variable> --> <current node> to each of the nodes that
         // last wrote to the variable (e.g., in case of a branch statement, that can be multiple nodes).
-        for (auto &writeNodes : uniqueNodeId_variable_writeNodes.at(cNode_id).at(scopedIdentifier)) {
-          writeNodes.get().getDataFlowGraph().addChild(cNode_graphNode);
+        auto &ignm = uniqueNodeId_variable_writeNodes.at(cNode_id);
+        if (ignm.find(scopedIdentifier)!=ignm.end()) {
+          for (auto &writeNodes :ignm.at(scopedIdentifier)) {
+            writeNodes.get().getDataFlowGraph().addChild(cNode_graphNode);
+          }
+        } else {
+          // This variable hasn't been encountered before (maybe defined outside of subtree CFGV was called on)
+          //TODO: ignm.insert_or_assign(varIdentifier, gNodeSet);
+          std::cout << "Did not manage to update writeNodes for " << scopedIdentifier.getId() << std::endl;
         }
+
       }
     }
 

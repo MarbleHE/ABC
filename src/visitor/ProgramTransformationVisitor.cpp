@@ -180,11 +180,13 @@ void SpecialProgramTransformationVisitor::visit(VariableDeclaration &elem) {
 
   // Register the Variable in the variableMap
   auto scopedIdentifier = ScopedIdentifier(this->getCurrentScope(), elem.getTarget().getIdentifier());
-  if (variableMap.has(scopedIdentifier))
-    throw std::runtime_error("Redeclaration of a variable that already exists in this scope: " + printProgram(elem));
+  // Because of loop unrolling, this kind of stuff will happen
+  // for example, we'll often get many copies of int i = i + 1;
+  //  if (variableMap.has(scopedIdentifier))
+  //    throw std::runtime_error("Redeclaration of a variable that already exists in this scope: " + printProgram(elem));
   variableMap.insert_or_assign(scopedIdentifier, {elem.getDatatype(), std::move(expr_ptr)});
 
-  // Register the Variable in the current scope
+  // Register the Variable in the current scope (doesn't matter if its already there, because it's a set)
   getCurrentScope().addIdentifier(elem.getTarget().getIdentifier());
 
   // This VariableDeclaration is now redundant and needs to be removed from the program.
@@ -378,6 +380,17 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
   /// Loop Variables are variables that are both written to and read from during the loop
   auto loopVariables = identifyReadWriteVariables(elem);
 
+  // The CFGV also returns variables that are read&written in inner loops, which we might not yet be aware of
+  { // scope to delete temp variable
+    std::unordered_set<ScopedIdentifier> filteredLoopVariables;
+    for (const auto &si : loopVariables) {
+      if (!variableMap.has(si)) {
+        filteredLoopVariables.insert(si);
+      }
+    }
+    loopVariables = filteredLoopVariables;
+  }
+
 
   // INITIALIZER
 
@@ -396,16 +409,6 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
   // Now, int i = 0 and similar things might have been deleted from AST and are in VariableValuesMap
 
 
-
-  // The CFGV also returns variables that are read&written in inner loops, which we might not yet be aware of
-  std::unordered_set<ScopedIdentifier> filteredLoopVariables;
-  for (const auto &si : loopVariables) {
-    if (variableMap.has(si)) {
-      filteredLoopVariables.insert(si);
-    }
-  }
-  loopVariables = filteredLoopVariables;
-
   // We need to emit Assignments (or Declarations with value if needed) for each of the loop variables Variables into the initializer
   if (!elem.hasInitializer()) { elem.setBody(std::make_unique<Block>()); };
   for (auto &sv : loopVariables) {
@@ -416,7 +419,9 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
   // Since they will be different in each iteration, CTES should treat them as "compile time unknown"
   // Therefore, we need to remove their values from the variableValues map
   for (auto &si: loopVariables) {
-    variableMap.insert_or_assign(si, {variableMap.get(si).type, nullptr});
+    if (variableMap.has(si)) { // the check is necessary because of nested loops!
+      variableMap.insert_or_assign(si, {variableMap.get(si).type, nullptr});
+    }
   }
 
   // CONDITION
@@ -457,36 +462,36 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
     // We cannot know if the loop can be fully unrolled without evaluating it
     // So we speculatively unroll the loop until its either too long or we cannot determine something at compile time
 
+    /// Backup of variableMap in case unrolling fails
+    TypedVariableValueMap mapBackup;
+    for (auto &[sv, tv] : variableMap) {
+      mapBackup.insert_or_assign(sv, {tv.type, tv.value ? tv.value->clone(tv.value->getParentPtr()) : nullptr});
+    }
 
+    /// Backup of the initializer in case unrolling fails
+    auto initializerBackup =
+        elem.getInitializer().clone(elem.getInitializer().getParentPtr());
 
-//    /// A separate Visitor, for isolation, brought up to date in terms of variables and scopes
-//    ProgramTransformationVisitor loopCTES;//(std::move(scopeHiearchy), &getCurrentScope(), std::move(mapcopy));
-//    // TODO: pass in copies of things, but remember that we either need to recreate the scope hierachy
-//    //  or update the variableMap so that anything above our current scope is changed to rootscope?
-//    //  Both sound a bit tedious
-//    // TypedVariableValueMap mapcopy;
-//    // std::unique_ptr<Scope> scopeHiearchy;
+    // Visit the initializer (this will load the loop variables back into variableValues)
+    // Manually visit the statements in the block, since otherwise Visitor::visit would create a new scope!
+    for (auto &s: elem.getInitializer().getStatements()) {
+      s.get().accept(*this);
+    }
 
-//    // Manual handling of scope (usually done via Visitor::visit(elem))
-//    loopCTES.enterScope(elem);
+    /// Evaluates (a copy of) the condition, returning either 0/1 or -1 if the condition is not compile time known
+    auto evaluateCondition = [&](AbstractExpression &condition) -> int {
+      /// Operate on a copy, so we can re-use the original condition in the next iteration!
+      auto condition_copy = condition.clone(condition.getParentPtr());
 
-//    // Visit the initializer (this will load the loop variables back into variableValues)
-//    // Manually visit the statements in the block, since otherwise Visitor::visit would create a new scope!
-//    for (auto &s: elem.getInitializer().getStatementPointers()) {
-//      s->accept(loopCTES);
-//    }
+      // Evaluate it by visiting
+      condition_copy->accept(*this);
+      if (replacementExpression) condition_copy = std::move(replacementExpression);
 
-    /// Do we have everything we need to evaluate the condition?
-    auto isExpressionKnown = [&](AbstractExpression &expression) -> bool {
-      return dynamic_cast<LiteralBool *>(&expression)!=nullptr;
-    };
-
-    /// Condition Execution Helper
-    auto isExpressionTrue = [&](AbstractExpression &expression) -> bool {
-      if (auto bool_ptr = dynamic_cast<LiteralBool *>(&expression)) {
+      // Check if it's known
+      if (auto bool_ptr = dynamic_cast<LiteralBool *>(&condition)) {
         return bool_ptr->getValue();
       } else {
-        return false;
+        return -1; //indicates  unknown at compile time
       }
     };
 
@@ -496,62 +501,90 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
     /// Track iterations
     int numIterations = 0;
 
-    bool go_on = false;
-    while (go_on && numIterations < fullyUnrollLoopMaxNumIterations) {
+    /// Result of testing condition
+    int condition = evaluateCondition(elem.getCondition());
+    while (condition==1 && numIterations < fullyUnrollLoopMaxNumIterations) {
       //TODO:  update executeLoopStmts
 
-//        // BODY
-//        if (elem.hasBody()) {
-//          auto clonedBody = elem.getBody().clone();
-//          clonedBody->accept(loopCTES);
-//
-//          // If there are any stmts left, transfer them to the unrolledBlock
-//          for (auto &s: clonedBody->getStatements()) {
-//            s->takeFromParent();
-//            unrolledBlock->addStatement(s);
-//          }
-//          nodesQueuedForDeletion.push_back(clonedBody);
-//        }
-//
-//
-//        // UPDATE
-//        if (elem.getUpdate()) {
-//          Block *clonedUpdate = elem.getUpdate()->clone();
-//          clonedUpdate->accept(loopCTES);
-//          // If there are any stmts left, transfer them to the unrolledBlock
-//          for (auto &s: clonedUpdate->getStatements()) {
-//            s->takeFromParent();
-//            unrolledBlock->addStatement(s);
-//          }
-//          nodesQueuedForDeletion.push_back(clonedUpdate);
-//        }
+      // BODY
+      if (elem.hasBody()) {
+        /// Operate on a copy of the body, so we can reuse it in later iterations
+        auto clonedBody = elem.getBody().clone(elem.getBody().getParentPtr());
+
+        // Visit and simplify - again, have to do visit statements manually because of scopes
+        for (auto &s: clonedBody->getStatementPointers()) {
+          removeStatement = false;
+          s->accept(*this);
+          if (removeStatement) s = nullptr;
+        }
+        clonedBody->removeNullStatements();
+
+        // If there are any stmts left, transfer them to the unrolledBlock
+        for (auto &s: clonedBody->getStatementPointers()) {
+          unrolledBlock->appendStatement(std::move(s));
+        }
+      }
+
+      // UPDATE
+      if (elem.hasUpdate()) {
+        /// Operate on a copy of the update, so we can reuse it in later iterations
+        auto clonedUpdate = elem.getUpdate().clone(elem.getUpdate().getParentPtr());
+
+        // Visit and simplify - again, have to do visit statements manually because of scopes
+        for (auto &s: clonedUpdate->getStatementPointers()) {
+          removeStatement = false;
+          s->accept(*this);
+          if (removeStatement) {
+            s = nullptr;
+            removeStatement = false;
+          }
+        }
+        clonedUpdate->removeNullStatements();
+
+        // If there are any stmts left, transfer them to the unrolledBlock
+        for (auto &s: clonedUpdate->getStatementPointers()) {
+          unrolledBlock->appendStatement(std::move(s));
+        }
+      }
+
+      // Re-compute condition
+      condition = evaluateCondition(elem.getCondition());
+
+      // Increase iteration count
       numIterations++;
     }
 
     // Cleanup the Block we just created, in case it's empty/has NULL stmts left
     unrolledBlock->removeNullStatements();
 
-    if (false /*&& numIterations < fullyUnrollLoopMaxNumIterations */) {
+    if (condition==0 && numIterations < fullyUnrollLoopMaxNumIterations) {
       // Loop unrolling was successful
 
-      //TODO: Transfer in scope Information and VariableValues from loopCTES
-      // forceScope(loopCTES.stmtToScopeMapper, loopCTES.curScope);
-      // variableValues = loopCTES.variableValues;
-
-      // TODO replace elem with the unrolled Block instead of setting is own body
-      // elem.getParent()->replaceChild(&elem, unrolledBlock);
+      // TODO replace elem with the unrolled Block instead of setting it as its body
       elem.setBody(std::move(unrolledBlock));
 
       // TODO: Mark the current For-Loop node (elem) for deletion
-      removeStatement = true;
+      //removeForStatement = true;
 
       // TODO: Note that if the parent of elem/unrolledBlock is a Block-like stmt,
       //  our caller (e.g. visit(Block)) will have to deal with unpacking it
     } else if (numIterations > fullyUnrollLoopMaxNumIterations) {
       // PARTIAL UNROLLING
       throw std::runtime_error("Partial loop unrolling currently not supported.");
+    } else {
+      // We don't clean up any excess scopes due to, e.g. if/else statements in the body
+      // This is a bit unfortunate, but doesn't seem worth fixing at this point
+      // Since they will just exist, but not disturb anything (variable resolution will never touch them)
+
+      // Reset & Restore VariableValueMap
+      variableMap = TypedVariableValueMap();
+      for (auto &[sv, tv] : mapBackup) {
+        variableMap.insert_or_assign(sv, {tv.type, tv.value ? tv.value->clone(tv.value->getParentPtr()) : nullptr});
+      }
+
+      /// Restore the initializer
+      elem.setInitializer(std::move(initializerBackup));
     }
-    // else: nothing to undo since we used a new visitor
   }
 
   // Manual scope handling

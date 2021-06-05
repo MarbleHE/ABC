@@ -2008,8 +2008,17 @@ TEST_F(ProgramTransformationVisitorTest, fullForLoopUnrolling) {
   // }
   /// Input program
   const char *programCode = R""""(
-   public int compute() {
-
+   public int compute(int img, int imgSize, int x, int y) {
+      int weightMatrix = {1, 1, 1, 1, -8, 1, 1, 1, 1};
+      int img2;
+      int value = 0;
+      for (int j = -1; j < 2; j = j + 1) {
+         for (int i = -1; i < 2; i = i + 1) {
+            value = value + weightMatrix[(i+1)*3 + j+1] * img[imgSize*(x+i)+y+j];
+         }
+      }
+      img2[imgSize*x+y] = 2 * img[imgSize*x+y] - (value);
+      return img2;
    }
 )"""";
   auto code = std::string(programCode);
@@ -2098,9 +2107,6 @@ TEST_F(ProgramTransformationVisitorTest, fourNestedLoopsLaplacianSharpeningFilte
 }
 
 TEST_F(ProgramTransformationVisitorTest, trivialLoop) {
-  //TODO: Update Test
-
-
   //  int trivialLoop() {
   //    int x = 0;
   //    for(int i = 0; i < 3; i = i + 1) {
@@ -2141,21 +2147,21 @@ TEST_F(ProgramTransformationVisitorTest, trivialLoop) {
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(ProgramTransformationVisitorTest, trivialNestedLoops) {
-  //  int trivialLoop() {
-  //    int x = 0;
-  //    for(int j = 0; j < 3; j = j + 1) {
-  //      for(int i = 0; i < 3; i = i + 1) {
-  //        x = 42;
-  //      }
-  //    }
-  //    return x;
-  //  }
-  /// Input program
-  const char *programCode = R""""(
-   public int compute() {
 
-   }
+TEST_F(ProgramTransformationVisitorTest, complexLoop) {
+
+/// Input program
+  const char *programCode = R""""(
+  public int compute(int img, int imgSize, int x, int y) {
+    int weightMatrix = {1, 1, 1, 1, -8, 1, 1, 1, 1};
+    int img2;
+    int value = 0;
+    for (int i = -1; i < 2; i = i + 1) {
+      value = value + weightMatrix[(i+1)*3 + 1] * img[imgSize*(x+i)+y];
+    }
+    img2[imgSize*x+y] = 2 * img[imgSize*x+y] - (value);
+    return img2;
+  }
 )"""";
   auto code = std::string(programCode);
   ast = Parser::parse(code);
@@ -2172,7 +2178,52 @@ TEST_F(ProgramTransformationVisitorTest, trivialNestedLoops) {
 {
   int compute()
   {
-    return;
+    return 42;
+  }
+}
+)"""";
+
+  EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
+}
+
+TEST_F(ProgramTransformationVisitorTest, trivialNestedLoops) {
+  //  int trivialLoop() {
+  //    int x = 0;
+  //    for(int j = 0; j < 3; j = j + 1) {
+  //      for(int i = 0; i < 3; i = i + 1) {
+  //        x = 42;
+  //      }
+  //    }
+  //    return x;
+  //  }
+  /// Input program
+  const char *programCode = R""""(
+   public int compute() {
+      int x = 0;
+      for(int j = 0; j < 3; j = j + 1) {
+        for(int i = 0; i < 3; i = i + 1) {
+          x = 42;
+        }
+      }
+      return x;
+    }
+)"""";
+  auto code = std::string(programCode);
+  ast = Parser::parse(code);
+
+  // perform the compile-time expression simplification
+  ast->accept(ctes);
+
+  // get the transformed code
+  ast->accept(ppv);
+  std::cout << ss.str() << std::endl;
+
+  /// Expected program
+  const char *expectedCode = R""""(
+{
+  int compute()
+  {
+    return 42;
   }
 }
 )"""";
@@ -2192,45 +2243,6 @@ TEST_F(ProgramTransformationVisitorTest, maxNumUnrollings) {
   //    }
   //    return x;
   //  }
-
-  // Function: (maxNumUnrollings)	[global]
-  //	ParameterList:	[Function_0]
-  //	Block:
-  //		VarDecl: (x)	[Block_2]
-  //			Datatype: (plaintext int)
-  //			LiteralInt: (0)
-  //		For:
-  //			VarDecl: (j)
-  //				Datatype: (plaintext int)
-  //				LiteralInt: (0)
-  //			LogicalExpr:
-  //				Variable: (j)
-  //				Operator: (<)
-  //				LiteralInt: (3)
-  //			VarAssignm: (j)
-  //				ArithmeticExpr:
-  //					Variable: (j)
-  //					Operator: (add)
-  //					LiteralInt: (1)
-  //			Block:	[Block_39]
-  //				For:	[Block_39]
-  //					VarDecl: (i)
-  //						Datatype: (plaintext int)
-  //						LiteralInt: (0)
-  //					LogicalExpr:
-  //						Variable: (i)
-  //						Operator: (<)
-  //						LiteralInt: (3)
-  //					VarAssignm: (i)
-  //						ArithmeticExpr:
-  //							Variable: (i)
-  //							Operator: (add)
-  //							LiteralInt: (1)
-  //					Block:	[Block_22]
-  //						VarAssignm: (x)	[Block_22]
-  //							LiteralInt: (42)
-  //		Return:	[Block_2]
-  //			Variable: (x)
 
   /// Input program
   const char *programCode = R""""(

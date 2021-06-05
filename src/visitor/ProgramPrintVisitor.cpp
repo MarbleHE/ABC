@@ -55,8 +55,10 @@ void SpecialProgramPrintVisitor::visit(For &elem) {
     auto temp_indentation_level = indentation_level;
     indentation_level = 0;
     for (auto &s: elem.getInitializer().getStatementPointers()) {
-      s->accept(*this);
-      os.seekp(-1, std::ostream::cur); //rewind stream to get rid of \n
+      if(s) {
+        s->accept(*this);
+        os.seekp(-1, std::ostream::cur); //rewind stream to get rid of \n
+      }
     }
     indentation_level = temp_indentation_level;
   }
