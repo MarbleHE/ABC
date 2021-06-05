@@ -69,7 +69,10 @@ class ExpressionList : public AbstractExpression {
   /// std::vector<AbstractStatement&> could, if it were possible
   /// \return ExpressionList of (const references to) all non-null expressions
   std::vector<std::reference_wrapper<const AbstractExpression>> getExpressions() const;
-  
+
+  /// Take Ownership of all expressions, removing them from this ExpressionsList
+  /// \return vector of all unique_ptrs to expressions
+  std::vector<std::unique_ptr<AbstractExpression>> takeExpressions();
 
   /// Add an expression as the last expression
   /// \param expression Expression to be appended, ExpressionList will take ownership

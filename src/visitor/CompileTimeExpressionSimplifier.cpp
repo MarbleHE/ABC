@@ -68,15 +68,15 @@ T applyOperator(T lhsOperand, T rhsOperand, Operator op) {
   }
 }
 
-//template<typename TO, typename FROM>
-///// \tparam TO Target Type
-///// \tparam FROM Source Type
-///// \param old Pointer to convert, needs to be std::move()'d in
-///// \return
-//std::unique_ptr<TO> dynamic_cast_unique_ptr (std::unique_ptr<FROM>&& old){
-//  return std::unique_ptr<TO>{dynamic_cast<TO*>(old.release())};
-//  //conversion: unique_ptr<FROM>->FROM*->TO*->unique_ptr<TO>
-//}
+template<typename TO, typename FROM>
+/// \tparam TO Target Type
+/// \tparam FROM Source Type
+/// \param old Pointer to convert, needs to be std::move()'d in
+/// \return
+std::unique_ptr<TO> dynamic_cast_unique_ptr(std::unique_ptr<FROM> &&old) {
+  return std::unique_ptr<TO>{dynamic_cast<TO *>(old.release())};
+  //conversion: unique_ptr<FROM>->FROM*->TO*->unique_ptr<TO>
+}
 
 std::string SpecialCompileTimeExpressionSimplifier::printProgram(AbstractNode &node) {
   std::stringstream ss;
@@ -134,21 +134,21 @@ void SpecialCompileTimeExpressionSimplifier::visit(UnaryExpression &elem) {
 
   // visit children
   elem.getOperand().accept(*this);
-  if(replacementExpression) {
+  if (replacementExpression) {
     elem.setOperand(std::move(replacementExpression));
   }
 
   // try to apply the operator
   if (elem.getOperator()==Operator(LOGICAL_NOT)) {
-    if(auto bool_ptr = dynamic_cast<LiteralBool*>(&elem.getOperand())){
+    if (auto bool_ptr = dynamic_cast<LiteralBool *>(&elem.getOperand())) {
       replacementExpression = std::make_unique<LiteralBool>(!bool_ptr->getValue());
     }
   } else if (elem.getOperator()==Operator(BITWISE_NOT)) {
-    if(auto bool_ptr = dynamic_cast<LiteralBool*>(&elem.getOperand())){
+    if (auto bool_ptr = dynamic_cast<LiteralBool *>(&elem.getOperand())) {
       replacementExpression = std::make_unique<LiteralBool>(~bool_ptr->getValue());
-    } else if(auto char_ptr = dynamic_cast<LiteralChar*>(&elem.getOperand())){
+    } else if (auto char_ptr = dynamic_cast<LiteralChar *>(&elem.getOperand())) {
       replacementExpression = std::make_unique<LiteralChar>(~char_ptr->getValue());
-    }else if(auto int_ptr = dynamic_cast<LiteralInt*>(&elem.getOperand())){
+    } else if (auto int_ptr = dynamic_cast<LiteralInt *>(&elem.getOperand())) {
       replacementExpression = std::make_unique<LiteralInt>(~int_ptr->getValue());
     }
   }
@@ -167,8 +167,8 @@ void SpecialCompileTimeExpressionSimplifier::visit(VariableDeclaration &elem) {
     if (replacementExpression) {
       expr_ptr = std::move(replacementExpression);
     } else {
-      // Note: Since we're deleting this VariableDeclaration at the end of this call,
-      // we can "move" the expression into the map, setting elem.target = nullptr
+      // Note: Since we're deleting this VariableDeclaration after this call,
+      // we can "move" the expression into the map, setting elem.value = nullptr
       expr_ptr = elem.takeValue();
     }
   }
@@ -188,35 +188,90 @@ void SpecialCompileTimeExpressionSimplifier::visit(VariableDeclaration &elem) {
 }
 
 void SpecialCompileTimeExpressionSimplifier::visit(Assignment &elem) {
-  // Get the value
-  std::unique_ptr<AbstractExpression> expr_ptr = nullptr;
-  // visit the expression to simplify it
+  // visit the value (rhs) expression to simplify it
   elem.getValue().accept(*this);
-  if (replacementExpression) {
-    expr_ptr = std::move(replacementExpression);
-  } else {
-    // Note: Since we're deleting this VariableDeclaration at the end of this call,
-    // we can "move" the expression into the map, setting elem.target = nullptr
-    expr_ptr = elem.takeValue();
-  }
+  if (replacementExpression) elem.setValue(std::move(replacementExpression));
 
-  // Update the Variable in the variableMap & Scope (if necessary)
   if (auto var_ptr = dynamic_cast<Variable *>(&elem.getTarget())) {
-    auto scopedIdentifier = ScopedIdentifier(this->getCurrentScope(), var_ptr->getIdentifier());
-    variableMap.insert_or_assign(scopedIdentifier, std::move(expr_ptr));
+    // Resolve the identifier to a scopedVariable
+    auto scopedIdentifier = getCurrentScope().resolveIdentifier(var_ptr->getIdentifier());
 
-    // Register the Variable in the current scope, if it didn't exist yet
-    if (!getCurrentScope().identifierIsLocal(var_ptr->getIdentifier())) {
-      getCurrentScope().addIdentifier(var_ptr->getIdentifier());
+    // Update or insert the value
+    // Since we're removing this statement after this call, we can "steal" the expression from elem
+    variableMap.insert_or_assign(scopedIdentifier, std::move(elem.takeValue()));
+
+    // This VariableDeclaration is now redundant and needs to be removed from the program.
+    // However, our parent visit(Block&) will have to handle this
+    removeStatement = true;
+
+  } else if (auto ind_ptr = dynamic_cast<IndexAccess *>(&elem.getTarget())) {
+
+    // Simplify the index expression
+    ind_ptr->getIndex().accept(*this);
+    if (replacementExpression) ind_ptr->setIndex(std::move(replacementExpression));
+
+    // For now, we only support a single level of index access, so target must be a variable
+    // TODO: Support matrix accesses, i.e. x[i][j]!
+    if (auto var_ptr = dynamic_cast<Variable *>(&elem.getTarget())) {
+      if (!getCurrentScope().identifierExists(var_ptr->getIdentifier())) {
+        throw std::runtime_error("Cannot assign to non-declared variable: " + printProgram(elem));
+      }
+
+      // Find the variable we are assigning to
+      auto scopedIdentifier = getCurrentScope().resolveIdentifier(var_ptr->getIdentifier());
+
+      // If the index could be resolved to a LiteralInt, we might be able to remove this expression
+      if (auto lit_ptr = dynamic_cast<LiteralInt *>(&ind_ptr->getIndex())) {
+        auto index = lit_ptr->getValue();
+
+        // check if we have a value for this variable already
+        if (variableMap.has(scopedIdentifier)) { //update value
+          if (variableMap.get(scopedIdentifier)==nullptr)
+            throw std::runtime_error("Found unexpected null value in variableMap!");
+
+          // Create a copy of the value, since we sadly can't take it out of the variableMap :(
+          // TODO: Consider finding or creating a more unique_ptr-friendly data structure?
+          auto new_val = variableMap.get(scopedIdentifier)->clone(&elem);
+
+          // check if it's an expression list
+          if (auto list = dynamic_cast_unique_ptr<ExpressionList>(std::move(new_val))) {
+            // steal the vector for a moment
+            auto vec = list->takeExpressions();
+
+            // Make sure it's large enough
+            for (size_t i = vec.size(); i <= index; ++i) {
+              vec.emplace_back(nullptr);
+            }
+
+            // Put in the new value. Since we'll remove elem after this function, we can steal it
+            vec.at(index) = elem.takeValue();
+
+            // Put new_val into the variableMap
+            variableMap.insert_or_assign(scopedIdentifier,std::move(new_val));
+          } else {
+            // This can occur if we had, e.g., int x = 6; x[7] = 8; which we don't allow for now
+            throw std::runtime_error(
+                "Cannot assign index of variable that is not vector valued already: " + printProgram(elem));
+          }
+
+        } else { // no values stored so far
+          // let's build a new index_expression that's mostly "undefined" (nullptr)
+          // except at the index we are assigning to
+          std::vector<std::unique_ptr<AbstractExpression>> list(index + 1);
+          // Since we're removing this statement after this call, we can "steal" the expression from elem
+          list.at(index) = std::move(elem.takeValue());
+          // Now build the ExpressionList
+          auto exprlist = std::make_unique<ExpressionList>(std::move(list));
+          // and put it into the variableMap
+          variableMap.insert_or_assign(scopedIdentifier, std::move(exprlist));
+        }
+      } // if index is a more general expression, we can't do anything
+
+    } else {
+      throw std::runtime_error("Cannot handle non-variable-target in index access: " + printProgram(elem));
     }
-  } else {
-    // TODO: Support assignment to individual vector assignments
-    throw std::runtime_error("Assignment to vector indices not yet supported.");
   }
 
-  // This VariableDeclaration is now redundant and needs to be removed from the program.
-  // However, our parent visit(Block&) will have to handle this
-  removeStatement = true;
 }
 
 void SpecialCompileTimeExpressionSimplifier::visit(Variable &elem) {
@@ -262,9 +317,9 @@ void SpecialCompileTimeExpressionSimplifier::visit(Block &elem) {
   // Iterate through statements
   auto &statements = elem.getStatementPointers();
   removeStatement = false;
-  for (auto & statement : statements) {
+  for (auto &statement : statements) {
     statement->accept(*this);
-    if(removeStatement) { /*NOLINT NOT always false */
+    if (removeStatement) { /*NOLINT NOT always false */
       // Don't remove yet, since that would invalidate iterators
       statement = nullptr;
       removeStatement = false;
