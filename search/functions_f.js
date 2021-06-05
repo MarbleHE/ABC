@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['scope_570',['Scope',['../class_scope.html#ad35486794f8405db863e08b0808150ee',1,'Scope::Scope(const Scope &amp;)=delete'],['../class_scope.html#a4b97ce1369f5afb0cab5c6a2aac0f0d1',1,'Scope::Scope(AbstractNode &amp;abstractNode)'],['../class_scope.html#a1dfb97b5aa1fdae9090073b872e689a8',1,'Scope::Scope(Scope &amp;&amp;other)=default']]],
+  ['scope_570',['Scope',['../class_scope.html#a1dfb97b5aa1fdae9090073b872e689a8',1,'Scope::Scope(Scope &amp;&amp;other)=default'],['../class_scope.html#a4b97ce1369f5afb0cab5c6a2aac0f0d1',1,'Scope::Scope(AbstractNode &amp;abstractNode)']]],
   ['scopedidentifier_571',['ScopedIdentifier',['../class_scoped_identifier.html#af586c8718e3d112230ff81cf262efdc2',1,'ScopedIdentifier']]],
   ['setaccessedvariables_572',['setAccessedVariables',['../class_graph_node.html#a4a48e95a5f0b3561bd29bda50e444258',1,'GraphNode']]],
   ['setbody_573',['setBody',['../class_for.html#a80ab813c1956e47bfa9af1d109104cc1',1,'For']]],

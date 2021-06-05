@@ -101,7 +101,7 @@ $(function() {
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="comment">// This class has implemented a way to deal with variables that are declared in a part of the program</span></div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="comment">// that is not in the given sub-AST and as such not visited by the visitor:</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="comment">//   If the visitor is initialized with ControlFlowGraphVisitor(ignoreNonDeclaredVariables = false), then variables</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="comment">//   If the visitor is initialized with ControlFlowGraphVisitor(ignoreNonDeclaredVariables = true), then variables</span></div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="comment">// for which no declaration could be found will just be ignored. Consequently, also read/write accesses to them are</span></div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="comment">// not being tracked in the variableAccesses map.</span></div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>

@@ -1,11 +1,11 @@
 var searchData=
 [
-  ['scope_223',['Scope',['../class_scope.html',1,'Scope'],['../class_scope.html#a1dfb97b5aa1fdae9090073b872e689a8',1,'Scope::Scope(Scope &amp;&amp;other)=default'],['../class_scope.html#ad35486794f8405db863e08b0808150ee',1,'Scope::Scope(const Scope &amp;)=delete'],['../class_scope.html#a4b97ce1369f5afb0cab5c6a2aac0f0d1',1,'Scope::Scope(AbstractNode &amp;abstractNode)']]],
+  ['scope_223',['Scope',['../class_scope.html',1,'Scope'],['../class_scope.html#a1dfb97b5aa1fdae9090073b872e689a8',1,'Scope::Scope(Scope &amp;&amp;other)=default'],['../class_scope.html#a4b97ce1369f5afb0cab5c6a2aac0f0d1',1,'Scope::Scope(AbstractNode &amp;abstractNode)']]],
   ['scopedidentifier_224',['ScopedIdentifier',['../class_scoped_identifier.html',1,'ScopedIdentifier'],['../class_scoped_identifier.html#af586c8718e3d112230ff81cf262efdc2',1,'ScopedIdentifier::ScopedIdentifier()']]],
   ['scopedvisitor_225',['ScopedVisitor',['../class_scoped_visitor.html',1,'']]],
   ['setaccessedvariables_226',['setAccessedVariables',['../class_graph_node.html#a4a48e95a5f0b3561bd29bda50e444258',1,'GraphNode']]],
   ['setbody_227',['setBody',['../class_for.html#a80ab813c1956e47bfa9af1d109104cc1',1,'For']]],
-  ['setcondition_228',['setCondition',['../class_if.html#abb5df2a036db433ecbce1bb93e99931e',1,'If::setCondition()'],['../class_for.html#a41a16b5b3610ed76059d15e298d30013',1,'For::setCondition()'],['../class_ternary_operator.html#a30b0f29e5187e3b60c11cf756f2976a8',1,'TernaryOperator::setCondition()']]],
+  ['setcondition_228',['setCondition',['../class_ternary_operator.html#a30b0f29e5187e3b60c11cf756f2976a8',1,'TernaryOperator::setCondition()'],['../class_if.html#abb5df2a036db433ecbce1bb93e99931e',1,'If::setCondition()'],['../class_for.html#a41a16b5b3610ed76059d15e298d30013',1,'For::setCondition()']]],
   ['setelsebranch_229',['setElseBranch',['../class_if.html#a9e56d02398bc797bb5d8c5945f33a135',1,'If']]],
   ['setelseexpr_230',['setElseExpr',['../class_ternary_operator.html#a8c7d30ec4315cbf4b2a6631003d2fb41',1,'TernaryOperator']]],
   ['setexpressions_231',['setExpressions',['../class_expression_list.html#adca3503b17d1a62e41ac5c68fc8a5241',1,'ExpressionList']]],
@@ -14,7 +14,7 @@ var searchData=
   ['setleft_234',['setLeft',['../class_binary_expression.html#a443ee22db0dd47b7a75704e84435accb',1,'BinaryExpression']]],
   ['setmatrix_235',['setMatrix',['../class_literal.html#a986408db2ae05ab48c05be7e770845dc',1,'Literal']]],
   ['setoperand_236',['setOperand',['../class_unary_expression.html#ad91e40484bf2a7957333c3925b0b2859',1,'UnaryExpression']]],
-  ['setoperator_237',['setOperator',['../class_binary_expression.html#a18ed50f62cc0cbd16a3fe9686ca0a9bf',1,'BinaryExpression::setOperator()'],['../class_operator_expression.html#aceaadc691336de704ec3a1165576a819',1,'OperatorExpression::setOperator()'],['../class_unary_expression.html#a73480a8adf171eb2031e79a45ae9406f',1,'UnaryExpression::setOperator()']]],
+  ['setoperator_237',['setOperator',['../class_operator_expression.html#aceaadc691336de704ec3a1165576a819',1,'OperatorExpression::setOperator()'],['../class_unary_expression.html#a73480a8adf171eb2031e79a45ae9406f',1,'UnaryExpression::setOperator()'],['../class_binary_expression.html#a18ed50f62cc0cbd16a3fe9686ca0a9bf',1,'BinaryExpression::setOperator()']]],
   ['setparent_238',['setParent',['../group___d_a_g.html#ga7d07d5bf1e0a7f1e87a42be354e12026',1,'AbstractNode::setParent()'],['../class_scope.html#ad7a04068e6bc5f37c69515e6f126c73c',1,'Scope::setParent()']]],
   ['setright_239',['setRight',['../class_binary_expression.html#ade33643de9cea3b6d5a8d9798011f97b',1,'BinaryExpression']]],
   ['settarget_240',['setTarget',['../class_variable_declaration.html#a99e474231f4b3b9f9d0f7c3522995bbd',1,'VariableDeclaration::setTarget()'],['../class_index_access.html#a7877cd12babf841b4104040837a40d92',1,'IndexAccess::setTarget()'],['../class_assignment.html#a6ed4b11275a3d182be36b22752720481',1,'Assignment::setTarget()']]],
