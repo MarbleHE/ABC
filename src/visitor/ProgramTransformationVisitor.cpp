@@ -366,8 +366,6 @@ void SpecialProgramTransformationVisitor::visit(Return &elem) {
 }
 
 void SpecialProgramTransformationVisitor::visit(For &elem) {
-  ScopedVisitor::visit(elem);
-
   //Update LoopDepth tracking.
   enteredForLoop();
 
@@ -382,7 +380,7 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
   removeStatement = false;
   for (auto &s : elem.getInitializer().getStatementPointers()) {
     s->accept(*this);
-    if (removeStatement) {
+    if (removeStatement) { /*NOLINT not actually always false */
       s = nullptr;
       removeStatement = false;
     }
@@ -390,11 +388,8 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
   elem.getInitializer().removeNullStatements();
   // Now, int i = 0 and similar things might have been deleted from AST and are in VariableValuesMap
 
-
-
   /// Loop Variables are variables that are both written to and read from during the loop
   auto loopVariables = identifyReadWriteVariables(elem, variableMap);
-
 
   // The CFGV also returns variables that are read&written in inner loops, which we might not yet be aware of
   std::unordered_set<ScopedIdentifier> filteredLoopVariables;
@@ -434,14 +429,12 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
   if (elem.hasUpdate()) elem.getUpdate().accept(*this);
   // Now, parts of the body statements (e.g. x++) might have been deleted and are only in VariableValuesMap
 
-
   // We have potentially removed stmts from body and update (loop-variable init has already been re-emitted)
   // Go through and re-emit any loop variables into the body:
   if (!elem.hasBody()) { elem.setBody(std::make_unique<Block>()); };
   for (auto &si : loopVariables) {
     elem.getBody().prependStatement(generateVariableDeclarationOrAssignment(si, &elem.getBody()));
   }
-
 
   // Manual scope handling
   exitScope();

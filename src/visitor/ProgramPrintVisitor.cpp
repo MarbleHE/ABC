@@ -48,7 +48,43 @@ void SpecialProgramPrintVisitor::visit(ExpressionList &elem) {
   os << "}";
 }
 void SpecialProgramPrintVisitor::visit(For &elem) {
-  PlainVisitor::visit(elem);
+  os << getIndentation() << "for({";
+
+  if (elem.hasInitializer()) {
+    // a lot of hacky stuff to get statements to print on one line!
+    auto temp_indentation_level = indentation_level;
+    indentation_level = 0;
+    for (auto &s: elem.getInitializer().getStatementPointers()) {
+      s->accept(*this);
+      os.seekp(-1, std::ostream::cur); //rewind stream to get rid of \n
+    }
+    indentation_level = temp_indentation_level;
+  }
+  os << "};";
+
+  if (elem.hasCondition()) {
+    elem.getCondition().accept(*this);
+  }
+  os << ";{";
+
+  if (elem.hasUpdate()) {
+    // a lot of hacky stuff to get statements to print on one line!
+    auto temp_indentation_level = indentation_level;
+    indentation_level = 0;
+    for (auto &s: elem.getUpdate().getStatementPointers()) {
+      s->accept(*this);
+      os.seekp(-1, std::ostream::cur); //rewind stream to get rid of \n
+    }
+    indentation_level = temp_indentation_level;
+  }
+  os << "})";
+
+  if (elem.hasBody()) {
+    os << "\n";
+    elem.getBody().accept(*this);
+  } else {
+    os << "{}" << "\n";
+  }
 }
 void SpecialProgramPrintVisitor::visit(Function &elem) {
   os << getIndentation() << elem.getReturnType().toString() << " "

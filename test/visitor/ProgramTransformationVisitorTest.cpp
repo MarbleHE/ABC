@@ -1912,8 +1912,9 @@ TEST_F(ProgramTransformationVisitorTest, DISABLED_partiallySimplifiableMatrix) {
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(ProgramTransformationVisitorTest, partialforLoopUnrolling) {
-  //TODO: Update Test
+TEST_F(ProgramTransformationVisitorTest, DISABLED_partialforLoopUnrolling) {
+
+  //TODO: Re-enable once partial loop unrolling is re-implemented
 
   // -- input --
   // int sumVectorElements(int numIterations) {
@@ -1942,8 +1943,13 @@ TEST_F(ProgramTransformationVisitorTest, partialforLoopUnrolling) {
   // }
   /// Input program
   const char *programCode = R""""(
-   public int compute() {
-
+   public int compute(int numIterations) {
+      int M = {54, 32, 63, 38, 13, 20};
+      int sum = 0;
+      for (int i = 0; i < numIterations; i++) {
+        sum = sum + M[i];
+      }
+      return sum;
    }
 )"""";
   auto code = std::string(programCode);
@@ -1956,12 +1962,17 @@ TEST_F(ProgramTransformationVisitorTest, partialforLoopUnrolling) {
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
+  //TODO: Update with what the output should really be
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute()
+  int compute(int numIterations)
   {
-    return;
+    int M = {54, 32, 63, 38, 13, 20};
+    int sum;
+    int i;
+    ....
+    return sum;
   }
 }
 )"""";
@@ -2100,7 +2111,11 @@ TEST_F(ProgramTransformationVisitorTest, trivialLoop) {
 /// Input program
   const char *programCode = R""""(
    public int compute() {
-
+      int x = 0;
+      for(int i = 0; i < 3; i = i + 1) {
+        x = 42;
+      }
+      return x;
    }
 )"""";
   auto code = std::string(programCode);
@@ -2118,7 +2133,10 @@ TEST_F(ProgramTransformationVisitorTest, trivialLoop) {
 {
   int compute()
   {
-    return;
+    x = 42;
+    x = 42;
+    x = 42;
+    return x;
   }
 }
 )"""";
@@ -2127,8 +2145,6 @@ TEST_F(ProgramTransformationVisitorTest, trivialLoop) {
 }
 
 TEST_F(ProgramTransformationVisitorTest, trivialNestedLoops) {
-  //TODO: Update Test
-
   //  int trivialLoop() {
   //    int x = 0;
   //    for(int j = 0; j < 3; j = j + 1) {
