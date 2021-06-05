@@ -72,6 +72,8 @@ class ScopedVisitor : public IVisitor {
 
   void setRootScope(std::unique_ptr<Scope> &&scope);
 
+  void overrideCurrentScope(Scope* scope);
+
   void visitChildren(AbstractNode &elem);
 
   void enterScope(AbstractNode &node);

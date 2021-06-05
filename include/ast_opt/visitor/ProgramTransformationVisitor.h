@@ -6,14 +6,21 @@
 #include "ast_opt/utilities/Visitor.h"
 #include "ast_opt/runtime/RuntimeVisitor.h"
 
-class SpecalProgramTransformationVisitor;
+class SpecialProgramTransformationVisitor;
 
-typedef Visitor<SpecalProgramTransformationVisitor, ScopedVisitor> ProgramTransformationVisitor;
+typedef Visitor<SpecialProgramTransformationVisitor, ScopedVisitor> ProgramTransformationVisitor;
 
-class SpecalProgramTransformationVisitor : public ScopedVisitor {
+struct TypedVariableValue {
+  Datatype type;
+  std::unique_ptr<AbstractExpression> value;
+};
+
+typedef VariableMap<TypedVariableValue> TypedVariableValueMap;
+
+class SpecialProgramTransformationVisitor : public ScopedVisitor {
  private:
 
-  VariableMap<std::unique_ptr<AbstractExpression>> variableMap;
+  TypedVariableValueMap variableMap;
 
   /// Converts an AST into a string in our C-like input language
   /// Uses the ProgramPrintVisitor internally
@@ -35,27 +42,71 @@ class SpecalProgramTransformationVisitor : public ScopedVisitor {
   /// then the child node should be removed
   bool removeStatement;
 
+  /// A counter that keeps track of the nesting level while visiting For-loops. The first value indicates the
+  /// depth of the currently visiting loop body. The second value the depth of the deepest loop. For example:
+  ///   ...
+  ///   for (...) {     // currentLoopDepth_maxLoopDepth = (1,1)
+  ///      ...
+  ///      for (...) {   // currentLoopDepth_maxLoopDepth = (2,2)
+  ///         ...
+  ///      }             // currentLoopDepth_maxLoopDepth = (1,2)
+  ///   }                // currentLoopDepth_maxLoopDepth = (0,0)
+  ///   ...
+  std::pair<int, int> currentLoopDepth_maxLoopDepth = {std::pair(0, 0)};
+
+  int fullyUnrollLoopMaxNumIterations = 1 << 20; // two to the power of 20
+
+  int maxNumLoopUnrollings = 4;
+
+  /// A method to be called immediately after entering the For-loop's visit method.
+  /// updates currentLoopDepth_maxLoopDepth
+  void enteredForLoop();
+
+  /// A method to be called before leaving the For-loop's visit method.
+  /// updates currentLoopDepth_maxLoopDepth
+  void leftForLoop();
+
+  /// Determines whether the number of total allowed loop unrollings is already exhausted.
+  /// \return True if the maxNumLoopUnrollings is not reached yet or if there is no limitation in the number of total
+  /// loop unrollings. Otherwise returns False.
+  bool isUnrollLoopAllowed() const;
+
+  /// Identify all variables that are written and read from in the body + condition of a for-loop
+  /// \param forLoop The for loop to investigate
+  /// \param VariableValues Initial VariableValues BEFORE the block
+  /// \return Variables, with their associated scopes, that match the criteria
+  std::unordered_set<ScopedIdentifier> identifyReadWriteVariables(For &forLoop,
+                                                                  TypedVariableValueMap &variableValues);
+
+  /// TODO: Document this.
+  /// \param variable
+  /// \return
+  std::unique_ptr<AbstractStatement> generateVariableDeclarationOrAssignment(const ScopedIdentifier &variable,
+                                                                             AbstractNode *parent);
+
  public:
 
-  void visit(Function& elem);
+  void visit(Function &elem);
 
-  void visit(Block& elem);
+  void visit(Block &elem);
 
   void visit(VariableDeclaration &elem);
 
   void visit(Assignment &elem);
 
-  void visit(Variable& elem);
+  void visit(Variable &elem);
 
   void visit(BinaryExpression &elem);
 
-  void visit(UnaryExpression& elem);
+  void visit(UnaryExpression &elem);
 
-  void visit(ExpressionList& elem);
+  void visit(ExpressionList &elem);
 
-  void visit(Return& elem);
+  void visit(Return &elem);
 
-  void visit(AbstractExpression& elem);
+  void visit(For &elem);
+
+  void visit(AbstractExpression &elem);
 };
 
 //  /// Determines whether the number of total allowed loop unrollings is already exhausted.
@@ -76,17 +127,7 @@ class SpecalProgramTransformationVisitor : public ScopedVisitor {
 //  std::map<AbstractNode *,
 //           std::map<ScopedVariable, EmittedVariableData *>::iterator> emittedAssignments;
 
-/// A counter that keeps track of the nesting level while visiting For-loops. The first value indicates the
-/// depth of the currently visiting loop body. The second value the depth of the deepest loop. For example:
-///   ...
-///   for (...) {     // currentLoopDepth_maxLoopDepth = (1,1)
-///      ...
-///      for (...) {   // currentLoopDepth_maxLoopDepth = (2,2)
-///         ...
-///      }             // currentLoopDepth_maxLoopDepth = (1,2)
-///   }                // currentLoopDepth_maxLoopDepth = (0,0)
-///   ...
-//  std::pair<int, int> currentLoopDepth_maxLoopDepth = {std::pair(0, 0)};
+
 
 /// A method to be called immediately after entering the For-loop's visit method.
 /// updates currentLoopDepth_maxLoopDepth
@@ -104,7 +145,7 @@ class SpecalProgramTransformationVisitor : public ScopedVisitor {
 /// Stores the latest value of a variable while traversing through the AST. Entries in this map consist of a key
 /// (pair) that is made of a variable identifier (first) and the scope where the variable was declared in (second).
 /// The entry of the variableValues map is the current value of the associated variable.
-//  VariableMap<std::unique_ptr<AbstractExpression>> variableValues;
+//  TypedVariableValueMap variableValues;
 
 /// Contains pointer to those nodes for which full or partial evaluation could be performed and hence can be deleted
 /// at the end of this simplification traversal.
@@ -209,7 +250,7 @@ class SpecalProgramTransformationVisitor : public ScopedVisitor {
 /// \param forLoop The for loop to investigate
 /// \param VariableValues Initial VariableValues BEFORE the block
 /// \return Variables, with their associated scopes, that match the criteria
-//  std::set<ScopedVariable> identifyReadWriteVariables(For &forLoop, VariableMap<std::unique_ptr<AbstractExpression>> VariableValues);
+//  std::set<ScopedVariable> identifyReadWriteVariables(For &forLoop, TypedVariableValueMap VariableValues);
 
 /// Creates a new Assignment statement of the variable that the given iterator (variableToEmit) is pointing to.
 /// The method ensures that there exists a variable declaration statement (VarDecl) in the scope where this

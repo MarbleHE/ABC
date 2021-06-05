@@ -63,8 +63,6 @@ TEST_F(ProgramTransformationVisitorTest, arithmeticExpr_variableUnknown_rhsOpera
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -97,8 +95,6 @@ TEST_F(ProgramTransformationVisitorTest, arithmeticExpr_variableKnown_fullyEvalu
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -130,8 +126,6 @@ TEST_F(ProgramTransformationVisitorTest, arithmeticExpr_variablesUnknown_notAnyt
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -163,8 +157,6 @@ TEST_F(ProgramTransformationVisitorTest, logicalExpr_literalsOnly_fullyEvaluable
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -197,8 +189,6 @@ TEST_F(ProgramTransformationVisitorTest, DISABLED_logicalExpr_variableUnknown_lh
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -230,8 +220,6 @@ TEST_F(ProgramTransformationVisitorTest, logicalExpr_variableKnown_fullyEvaluabl
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -269,8 +257,6 @@ TEST_F(ProgramTransformationVisitorTest, logicalExpr_variablesUnknown_notAnythin
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -305,8 +291,6 @@ TEST_F(ProgramTransformationVisitorTest, unaryExpr_literalsOnly_fullyEvaluable) 
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -344,8 +328,6 @@ TEST_F(ProgramTransformationVisitorTest, unaryExpr_variableKnown_fullyEvaluable)
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -379,8 +361,6 @@ TEST_F(ProgramTransformationVisitorTest, unaryExpr_variableUnknown_notEvaluable)
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -421,8 +401,6 @@ TEST_F(ProgramTransformationVisitorTest, varAssignm_variablesKnown_fullyEvaluabl
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -461,8 +439,6 @@ TEST_F(ProgramTransformationVisitorTest, varAssignm_previouslyDeclaredNonInitial
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -499,8 +475,6 @@ TEST_F(ProgramTransformationVisitorTest, varAssignm_assignmentToParameter) {
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -547,8 +521,6 @@ TEST_F(ProgramTransformationVisitorTest,
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -585,8 +557,6 @@ TEST_F(ProgramTransformationVisitorTest, return_literalOnly_expectedNoChange) {
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -628,8 +598,6 @@ TEST_F(ProgramTransformationVisitorTest,
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -671,8 +639,6 @@ TEST_F(ProgramTransformationVisitorTest,
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -709,8 +675,6 @@ TEST_F(ProgramTransformationVisitorTest, return_variableUnknown_expectedNoChange
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -751,8 +715,6 @@ TEST_F(ProgramTransformationVisitorTest, return_multipleReturnValues_expectedPar
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -805,8 +767,6 @@ TEST_F(ProgramTransformationVisitorTest,
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -864,8 +824,6 @@ TEST_F(ProgramTransformationVisitorTest,
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -922,8 +880,6 @@ TEST_F(ProgramTransformationVisitorTest,
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -974,8 +930,6 @@ TEST_F(ProgramTransformationVisitorTest,
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1029,8 +983,6 @@ TEST_F(ProgramTransformationVisitorTest,
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1084,8 +1036,6 @@ TEST_F(ProgramTransformationVisitorTest,
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1140,8 +1090,6 @@ TEST_F(ProgramTransformationVisitorTest,
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1203,8 +1151,6 @@ TEST_F(ProgramTransformationVisitorTest,
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1250,8 +1196,6 @@ TEST_F(ProgramTransformationVisitorTest, symbolicTerms_partiallyEvaluableOnly) {
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1296,8 +1240,6 @@ TEST_F(ProgramTransformationVisitorTest, symbolicTerms_includingOperatorExprs) {
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1338,8 +1280,6 @@ TEST_F(ProgramTransformationVisitorTest, symbolicTerms_nestedDivisionOperator) {
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1380,8 +1320,6 @@ TEST_F(ProgramTransformationVisitorTest, symbolicTerms_nestedOperatorsSimplifiab
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1422,8 +1360,6 @@ TEST_F(ProgramTransformationVisitorTest, symbolicTerms_nestedLogicalOperators) {
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1464,8 +1400,6 @@ TEST_F(ProgramTransformationVisitorTest, symbolicTerms_logicalAndSimplification_
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1504,8 +1438,6 @@ TEST_F(ProgramTransformationVisitorTest, symbolicTerms_logicalAndSimplification_
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1545,8 +1477,6 @@ TEST_F(ProgramTransformationVisitorTest, symbolicTerms_logicalAndSimplification_
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1587,8 +1517,6 @@ TEST_F(ProgramTransformationVisitorTest, symbolicTerms_logicalAndSimplification_
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1628,8 +1556,6 @@ TEST_F(ProgramTransformationVisitorTest, symbolicTerms_logicalAndSimplification_
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1669,8 +1595,6 @@ TEST_F(ProgramTransformationVisitorTest, symbolicTerms_logicalAndSimplification_
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1721,8 +1645,6 @@ TEST_F(ProgramTransformationVisitorTest, DISABLED_WhileLoop_compileTimeKnownExpr
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1766,8 +1688,6 @@ TEST_F(ProgramTransformationVisitorTest, DISABLED_Call_inliningExpected) {
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1807,8 +1727,6 @@ TEST_F(ProgramTransformationVisitorTest, DISABLED_Call_inliningExpected2) {
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1851,8 +1769,6 @@ TEST_F(ProgramTransformationVisitorTest, DISABLED_Rotate_executionExpected) {
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1893,8 +1809,6 @@ TEST_F(ProgramTransformationVisitorTest, DISABLED_transpose) {
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1939,8 +1853,6 @@ TEST_F(ProgramTransformationVisitorTest, DISABLED_getMatrixElementSimpleBool) {
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -1984,8 +1896,6 @@ TEST_F(ProgramTransformationVisitorTest, DISABLED_partiallySimplifiableMatrix) {
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -2043,8 +1953,6 @@ TEST_F(ProgramTransformationVisitorTest, partialforLoopUnrolling) {
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -2100,8 +2008,6 @@ TEST_F(ProgramTransformationVisitorTest, fullForLoopUnrolling) {
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -2164,8 +2070,6 @@ TEST_F(ProgramTransformationVisitorTest, fourNestedLoopsLaplacianSharpeningFilte
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -2206,8 +2110,6 @@ TEST_F(ProgramTransformationVisitorTest, trivialLoop) {
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -2249,8 +2151,6 @@ TEST_F(ProgramTransformationVisitorTest, trivialNestedLoops) {
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
@@ -2332,8 +2232,6 @@ TEST_F(ProgramTransformationVisitorTest, maxNumUnrollings) {
   ast->accept(ctes);
 
   // get the transformed code
-  std::stringstream ss;
-  ProgramPrintVisitor ppv(ss);
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 

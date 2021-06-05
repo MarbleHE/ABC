@@ -1,5 +1,6 @@
-#include "ast_opt/visitor/ProgramTransformationVisitor.h"
 #include <stdexcept>
+#include "ast_opt/visitor/ProgramTransformationVisitor.h"
+#include "ast_opt/visitor/controlFlowGraph/ControlFlowGraphVisitor.h"
 #include "ast_opt/visitor/ProgramPrintVisitor.h"
 
 template<typename T>
@@ -22,9 +23,13 @@ T applyOperator(T lhsOperand, T rhsOperand, Operator op) {
   } else if (operatorEqualsAnyOf({MULTIPLICATION, FHE_MULTIPLICATION})) {
     return (lhsOperand*rhsOperand);
   } else if (operatorEquals(DIVISION)) {
-    return (lhsOperand/rhsOperand);
+    if constexpr (!std::is_same<T,bool>::value) {
+      return (lhsOperand/rhsOperand);
+    } else {
+      throw std::runtime_error("Cannot perform modulo (%) on bool.");
+    }
   } else if (operatorEquals(MODULO)) {
-    if constexpr (std::is_integral<T>::value) {
+    if constexpr (std::is_integral<T>::value && !std::is_same<T,bool>::value) {
       return (lhsOperand%rhsOperand);
     } else {
       throw std::runtime_error("Cannot perform modulo (%) and on non-integral types.");
@@ -47,7 +52,7 @@ T applyOperator(T lhsOperand, T rhsOperand, Operator op) {
     return (lhsOperand!=rhsOperand);
   } else if (operatorEquals(BITWISE_AND)) {
     if constexpr (std::is_integral<T>::value) {
-      return (lhsOperand & rhsOperand);
+      return (lhsOperand & rhsOperand && !std::is_same<T,bool>::value);
     } else {
       throw std::runtime_error("Cannot perform bitwise AND on non-integral types.");
     }
@@ -78,14 +83,14 @@ std::unique_ptr<TO> dynamic_cast_unique_ptr(std::unique_ptr<FROM> &&old) {
   //conversion: unique_ptr<FROM>->FROM*->TO*->unique_ptr<TO>
 }
 
-std::string SpecalProgramTransformationVisitor::printProgram(AbstractNode &node) {
+std::string SpecialProgramTransformationVisitor::printProgram(AbstractNode &node) {
   std::stringstream ss;
   ProgramPrintVisitor ppv(ss);
   node.accept(ppv);
   return ss.str();
 }
 
-void SpecalProgramTransformationVisitor::visit(BinaryExpression &elem) {
+void SpecialProgramTransformationVisitor::visit(BinaryExpression &elem) {
   std::string original_code = printProgram(elem);
   elem.getLeft().accept(*this);
   if (replacementExpression) {
@@ -102,35 +107,35 @@ void SpecalProgramTransformationVisitor::visit(BinaryExpression &elem) {
   // does not use apply when implicit conversions would be required, because handling them is messy
   AbstractNode *lhs_ptr = &elem.getLeft();
   AbstractNode *rhs_ptr = &elem.getRight();
-  if (auto lit_lhs_ptr = (dynamic_cast<LiteralInt *>(lhs_ptr))) {
+  if (auto literal_int_lhs_ptr = (dynamic_cast<LiteralInt *>(lhs_ptr))) {
     if (auto lit_rhs_ptr = (dynamic_cast<LiteralInt *>(rhs_ptr))) {
-      auto v = applyOperator(lit_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
+      auto v = applyOperator(literal_int_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
       replacementExpression = std::make_unique<LiteralInt>(v);
     }
-  } else if (auto lit_lhs_ptr = (dynamic_cast<LiteralBool *>(lhs_ptr))) {
+  } else if (auto literal_bool_lhs_ptr = (dynamic_cast<LiteralBool *>(lhs_ptr))) {
     if (auto lit_rhs_ptr = (dynamic_cast<LiteralBool *>(rhs_ptr))) {
-      auto v = applyOperator(lit_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
+      auto v = applyOperator(literal_bool_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
       replacementExpression = std::make_unique<LiteralBool>(v);
     }
-  } else if (auto lit_lhs_ptr = (dynamic_cast<LiteralChar *>(lhs_ptr))) {
+  } else if (auto literal_char_lhs_ptr = (dynamic_cast<LiteralChar *>(lhs_ptr))) {
     if (auto lit_rhs_ptr = (dynamic_cast<LiteralChar *>(rhs_ptr))) {
-      auto v = applyOperator(lit_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
+      auto v = applyOperator(literal_char_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
       replacementExpression = std::make_unique<LiteralChar>(v);
     }
-  } else if (auto lit_lhs_ptr = (dynamic_cast<LiteralFloat *>(lhs_ptr))) {
+  } else if (auto literal_float_lhs_ptr = (dynamic_cast<LiteralFloat *>(lhs_ptr))) {
     if (auto lit_rhs_ptr = (dynamic_cast<LiteralFloat *>(rhs_ptr))) {
-      auto v = applyOperator(lit_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
+      auto v = applyOperator(literal_float_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
       replacementExpression = std::make_unique<LiteralFloat>(v);
     }
-  } else if (auto lit_lhs_ptr = (dynamic_cast<LiteralDouble *>(lhs_ptr))) {
+  } else if (auto literal_double_lhs_ptr = (dynamic_cast<LiteralDouble *>(lhs_ptr))) {
     if (auto lit_rhs_ptr = (dynamic_cast<LiteralDouble *>(rhs_ptr))) {
-      auto v = applyOperator(lit_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
+      auto v = applyOperator(literal_double_lhs_ptr->getValue(), lit_rhs_ptr->getValue(), elem.getOperator());
       replacementExpression = std::make_unique<LiteralDouble>(v);
     }
   } // else: nothing needs to be done
 }
 
-void SpecalProgramTransformationVisitor::visit(UnaryExpression &elem) {
+void SpecialProgramTransformationVisitor::visit(UnaryExpression &elem) {
 
   // visit children
   elem.getOperand().accept(*this);
@@ -145,7 +150,7 @@ void SpecalProgramTransformationVisitor::visit(UnaryExpression &elem) {
     }
   } else if (elem.getOperator()==Operator(BITWISE_NOT)) {
     if (auto bool_ptr = dynamic_cast<LiteralBool *>(&elem.getOperand())) {
-      replacementExpression = std::make_unique<LiteralBool>(~bool_ptr->getValue());
+      replacementExpression = std::make_unique<LiteralBool>(!bool_ptr->getValue());
     } else if (auto char_ptr = dynamic_cast<LiteralChar *>(&elem.getOperand())) {
       replacementExpression = std::make_unique<LiteralChar>(~char_ptr->getValue());
     } else if (auto int_ptr = dynamic_cast<LiteralInt *>(&elem.getOperand())) {
@@ -158,7 +163,7 @@ void SpecalProgramTransformationVisitor::visit(UnaryExpression &elem) {
 
 }
 
-void SpecalProgramTransformationVisitor::visit(VariableDeclaration &elem) {
+void SpecialProgramTransformationVisitor::visit(VariableDeclaration &elem) {
   // Get the value, if it exists
   std::unique_ptr<AbstractExpression> expr_ptr = nullptr;
   if (elem.hasValue()) {
@@ -177,7 +182,7 @@ void SpecalProgramTransformationVisitor::visit(VariableDeclaration &elem) {
   auto scopedIdentifier = ScopedIdentifier(this->getCurrentScope(), elem.getTarget().getIdentifier());
   if (variableMap.has(scopedIdentifier))
     throw std::runtime_error("Redeclaration of a variable that already exists in this scope: " + printProgram(elem));
-  variableMap.insert_or_assign(scopedIdentifier, std::move(expr_ptr));
+  variableMap.insert_or_assign(scopedIdentifier, {elem.getDatatype(), std::move(expr_ptr)});
 
   // Register the Variable in the current scope
   getCurrentScope().addIdentifier(elem.getTarget().getIdentifier());
@@ -187,7 +192,7 @@ void SpecalProgramTransformationVisitor::visit(VariableDeclaration &elem) {
   removeStatement = true;
 }
 
-void SpecalProgramTransformationVisitor::visit(Assignment &elem) {
+void SpecialProgramTransformationVisitor::visit(Assignment &elem) {
   // visit the value (rhs) expression to simplify it
   elem.getValue().accept(*this);
   if (replacementExpression) elem.setValue(std::move(replacementExpression));
@@ -198,7 +203,8 @@ void SpecalProgramTransformationVisitor::visit(Assignment &elem) {
 
     // Update or insert the value
     // Since we're removing this statement after this call, we can "steal" the expression from elem
-    variableMap.insert_or_assign(scopedIdentifier, std::move(elem.takeValue()));
+    auto type = variableMap.get(scopedIdentifier).type;
+    variableMap.insert_or_assign(scopedIdentifier, {type, std::move(elem.takeValue())});
 
     // This VariableDeclaration is now redundant and needs to be removed from the program.
     // However, our parent visit(Block&) will have to handle this
@@ -212,13 +218,13 @@ void SpecalProgramTransformationVisitor::visit(Assignment &elem) {
 
     // For now, we only support a single level of index access, so target must be a variable
     // TODO: Support matrix accesses, i.e. x[i][j]!
-    if (auto var_ptr = dynamic_cast<Variable *>(&elem.getTarget())) {
-      if (!getCurrentScope().identifierExists(var_ptr->getIdentifier())) {
+    if (auto ind_var_ptr = dynamic_cast<Variable *>(&elem.getTarget())) {
+      if (!getCurrentScope().identifierExists(ind_var_ptr->getIdentifier())) {
         throw std::runtime_error("Cannot assign to non-declared variable: " + printProgram(elem));
       }
 
       // Find the variable we are assigning to
-      auto scopedIdentifier = getCurrentScope().resolveIdentifier(var_ptr->getIdentifier());
+      auto scopedIdentifier = getCurrentScope().resolveIdentifier(ind_var_ptr->getIdentifier());
 
       // If the index could be resolved to a LiteralInt, we might be able to remove this expression
       if (auto lit_ptr = dynamic_cast<LiteralInt *>(&ind_ptr->getIndex())) {
@@ -226,12 +232,12 @@ void SpecalProgramTransformationVisitor::visit(Assignment &elem) {
 
         // check if we have a value for this variable already
         if (variableMap.has(scopedIdentifier)) { //update value
-          if (variableMap.get(scopedIdentifier)==nullptr)
+          if (variableMap.get(scopedIdentifier).value==nullptr)
             throw std::runtime_error("Found unexpected null value in variableMap!");
 
           // Create a copy of the value, since we sadly can't take it out of the variableMap :(
           // TODO: Consider finding or creating a more unique_ptr-friendly data structure?
-          auto new_val = variableMap.get(scopedIdentifier)->clone(&elem);
+          auto new_val = variableMap.get(scopedIdentifier).value->clone(&elem);
 
           // check if it's an expression list
           if (auto list = dynamic_cast_unique_ptr<ExpressionList>(std::move(new_val))) {
@@ -247,23 +253,26 @@ void SpecalProgramTransformationVisitor::visit(Assignment &elem) {
             vec.at(index) = elem.takeValue();
 
             // Put new_val into the variableMap
-            variableMap.insert_or_assign(scopedIdentifier, std::move(new_val));
+            auto type = variableMap.get(scopedIdentifier).type;
+            variableMap.insert_or_assign(scopedIdentifier, {type, std::move(new_val)});
           } else {
             // This can occur if we had, e.g., int x = 6; x[7] = 8; which we don't allow for now
             throw std::runtime_error(
                 "Cannot assign index of variable that is not vector valued already: " + printProgram(elem));
           }
 
-        } else { // no values stored so far
-          // let's build a new index_expression that's mostly "undefined" (nullptr)
-          // except at the index we are assigning to
-          std::vector<std::unique_ptr<AbstractExpression>> list(index + 1);
-          // Since we're removing this statement after this call, we can "steal" the expression from elem
-          list.at(index) = std::move(elem.takeValue());
-          // Now build the ExpressionList
-          auto exprlist = std::make_unique<ExpressionList>(std::move(list));
-          // and put it into the variableMap
-          variableMap.insert_or_assign(scopedIdentifier, std::move(exprlist));
+        } else { // no values stored so far -> no idea about data type!
+          throw std::runtime_error(
+              "Variable is assigned to but no information found in variableMap: " + printProgram(elem));
+          // // let's build a new index_expression that's mostly "undefined" (nullptr)
+          // // except at the index we are assigning to
+          // std::vector<std::unique_ptr<AbstractExpression>> list(index + 1);
+          // // Since we're removing this statement after this call, we can "steal" the expression from elem
+          // list.at(index) = std::move(elem.takeValue());
+          // // Now build the ExpressionList
+          // auto exprlist = std::make_unique<ExpressionList>(std::move(list));
+          // // and put it into the variableMap
+          // variableMap.insert_or_assign(scopedIdentifier, std::move(exprlist));
         }
       } // if index is a more general expression, we can't do anything
 
@@ -274,32 +283,34 @@ void SpecalProgramTransformationVisitor::visit(Assignment &elem) {
 
 }
 
-void SpecalProgramTransformationVisitor::visit(Variable &elem) {
+void SpecialProgramTransformationVisitor::visit(Variable &elem) {
   // take scope into account
   auto scopedIdentifier = getCurrentScope().resolveIdentifier(elem.getIdentifier());
 
   // check  if variable has been declared and error if not
   if (!variableMap.has(scopedIdentifier))
-    throw std::runtime_error("Variable not declared: " + printProgram(elem) + " in " + printProgram(elem.getParent()));
+    throw std::runtime_error(
+        "Variable not declared: " + printProgram(elem) + " in " + printProgram(elem.getParent()));
 
   // check if variable has a value and ask the parent to replace it with this, if yes
-  if (variableMap.at(scopedIdentifier)!=nullptr) {
+  if (variableMap.at(scopedIdentifier).value!=nullptr) {
     // Make the parent replace this node with (a copy of) the current value
     // NOTE: Copy-on-Write (COW) would be a useful optimization here
-    replacementExpression = std::move(variableMap.at(scopedIdentifier)->clone(&elem.getParent()));
+    replacementExpression = std::move(variableMap.at(scopedIdentifier).value->clone(&elem.getParent()));
   }
 
 }
 
-void SpecalProgramTransformationVisitor::visit(Function &elem) {
+void SpecialProgramTransformationVisitor::visit(Function &elem) {
   enterScope(elem);
 
   // Register the Variables from the parameters in the variableMap & scope
   for (auto &p : elem.getParameters()) {
     auto scopedIdentifier = ScopedIdentifier(this->getCurrentScope(), p.get().getIdentifier());
     if (variableMap.has(scopedIdentifier))
-      throw std::runtime_error("Redeclaration of a variable that already exists in this scope: " + printProgram(elem));
-    variableMap.insert_or_assign(scopedIdentifier, nullptr);
+      throw std::runtime_error(
+          "Redeclaration of a variable that already exists in this scope: " + printProgram(elem));
+    variableMap.insert_or_assign(scopedIdentifier, {p.get().getParameterType(), nullptr});
     getCurrentScope().addIdentifier(p.get().getIdentifier());
   }
 
@@ -311,7 +322,7 @@ void SpecalProgramTransformationVisitor::visit(Function &elem) {
   exitScope();
 }
 
-void SpecalProgramTransformationVisitor::visit(Block &elem) {
+void SpecialProgramTransformationVisitor::visit(Block &elem) {
   enterScope(elem);
 
   // Iterate through statements
@@ -331,7 +342,7 @@ void SpecalProgramTransformationVisitor::visit(Block &elem) {
   exitScope();
 }
 
-void SpecalProgramTransformationVisitor::visit(ExpressionList &elem) {
+void SpecialProgramTransformationVisitor::visit(ExpressionList &elem) {
   // Temporarily steal the expression vector
   auto vec = elem.takeExpressions();
 
@@ -345,7 +356,7 @@ void SpecalProgramTransformationVisitor::visit(ExpressionList &elem) {
   elem.setExpressions(std::move(vec));
 }
 
-void SpecalProgramTransformationVisitor::visit(Return &elem) {
+void SpecialProgramTransformationVisitor::visit(Return &elem) {
   if (elem.hasValue()) {
     elem.getValue().accept(*this);
     if (replacementExpression) {
@@ -354,7 +365,282 @@ void SpecalProgramTransformationVisitor::visit(Return &elem) {
   }
 }
 
-void SpecalProgramTransformationVisitor::visit(AbstractExpression &elem) {
+void SpecialProgramTransformationVisitor::visit(For &elem) {
+  ScopedVisitor::visit(elem);
+
+  //Update LoopDepth tracking.
+  enteredForLoop();
+
+  // Handle scope
+  enterScope(elem);
+
+  // INITIALIZER
+
+  // Visit initializer. Visiting this is important, in case it affects variables that won't be detected as "loop variables"
+  // If we did not visit it, the recursive visit of the body might go wrong!
+  // Manually visit the statements in the block, since otherwise Visitor::visit would create a new scope!
+  removeStatement = false;
+  for (auto &s : elem.getInitializer().getStatementPointers()) {
+    s->accept(*this);
+    if (removeStatement) {
+      s = nullptr;
+      removeStatement = false;
+    }
+  }
+  elem.getInitializer().removeNullStatements();
+  // Now, int i = 0 and similar things might have been deleted from AST and are in VariableValuesMap
+
+
+
+  /// Loop Variables are variables that are both written to and read from during the loop
+  auto loopVariables = identifyReadWriteVariables(elem, variableMap);
+
+
+  // The CFGV also returns variables that are read&written in inner loops, which we might not yet be aware of
+  std::unordered_set<ScopedIdentifier> filteredLoopVariables;
+  for (const auto &si : loopVariables) {
+    if (variableMap.has(si)) {
+      filteredLoopVariables.insert(si);
+    }
+  }
+  loopVariables = filteredLoopVariables;
+
+  // We need to emit Assignments (or Declarations with value if needed) for each of the loop variables Variables into the initializer
+  if (!elem.hasInitializer()) { elem.setBody(std::make_unique<Block>()); };
+  for (auto &sv : loopVariables) {
+    elem.getInitializer().prependStatement(generateVariableDeclarationOrAssignment(sv, &elem.getInitializer()));
+  }
+
+  // The values of loop variables we got from the initializer should not be substituted inside the loop
+  // Since they will be different in each iteration, CTES should treat them as "compile time unknown"
+  // Therefore, we need to remove their values from the variableValues map
+  for (auto &si: loopVariables) {
+    variableMap.insert_or_assign(si, {variableMap.get(si).type, nullptr});
+  }
+
+  // BODY
+
+  // Visit Body to simplify it + recursively deal with nested loops
+  // This will also update the maxLoopDepth in case there are nested loops
+  // This in turn allows us to determine if this For-Loop should be unrolled - see isUnrollLoopAllowed()
+  if (elem.hasBody()) elem.getBody().accept(*this);
+  // Now, parts of the body statements (e.g. x++) might have been deleted and are only in VariableValuesMap
+
+  // UPDATE
+
+  // Visit Update to simplify it + recursively deal with nested loops
+  // This will also update the maxLoopDepth in case there are nested loops (which would be weird but possible)
+  // This in turn allows us to determine if this For-Loop should be unrolled - see isUnrollLoopAllowed()
+  if (elem.hasUpdate()) elem.getUpdate().accept(*this);
+  // Now, parts of the body statements (e.g. x++) might have been deleted and are only in VariableValuesMap
+
+
+  // We have potentially removed stmts from body and update (loop-variable init has already been re-emitted)
+  // Go through and re-emit any loop variables into the body:
+  if (!elem.hasBody()) { elem.setBody(std::make_unique<Block>()); };
+  for (auto &si : loopVariables) {
+    elem.getBody().prependStatement(generateVariableDeclarationOrAssignment(si, &elem.getBody()));
+  }
+
+
+  // Manual scope handling
+  exitScope();
+
+  // At this point, the loop has been visited and some parts have been simplified.
+  // Now we are ready to analyze if this loop can additionally also be unrolled:
+  // Are we even set to do unrolling at this LoopDepth?
+  if (!isUnrollLoopAllowed()) {
+    //TODO: Any further steps necessary?
+  } else {
+    // We cannot know if the loop can be fully unrolled without evaluating it
+    // So we speculatively unroll the loop until its either too long or we cannot determine something at compile time
+
+    /// A separate Visitor, for isolation, brought up to date in terms of variables and scopes
+    ProgramTransformationVisitor loopCTES;//(std::move(scopeHiearchy), &getCurrentScope(), std::move(mapcopy));
+    // TODO: pass in copies of things, but remember that we either need to recreate the scope hierachy
+    //  or update the variableMap so that anything above our current scope is changed to rootscope?
+    //  Both sound a bit tedious
+    // TypedVariableValueMap mapcopy;
+    // std::unique_ptr<Scope> scopeHiearchy;
+
+    // Manual handling of scope (usually done via Visitor::visit(elem))
+    loopCTES.enterScope(elem);
+
+    // Visit the initializer (this will load the loop variables back into variableValues)
+    // Manually visit the statements in the block, since otherwise Visitor::visit would create a new scope!
+    for (auto &s: elem.getInitializer().getStatementPointers()) {
+      s->accept(loopCTES);
+    }
+
+    /// Do we have everything we need to evaluate the condition?
+    auto conditionCompileTimeKnown = [&]() -> bool {
+      //TODO: update conditionCompileTimeKnown
+
+      // auto variableIdentifiers = elem.getCondition()->getVariableIdentifiers();
+      // for (auto &identifier : variableIdentifiers) {
+      //   auto var = loopCTES.variableValues.getVariableEntryDeclaredInThisOrOuterScope(identifier, loopCTES.curScope);
+      //   auto value = loopCTES.variableValues.getVariableValue(var).getValue();
+      //   if (value==nullptr) {
+      //     // no need to continue checking other variables
+      //     return false;
+      //   }
+      // }
+      return true;
+    };
+
+    /// Condition Execution Helper
+    auto conditionEvaluatesTrue = [&]() -> bool {
+      //TODO: Update conditionEvaluatesTrue
+
+      //  auto result = evaluateNodeRecursive(elem.getCondition(), loopCTES.getTransformedVariableMap());
+      //  auto evalResult = result.empty() ? nullptr : result.back();
+      //  if (evalResult==nullptr)
+      //    throw std::runtime_error("Unexpected: Could not evaluate For-loops condition although "
+      //                             "all variable have known values. Cannot continue.");
+      //  return evalResult->isEqual(new LiteralBool(true));
+      return true;
+    };
+
+    /// Block for stmts that cannot be compile-time evaluated but do not affect condition
+    auto unrolledBlock = new Block();
+
+    /// Helper for executing the loop (also deals with update, in case we ever change stmt inlining)
+    auto executeLoopStmts = [&]() {
+      //TODO:  update executeLoopStmts
+
+      //  // BODY
+      //  if (elem.getBody()) {
+      //    Block *clonedBody = elem.getBody()->clone();
+      //    clonedBody->accept(loopCTES);
+      //
+      //    // If there are any stmts left, transfer them to the unrolledBlock
+      //    for (auto &s: clonedBody->getStatements()) {
+      //      s->takeFromParent();
+      //      unrolledBlock->addStatement(s);
+      //    }
+      //    nodesQueuedForDeletion.push_back(clonedBody);
+      //  }
+      //
+      //
+      //  // UPDATE
+      //  if (elem.getUpdate()) {
+      //    Block *clonedUpdate = elem.getUpdate()->clone();
+      //    clonedUpdate->accept(loopCTES);
+      //    // If there are any stmts left, transfer them to the unrolledBlock
+      //    for (auto &s: clonedUpdate->getStatements()) {
+      //      s->takeFromParent();
+      //      unrolledBlock->addStatement(s);
+      //    }
+      //    nodesQueuedForDeletion.push_back(clonedUpdate);
+      //  }
+    };
+
+    /// Track iterations
+    int numIterations = 0;
+
+    while (conditionCompileTimeKnown() && numIterations < fullyUnrollLoopMaxNumIterations && conditionEvaluatesTrue()) {
+      executeLoopStmts();
+      numIterations++;
+    }
+
+    if (conditionCompileTimeKnown() && numIterations < fullyUnrollLoopMaxNumIterations) {
+      // Loop unrolling was successful
+
+      //TODO: Transfer in scope Information and VariableValues from loopCTES
+      // forceScope(loopCTES.stmtToScopeMapper, loopCTES.curScope);
+      // variableValues = loopCTES.variableValues;
+
+      // TODO replace elem with the unrolled Block.
+      // elem.getParent()->replaceChild(&elem, unrolledBlock);
+
+      // Cleanup the Block we just inserted, in case it's empty/has NULL stmts left
+      unrolledBlock->removeNullStatements();
+
+      // Mark the current For-Loop node (elem) for deletion
+      removeStatement = true;
+
+      // TODO: Note that if the parent of elem/unrolledBlock is a Block-like stmt,
+      //  our caller (e.g. visit(Block)) will have to deal with unpacking it
+    } else if (numIterations > fullyUnrollLoopMaxNumIterations) {
+      // PARTIAL UNROLLING
+      throw std::runtime_error("Partial loop unrolling currently not supported.");
+    }
+    // else: nothing to undo since we used a new visitor
+  }
+
+  // Update LoopDepth tracking
+  leftForLoop();
+}
+
+void SpecialProgramTransformationVisitor::leftForLoop() {
+  if (currentLoopDepth_maxLoopDepth.first==1) {
+    // if the outermost loop is left, reset the loop depth tracking counter
+    currentLoopDepth_maxLoopDepth = std::pair(0, 0);
+  } else {
+    // if we ascended back to a higher level we only decrement the current depth level counter
+    --currentLoopDepth_maxLoopDepth.first;
+  }
+}
+
+void SpecialProgramTransformationVisitor::enteredForLoop() {
+  // Only increase the maximum if we're currently in the deepest level
+  // Otherwise, things like for() { for() {}; ...; for() {}; } would give wrong level
+  if (currentLoopDepth_maxLoopDepth.first==currentLoopDepth_maxLoopDepth.second) {
+    ++currentLoopDepth_maxLoopDepth.second;
+  }
+
+  ++currentLoopDepth_maxLoopDepth.first;
+}
+
+bool SpecialProgramTransformationVisitor::isUnrollLoopAllowed() const {
+  return (currentLoopDepth_maxLoopDepth.second - currentLoopDepth_maxLoopDepth.first
+      < maxNumLoopUnrollings);
+}
+
+std::unordered_set<ScopedIdentifier>
+SpecialProgramTransformationVisitor::identifyReadWriteVariables(For &forLoop,
+                                                                TypedVariableValueMap &variableValues) {
+
+  /// Visitor to create Control- and Data-Flow Graphs used to analyze which variables are read and written in Block
+  ControlFlowGraphVisitor cfgv;
+
+  variableValues;// just so it's used for MSVC
+
+  // TODO: Pass current scope information, so that CFGV has correct starting point
+  //  cfgv.forceScope(stmtToScopeMapper, curScope);
+  //  cfgv.forceVariableValues(variableValues);
+
+  // Create Control-Flow Graph for blockStmt
+  cfgv.visit(forLoop);
+
+  // Build Data-Flow Graph from Control-Flow Graph.
+  cfgv.buildDataFlowGraph();
+
+  //TODO: Get the variables that have been read and written
+  // return cfgv.getVariablesReadAndWritten();
+
+  return std::unordered_set<ScopedIdentifier>();
+}
+
+std::unique_ptr<AbstractStatement> SpecialProgramTransformationVisitor::generateVariableDeclarationOrAssignment(const ScopedIdentifier &variable,
+                                                                                                                AbstractNode *parent) {
+  // if the variable has no value, there's no need to create a variable assignment
+  if (!variableMap.has(variable) or variableMap.get(variable).value==nullptr) {
+    return nullptr;
+  }
+
+  // TODO: properly check if a variable declaration statement was emitted before for this variable and only emit if not
+  bool emitDeclaration = true;
+  auto &tv = variableMap.get(variable);
+  auto var = std::make_unique<Variable>(variable.getId());
+  if (emitDeclaration) {
+    return std::make_unique<VariableDeclaration>(tv.type, std::move(var), std::move(tv.value->clone(parent)));
+  } else {
+    return std::make_unique<Assignment>(std::move(var), std::move(tv.value->clone(parent)));
+  }
+}
+
+void SpecialProgramTransformationVisitor::visit(AbstractExpression &elem) {
   for (auto &c : elem) {
     c.accept(*this);
     replacementExpression = nullptr;
@@ -1122,231 +1408,6 @@ void SpecalProgramTransformationVisitor::visit(AbstractExpression &elem) {
 //  Visitor::visit(elem);
 //}
 //
-//std::set<ScopedVariable>
-//ProgramTransformationVisitor::identifyReadWriteVariables(For &forLoop, VariableValuesMap VariableValues) {
-//
-//  /// Visitor to create Control- and Data-Flow Graphs used to analyze which variables are read and written in Block
-//  ControlFlowGraphVisitor cfgv;
-//  // Pass current scope information, so that CFGV has correct starting point
-//  cfgv.forceScope(stmtToScopeMapper, curScope);
-//  cfgv.forceVariableValues(variableValues);
-//  // Create Control-Flow Graph for blockStmt
-//  cfgv.visit(forLoop);
-//  // Build Data-Flow Graph from Control-Flow Graph.
-//  cfgv.buildDataFlowGraph();
-//
-//  return cfgv.getVariablesReadAndWritten();
-//}
-//
-//void ProgramTransformationVisitor::visit(For &elem) {
-//  // Update LoopDepth tracking.
-//  enteredForLoop();
-//
-//  // Manual handling of scope (usually done via Visitor::visit(elem))
-//  addStatementToScope(elem);
-//  changeToInnerScope(elem.getUniqueNodeId(), &elem);
-//
-//
-//  // INITIALIZER
-//
-//  // Visit initializer. Visiting this is important, in case it affects variables that won't be detected as "loop variables"
-//  // If we did not visit it, the recursive visit of the body might go wrong!
-//  // Manually visit the statements in the block, since otherwise Visitor::visit would create a new scope!
-//  for (auto &s: elem.getInitializer()->getStatements()) {
-//    s->accept(*this);
-//  }
-//  // Since we manually visited, we also need to manually clean up
-//  cleanUpBlock(*elem.getInitializer());
-//
-//  // Now, int i = 0 and similar things might have been deleted from AST and are in VariableValuesMap
-//
-//  /// Loop Variables are variables that are both written to and read from during the loop
-//  auto loopVariables = identifyReadWriteVariables(elem, variableValues);
-//
-//  // The CFGV also returns variables that are read&written in inner loops, which we might not yet be aware of
-//  std::set<ScopedVariable> filteredLoopVariables;
-//  auto m = variableValues.getMap();
-//  for (auto &sv : loopVariables) {
-//    if (m.find(sv)!=m.end()) {
-//      filteredLoopVariables.insert(sv);
-//    }
-//  }
-//  loopVariables = filteredLoopVariables;
-//
-//  // We need to emit Assignments (and Decl's if needed) for each of the loop variables Variables into the initializer
-//  if (!elem.getInitializer()) { elem.setInitializer(new Block()); };
-//  auto assignments = emitVariableAssignments(loopVariables);
-//  for (auto &a : assignments) {
-//    elem.getInitializer()->addStatement(a);
-//  }
-//
-//  // The values of loop variables we got from the initializer should not be substituted inside the loop
-//  // Since they will be different in each iteration, CTES should treat them as "compile time unknown"
-//  // Therefore, we need to remove their values from the variableValues map
-//  for (auto &v: loopVariables) {
-//    variableValues.setVariableValue(v, VariableValue(variableValues.getVariableValue(v).getDatatype(), nullptr));
-//  }
-//
-//  // BODY
-//
-//  // Visit Body to simplify it + recursively deal with nested loops
-//  // This will also update the maxLoopDepth in case there are nested loops
-//  // This in turn allows us to determine if this For-Loop should be unrolled - see isUnrollLoopAllowed()
-//  if (elem.getBody()) elem.getBody()->accept(*this);
-//  // Now, parts of the body statements (e.g. x++) might have been deleted and are only in VariableValuesMap
-//
-//  // UPDATE
-//
-//  // Visit Update to simplify it + recursively deal with nested loops
-//  // This will also update the maxLoopDepth in case there are nested loops (which would be weird but possible)
-//  // This in turn allows us to determine if this For-Loop should be unrolled - see isUnrollLoopAllowed()
-//  if (elem.getUpdate()) elem.getUpdate()->accept(*this);
-//  // Now, parts of the body statements (e.g. x++) might have been deleted and are only in VariableValuesMap
-//
-//
-//  // We have potentially removed stmts from body and update (loop-variable init has already been re-emitted)
-//  // Go through and re-emit any loop variables into the body:
-//  if (!elem.getBody()) { elem.setBody(new Block()); };
-//  auto new_assignments = emitVariableAssignments(loopVariables);
-//  for (auto &a : new_assignments) {
-//    elem.getBody()->addStatement(a);
-//  }
-//
-//  // Manual scope handling
-//  changeToOuterScope();
-//
-//  // At this point, the loop has been visited and some parts have been simplified.
-//  // Now we are ready to analyze if this loop can additionally also be unrolled:
-//  // Are we even set to do unrolling at this LoopDepth?
-//  if (!isUnrollLoopAllowed()) {
-//    //TODO: Any further steps necessary?
-//  } else {
-//
-//    // We cannot know if the loop can be fully unrolled without evaluating it
-//    // So we speculatively unroll the loop until its either too long or we cannot determine something at compile time
-//
-//    /// A separate Visitor, for isolation, brought up to date in terms of variables and scopes
-//    ProgramTransformationVisitor loopCTES;
-//    loopCTES.forceScope(stmtToScopeMapper, curScope);
-//    loopCTES.variableValues = variableValues;
-//
-//    // Manual handling of scope (usually done via Visitor::visit(elem))
-//    loopCTES.addStatementToScope(elem);
-//    loopCTES.changeToInnerScope(elem.getUniqueNodeId(), &elem);
-//
-//    /// Visit the initializer (this will load the loop variables back into variableValues)
-//    // Manually visit the statements in the block, since otherwise Visitor::visit would create a new scope!
-//    for (auto &s: elem.getInitializer()->getStatements()) {
-//      s->accept(loopCTES);
-//    }
-//    // Since we manually visited, we also need to manually clean up
-//    loopCTES.cleanUpBlock(*elem.getInitializer());
-//
-//    /// Do we have everything we need to evaluate the condition?
-//    auto conditionCompileTimeKnown = [&]() -> bool {
-//      auto variableIdentifiers = elem.getCondition()->getVariableIdentifiers();
-//      for (auto &identifier : variableIdentifiers) {
-//        auto var = loopCTES.variableValues.getVariableEntryDeclaredInThisOrOuterScope(identifier, loopCTES.curScope);
-//        auto value = loopCTES.variableValues.getVariableValue(var).getValue();
-//        if (value==nullptr) {
-//          // no need to continue checking other variables
-//          return false;
-//        }
-//      }
-//      return true;
-//    };
-//
-//    /// Condition Execution Helper
-//    auto conditionEvaluatesTrue = [&]() -> bool {
-//      auto result = evaluateNodeRecursive(elem.getCondition(), loopCTES.getTransformedVariableMap());
-//      auto evalResult = result.empty() ? nullptr : result.back();
-//      if (evalResult==nullptr)
-//        throw std::runtime_error("Unexpected: Could not evaluate For-loops condition although "
-//                                 "all variable have known values. Cannot continue.");
-//      return evalResult->isEqual(new LiteralBool(true));
-//    };
-//
-//    /// Block for stmts that cannot be compile-time evaluated but do not affect condition
-//    auto unrolledBlock = new Block();
-//
-//    /// Helper for executing the loop (also deals with update, in case we ever change stmt inlining)
-//    auto executeLoopStmts = [&]() {
-//
-//      // BODY
-//      if (elem.getBody()) {
-//        Block *clonedBody = elem.getBody()->clone();
-//        clonedBody->accept(loopCTES);
-//
-//        // If there are any stmts left, transfer them to the unrolledBlock
-//        for (auto &s: clonedBody->getStatements()) {
-//          s->takeFromParent();
-//          unrolledBlock->addStatement(s);
-//        }
-//        nodesQueuedForDeletion.push_back(clonedBody);
-//      }
-//
-//
-//      // UPDATE
-//      if (elem.getUpdate()) {
-//        Block *clonedUpdate = elem.getUpdate()->clone();
-//        clonedUpdate->accept(loopCTES);
-//        // If there are any stmts left, transfer them to the unrolledBlock
-//        for (auto &s: clonedUpdate->getStatements()) {
-//          s->takeFromParent();
-//          unrolledBlock->addStatement(s);
-//        }
-//        nodesQueuedForDeletion.push_back(clonedUpdate);
-//      }
-//    };
-//
-//    /// Track iterations
-//    int numIterations = 0;
-//
-//    while (conditionCompileTimeKnown() && numIterations < configuration.fullyUnrollLoopMaxNumIterations
-//        && conditionEvaluatesTrue()) {
-//      executeLoopStmts();
-//      numIterations++;
-//    }
-//
-//    if (conditionCompileTimeKnown() && numIterations < configuration.fullyUnrollLoopMaxNumIterations) {
-//      // Loop unrolling was successful
-//
-//      // Transfer in scope Information and VariableValues from loopCTES
-//      forceScope(loopCTES.stmtToScopeMapper, loopCTES.curScope);
-//      variableValues = loopCTES.variableValues;
-//
-//      // We need to remove elem from its parents scope
-//      removeStatementFromScope(elem);
-//
-//      // Add the new unrolled Block to the scope instead
-//      addStatementToScope(*unrolledBlock);
-//
-//      // Then, we replace elem with the unrolled Block.
-//      // This is mostly so that code that looks for parents works correctly
-//      elem.getParent()->replaceChild(&elem, unrolledBlock);
-//
-//      // Cleanup the Block we just inserted, in case it's empty/has NULL stmts left
-//      cleanUpBlock(*unrolledBlock);
-//
-//      // Mark the current For-Loop node (elem) for deletion
-//      nodesQueuedForDeletion.push_back(&elem);
-//
-//      // Note that if the parent of elem/unrolledBlock is a Block-like stmt,
-//      // our caller (e.g. visit(Block)) will have to deal with unpacking it
-//    } else if (numIterations > configuration.fullyUnrollLoopMaxNumIterations) {
-//      // PARTIAL UNROLLING
-//      throw std::runtime_error("Partial loop unrolling currently not supported.");
-//    }
-//    // else: nothing to undo since we used a new visitor
-//  }
-//
-//  // Update LoopDepth tracking
-//  leftForLoop();
-//}
-//
-//
-//
-//
 ////AbstractNode *ProgramTransformationVisitor::doPartialLoopUnrolling(For &elem) {
 ////  // create a new Block statemeny: necessary for cleanup loop and to avoid overriding user-defined variables that expect
 ////  // the initalizer to be within the for-loop's scope only
@@ -1731,90 +1792,6 @@ void SpecalProgramTransformationVisitor::visit(AbstractExpression &elem) {
 //  emittedVariableDeclarations.emplace(variableToEmit, new EmittedVariableData(newVarDeclaration));
 //}
 //
-//std::set<VarAssignm *> ProgramTransformationVisitor::emitVariableAssignment(ScopedVariable variableToEmit) {
-//  auto varValue = variableValues.getVariableValue(variableToEmit);
-//  std::set<VarAssignm *> result;
-//
-//  // if the variable has no value, there's no need to create a variable assignment
-//  if (varValue.getValue()==nullptr) return result;
-//
-//  // check if a variable declaration statement was emitted before for this variable
-//  if (emittedVariableDeclarations.count(variableToEmit)==0) {
-//    // if there exists no declaration statement for this variable yet, add a variable declaration statement (without
-//    // initialization) at the beginning of the scope by prepending a VarDecl statement to the parent of the last
-//    // statement in the scope - this should generally be a Block statement
-//    emitVariableDeclaration(variableToEmit);
-//  }
-//
-//  // When emitting Variable assignments, we must consider dependencies among variables!
-//  //
-//  // Consider a program like this:
-//  // void foo(int a, int b) { //foo(0,10)
-//  //    a = b + 1; // a = 10 + 1 = 11
-//  //    b = a + 2; // b = 11 + 2 = 13
-//  //    ...
-//  // }
-//  //
-//  // After visiting and removing these statements, something like the following is saved in variableValues:
-//  // [a, OpExp(+,Var(b),"1")], [b, OpExp(+, OpExp(+,Var(b),"1"), "2")]
-//  //
-//  // Now, if we where to emit assignments for these two statements in the "wrong" order, this would happen:
-//  // foo(0,10):
-//  //    b = (b + 1) + 2;  //b = (10 + 1) + 2 = 13 (correct)
-//  //    a = b + 1;        //a = 13 + 1 = 14 (incorrect!!)
-//  //
-//  // The issue is, that the Variable(..) expressions occurring in the expression stored in VariableValues
-//  // refer to the values of the variables as they are *before* the variables are updated by the emitted assignment.
-//  //
-//  // Therefore, whenever we emit a variable, we must check if it is used inside other VariableValues expressions
-//  // If yes, we emit a temporary variable to hold the "pre-emit" value, e.g. "int temp_b = b;"
-//  // before we emit the actual assignment (e.g. "b = b + 3;")
-//  // Inside the expressions in VariableValues that used Var(b), we then replace this occurrence with Var(temp_b)
-//
-//  // Find occurrences of this variable in other variable's values in the VariableValues map
-//  ScopedVariable scopedVariableToEmit = variableToEmit;
-//  std::vector<Variable *> occurrences;
-//  auto m = variableValues.getMap();
-//  for (auto it = m.begin(); it!=m.end(); ++it) {
-//    if (it->first!=variableToEmit && it->second.getValue()!=nullptr) {
-//      for (auto &v: it->second.getValue()->getVariables()) {
-//        if (v->getIdentifier()==scopedVariableToEmit.getIdentifier()) {
-//          occurrences.push_back(v);
-//        }
-//      }
-//    }
-//  }
-//
-//  // Emit a new temporary variable and replace occurrences
-//  if (!occurrences.empty()) {
-//    // Create a unique name - currently uses one of the to-be-replaced-nodes unique IDs for uniqueness
-//    std::string temp_id = "temp_" + scopedVariableToEmit.getIdentifier() + "_" + occurrences[0]->getUniqueNodeId();
-//
-//    // add to variableValues and emit
-//    auto sv = ScopedVariable(temp_id, curScope);
-//    auto vv = VariableValue(variableValues.getVariableValue(variableToEmit));
-//    variableValues.addDeclaredVariable(sv, vv);
-//    auto new_assignments = emitVariableAssignment(sv);
-//    result.insert(new_assignments.begin(), new_assignments.end());
-//
-//    // replace all occurrences with a new Var(temp_...) node
-//    for (auto &o: occurrences) {
-//      auto p = o->getParent();
-//      auto n = new Variable(temp_id);
-//      p->replaceChild(o, n);
-//    }
-//  }
-//
-//  auto newVarAssignm = new VarAssignm(variableToEmit.getIdentifier(),
-//                                      variableValues.getVariableValue(variableToEmit).getValue()
-//                                          ->clone());
-//  // add a reference in the list of the associated VarDecl
-//  emittedVariableDeclarations.at(variableToEmit)->addVarAssignm(newVarAssignm);
-//  // add a reference to link from this VarAssignm to the associated VarDecl
-//  emittedVariableAssignms[newVarAssignm] = emittedVariableDeclarations.find(variableToEmit);
-//  result.insert(newVarAssignm);
-//  return result;
-//}
 //
 //std::set<VarAssignm *> ProgramTransformationVisitor::emitVariableAssignments(std::set<ScopedVariable> variables) {
 //  std::set<VarAssignm *> result;
@@ -1828,26 +1805,6 @@ void SpecalProgramTransformationVisitor::visit(AbstractExpression &elem) {
 //void ProgramTransformationVisitor::enqueueNodeForDeletion(AbstractNode *node) {
 //
 //   //TODO: Replace the deletion logic in CTES with something more efficient
-//}
-//
-//void ProgramTransformationVisitor::leftForLoop() {
-//  if (currentLoopDepth_maxLoopDepth.first==1) {
-//    // if the outermost loop is left, reset the loop depth tracking counter
-//    currentLoopDepth_maxLoopDepth = std::pair(0, 0);
-//  } else {
-//    // if we ascended back to a higher level we only decrement the current depth level counter
-//    --currentLoopDepth_maxLoopDepth.first;
-//  }
-//}
-//
-//void ProgramTransformationVisitor::enteredForLoop() {
-//  // Only increase the maximum if we're currently in the deepest level
-//  // Otherwise, things like for() { for() {}; ...; for() {}; } would give wrong level
-//  if (currentLoopDepth_maxLoopDepth.first==currentLoopDepth_maxLoopDepth.second) {
-//    ++currentLoopDepth_maxLoopDepth.second;
-//  }
-//
-//  ++currentLoopDepth_maxLoopDepth.first;
 //}
 //
 //void ProgramTransformationVisitor::cleanUpBlock(Block &elem) {
@@ -1867,9 +1824,4 @@ void SpecalProgramTransformationVisitor::visit(AbstractExpression &elem) {
 //      elem.addStatement(c->castTo<AbstractStatement>());
 //    }
 //  }
-//}
-//bool ProgramTransformationVisitor::isUnrollLoopAllowed() const {
-//  return configuration.allowsInfiniteLoopUnrollings()
-//      || (currentLoopDepth_maxLoopDepth.second - currentLoopDepth_maxLoopDepth.first
-//          < configuration.maxNumLoopUnrollings);
 //}
