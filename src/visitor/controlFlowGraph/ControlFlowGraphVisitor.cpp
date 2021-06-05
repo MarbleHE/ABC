@@ -352,7 +352,7 @@ SpecialControlFlowGraphVisitor::SpecialControlFlowGraphVisitor(bool ignoreNonDec
     : ignoreNonDeclaredVariables(ignoreNonDeclaredVariables) {
 }
 
-void SpecialControlFlowGraphVisitor::buildDataflowGraph() {
+void SpecialControlFlowGraphVisitor::buildDataFlowGraph() {
   // =================
   // STEP 1: Distribute knowledge about variable writes
   // Traverse the graph and store for each graph node where (i.e., at which node) all of the variables seen so far were

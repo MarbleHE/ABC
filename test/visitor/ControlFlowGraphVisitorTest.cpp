@@ -456,7 +456,7 @@ TEST(ControlFlowGraphVisitorTest, dfgGraph_simpleAssignment) { /* NOLINT */
 
   auto &gn = cfgv.getRootNode();
 
-  cfgv.buildDataflowGraph();
+  cfgv.buildDataFlowGraph();
 
   auto &functionStmt = getGraphNodeByChildrenIdxPath(gn, {0});
   auto &varAssignm = getGraphNodeByChildrenIdxPath(gn, {0, 0, 0});
@@ -502,7 +502,7 @@ TEST(ControlFlowGraphVisitorTest, dfgGraph_ifAssignment) { /* NOLINT */
 
   auto &gn = cfgv.getRootNode();
 
-  cfgv.buildDataflowGraph();
+  cfgv.buildDataFlowGraph();
 
   auto &functionStmt = getGraphNodeByChildrenIdxPath(gn, {0});
   auto &ifStmt = getGraphNodeByChildrenIdxPath(gn, {0, 0, 0});
@@ -548,7 +548,7 @@ TEST(ControlFlowGraphVisitorTest, dfgGraph_ifElseAssignment) { /* NOLINT */
 
   auto &gn = cfgv.getRootNode();
 
-  cfgv.buildDataflowGraph();
+  cfgv.buildDataFlowGraph();
 
   auto &functionStmt = getGraphNodeByChildrenIdxPath(gn, {0});
   auto &ifStmt = getGraphNodeByChildrenIdxPath(gn, {0, 0, 0});
@@ -598,7 +598,7 @@ TEST(ControlFlowGraphVisitorTest, dfgGraph_forLoop) { /* NOLINT */
 
   auto &gn = cfgv.getRootNode();
 
-  cfgv.buildDataflowGraph();
+  cfgv.buildDataFlowGraph();
 
   auto &functionStmt = getGraphNodeByChildrenIdxPath(gn, {0});
   auto &varDecl = getGraphNodeByChildrenIdxPath(gn, {0, 0, 0});

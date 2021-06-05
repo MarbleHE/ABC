@@ -124,7 +124,7 @@ class SpecialControlFlowGraphVisitor : public ScopedVisitor {
   ///   In the second pass, we iterate over all nodes that we have visited in the first pass and check whether the
   /// respective node reads a variable. If yes, we lookup when the respective variable was written the last time (i.e.,
   /// in which node) and add an backward edge (last_written_node -> read_node).
-  void buildDataflowGraph();
+  void buildDataFlowGraph();
 };
 
 #endif //AST_OPTIMIZER_SRC_VISITOR_CONTROLFLOWGRAPHVISITOR_H_
