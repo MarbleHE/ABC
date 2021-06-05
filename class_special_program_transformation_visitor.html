@@ -97,6 +97,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>visit</b> (<a class="
 <tr class="memitem:a158313d778c2a7c16668daafc23376ef"><td class="memItemLeft" align="right" valign="top"><a id="a158313d778c2a7c16668daafc23376ef"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>visit</b> (<a class="el" href="class_variable.html">Variable</a> &amp;elem)</td></tr>
 <tr class="separator:a158313d778c2a7c16668daafc23376ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a730bd1ac0ba805605cf2904e00c2b36c"><td class="memItemLeft" align="right" valign="top"><a id="a730bd1ac0ba805605cf2904e00c2b36c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>visit</b> (<a class="el" href="class_index_access.html">IndexAccess</a> &amp;elem)</td></tr>
+<tr class="separator:a730bd1ac0ba805605cf2904e00c2b36c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a82a3622cea4daba4749362963e3494e4"><td class="memItemLeft" align="right" valign="top"><a id="a82a3622cea4daba4749362963e3494e4"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>visit</b> (<a class="el" href="class_binary_expression.html">BinaryExpression</a> &amp;elem)</td></tr>
 <tr class="separator:a82a3622cea4daba4749362963e3494e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -124,9 +127,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>visit</b> (<a class="
 <tr class="memitem:acfa19d36b4f733d7b7a144250ca48b67 inherit pub_methods_class_scoped_visitor"><td class="memItemLeft" align="right" valign="top"><a id="acfa19d36b4f733d7b7a144250ca48b67"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>visit</b> (<a class="el" href="class_if.html">If</a> &amp;elem) override</td></tr>
 <tr class="separator:acfa19d36b4f733d7b7a144250ca48b67 inherit pub_methods_class_scoped_visitor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa27caf8f09dffd2ece7b73390776691a inherit pub_methods_class_scoped_visitor"><td class="memItemLeft" align="right" valign="top"><a id="aa27caf8f09dffd2ece7b73390776691a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>visit</b> (<a class="el" href="class_index_access.html">IndexAccess</a> &amp;elem) override</td></tr>
-<tr class="separator:aa27caf8f09dffd2ece7b73390776691a inherit pub_methods_class_scoped_visitor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2020f28effdf0f092dd468bb5deceb01 inherit pub_methods_class_scoped_visitor"><td class="memItemLeft" align="right" valign="top"><a id="a2020f28effdf0f092dd468bb5deceb01"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>visit</b> (<a class="el" href="class_literal.html">LiteralBool</a> &amp;elem) override</td></tr>
 <tr class="separator:a2020f28effdf0f092dd468bb5deceb01 inherit pub_methods_class_scoped_visitor"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -208,10 +208,16 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>exitScope</b> ()</td>
 </div><div class="memdoc">
 <p>Before we start simplifying stuff away, we need to let the CFGV do its thing Otherwise, we would delete, e.g. "int i = 0;" since it's put into the varMap as as i -&gt; LiteralInt(0)</p>
 <p>Loop Variables are variables that are both written to and read from during the loop</p>
-<p>Do we have everything we need to evaluate the condition?</p>
-<p>Condition Execution Helper</p>
+<p>Backup of variableMap in case unrolling fails</p>
+<p>Backup of the initializer in case unrolling fails</p>
+<p>Evaluates (a copy of) the condition, returning either 0/1 or -1 if the condition is not compile time known</p>
+<p>Operate on a copy, so we can re-use the original condition in the next iteration!</p>
 <p><a class="el" href="class_block.html">Block</a> for created unrolled Statements</p>
 <p>Track iterations</p>
+<p>Result of testing condition</p>
+<p>Operate on a copy of the body, so we can reuse it in later iterations</p>
+<p>Operate on a copy of the update, so we can reuse it in later iterations</p>
+<p>Restore the initializer</p>
 
 <p>Reimplemented from <a class="el" href="class_scoped_visitor.html">ScopedVisitor</a>.</p>
 

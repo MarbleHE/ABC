@@ -105,6 +105,8 @@ virtual <a class="el" href="group___d_a_g.html#ga4bc933321cb97fee4fb929e8f4d740a
 <tr class="separator:gaccb709a7ddc8e75788b44fbd0801d8de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaac40fc6193eae6c432d79ab09d5896a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_abstract_node.html">AbstractNode</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___d_a_g.html#gaac40fc6193eae6c432d79ab09d5896a3">AbstractNode::getParent</a> ()</td></tr>
 <tr class="separator:gaac40fc6193eae6c432d79ab09d5896a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7c740fb694a2f17cb20429aceaa37d5c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_abstract_node.html">AbstractNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___d_a_g.html#ga7c740fb694a2f17cb20429aceaa37d5c">AbstractNode::getParentPtr</a> ()</td></tr>
+<tr class="separator:ga7c740fb694a2f17cb20429aceaa37d5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf7c1b9376d52444e772b9764e5baaf2d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_abstract_node.html">AbstractNode</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___d_a_g.html#gaf7c1b9376d52444e772b9764e5baaf2d">AbstractNode::getParent</a> () const</td></tr>
 <tr class="separator:gaf7c1b9376d52444e772b9764e5baaf2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga7d07d5bf1e0a7f1e87a42be354e12026"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___d_a_g.html#ga7d07d5bf1e0a7f1e87a42be354e12026">AbstractNode::setParent</a> (<a class="el" href="class_abstract_node.html">AbstractNode</a> &amp;newParent)</td></tr>
@@ -154,7 +156,7 @@ virtual <a class="el" href="group___d_a_g.html#ga4bc933321cb97fee4fb929e8f4d740a
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Returns a pointer to the only parent node. </p><dl class="section return"><dt>Returns</dt><dd>A pointer to the node's parent node. </dd></dl>
+<p>Returns a reference to the only parent node. </p><dl class="section return"><dt>Returns</dt><dd>A reference to the node's parent node. </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname">std::runtime_error</td><td>if the node has no parent </td></tr>
@@ -185,6 +187,24 @@ virtual <a class="el" href="group___d_a_g.html#ga4bc933321cb97fee4fb929e8f4d740a
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="ga7c740fb694a2f17cb20429aceaa37d5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7c740fb694a2f17cb20429aceaa37d5c">&#9670;&nbsp;</a></span>getParentPtr()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_abstract_node.html">AbstractNode</a> * AbstractNode::getParentPtr </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Returns a pointer to the only parent node. </p><dl class="section return"><dt>Returns</dt><dd>A pointer to the node's parent node. </dd></dl>
 
 </div>
 </div>

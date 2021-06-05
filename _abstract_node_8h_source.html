@@ -123,234 +123,237 @@ $(function() {
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160; </div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <a class="code" href="class_abstract_node.html">AbstractNode</a> &amp;<a class="code" href="group___d_a_g.html#gaac40fc6193eae6c432d79ab09d5896a3">getParent</a>();</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160; </div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="keyword">const</span> <a class="code" href="class_abstract_node.html">AbstractNode</a> &amp;<a class="code" href="group___d_a_g.html#gaac40fc6193eae6c432d79ab09d5896a3">getParent</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160; </div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="group___d_a_g.html#ga7d07d5bf1e0a7f1e87a42be354e12026">setParent</a>(<a class="code" href="class_abstract_node.html">AbstractNode</a> &amp;newParent);</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160; <span class="comment">// End of DAG group</span></div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160; </div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160; </div>
-<div class="line"><a name="l00143"></a><span class="lineno"><a class="line" href="group__output.html#ga46f4d6b6ae532260c283a6e5e6502fb8">  143</a></span>&#160;  [[nodiscard]] <span class="keyword">virtual</span> nlohmann::json <a class="code" href="group__output.html#ga46f4d6b6ae532260c283a6e5e6502fb8">toJson</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <a class="code" href="class_abstract_node.html">AbstractNode</a>* <a class="code" href="group___d_a_g.html#ga7c740fb694a2f17cb20429aceaa37d5c">getParentPtr</a>();</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160; </div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  <span class="keyword">const</span> <a class="code" href="class_abstract_node.html">AbstractNode</a> &amp;<a class="code" href="group___d_a_g.html#gaac40fc6193eae6c432d79ab09d5896a3">getParent</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160; </div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="group___d_a_g.html#ga7d07d5bf1e0a7f1e87a42be354e12026">setParent</a>(<a class="code" href="class_abstract_node.html">AbstractNode</a> &amp;newParent);</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160; <span class="comment">// End of DAG group</span></div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160; </div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160; <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160; </div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  [[nodiscard]] <span class="keyword">virtual</span> std::string <a class="code" href="group__output.html#gaee58b60a470f2e494e0db1808c87b13d">toString</a>(<span class="keywordtype">bool</span> printChildren) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160; </div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  <span class="keyword">friend</span> std::ostream &amp;<a class="code" href="group__output.html#gac17194268db99b9b8ba9b3a85563fb94">operator&lt;&lt;</a>(std::ostream &amp;os, <span class="keyword">const</span> <a class="code" href="class_abstract_node.html">AbstractNode</a> &amp;node);</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160; </div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  [[nodiscard]] std::string <a class="code" href="group__output.html#gac36ebbc674fc0241f43bbbace87537bc">toStringHelper</a>(<span class="keywordtype">bool</span> printChildren, std::vector&lt;std::string&gt; attributes) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160; </div>
-<div class="line"><a name="l00167"></a><span class="lineno"><a class="line" href="group__output.html#ga8cc40127801e7777c8094f17a3b1efcb">  167</a></span>&#160;  [[nodiscard]] <span class="keyword">virtual</span> std::string <a class="code" href="group__output.html#ga8cc40127801e7777c8094f17a3b1efcb">getNodeType</a>() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160; <span class="comment">// End of output group</span></div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160; </div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  <span class="keywordtype">int</span> assignedNodeId{-1};</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160; </div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">int</span> nodeIdCounter;</div>
+<div class="line"><a name="l00147"></a><span class="lineno"><a class="line" href="group__output.html#ga46f4d6b6ae532260c283a6e5e6502fb8">  147</a></span>&#160;  [[nodiscard]] <span class="keyword">virtual</span> nlohmann::json <a class="code" href="group__output.html#ga46f4d6b6ae532260c283a6e5e6502fb8">toJson</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160; </div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  [[nodiscard]] <span class="keyword">virtual</span> std::string <a class="code" href="group__output.html#gaee58b60a470f2e494e0db1808c87b13d">toString</a>(<span class="keywordtype">bool</span> printChildren) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160; </div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  <span class="keyword">friend</span> std::ostream &amp;<a class="code" href="group__output.html#gac17194268db99b9b8ba9b3a85563fb94">operator&lt;&lt;</a>(std::ostream &amp;os, <span class="keyword">const</span> <a class="code" href="class_abstract_node.html">AbstractNode</a> &amp;node);</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160; </div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160; <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  [[nodiscard]] std::string <a class="code" href="group__output.html#gac36ebbc674fc0241f43bbbace87537bc">toStringHelper</a>(<span class="keywordtype">bool</span> printChildren, std::vector&lt;std::string&gt; attributes) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160; </div>
+<div class="line"><a name="l00171"></a><span class="lineno"><a class="line" href="group__output.html#ga8cc40127801e7777c8094f17a3b1efcb">  171</a></span>&#160;  [[nodiscard]] <span class="keyword">virtual</span> std::string <a class="code" href="group__output.html#ga8cc40127801e7777c8094f17a3b1efcb">getNodeType</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160; <span class="comment">// End of output group</span></div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160; </div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  <span class="keywordtype">int</span> assignedNodeId{-1};</div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160; </div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  <span class="keyword">mutable</span> std::string uniqueNodeId;</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">int</span> nodeIdCounter;</div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160; </div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  std::string generateUniqueNodeId() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160; </div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">int</span> getAndIncrementNodeId();</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160; </div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;  <a class="code" href="group__node_i_d.html#ga7b59e2377b8841ec1762bbca9ba88d2d">AbstractNode</a>();</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  <span class="keyword">mutable</span> std::string uniqueNodeId;</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160; </div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;  std::string generateUniqueNodeId() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160; </div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">int</span> getAndIncrementNodeId();</div>
 <div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160; </div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;  std::string <a class="code" href="group__node_i_d.html#ga27e3de10b856ef7ebc64e6382aec92eb">getUniqueNodeId</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160; <span class="comment">// End of nodeID group</span></div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;};</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160; </div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;<span class="keyword">class </span><a class="code" href="class_base_iterator_impl.html">BaseIteratorImpl</a>;</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160; <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  <a class="code" href="group__node_i_d.html#ga7b59e2377b8841ec1762bbca9ba88d2d">AbstractNode</a>();</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160; </div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;  std::string <a class="code" href="group__node_i_d.html#ga27e3de10b856ef7ebc64e6382aec92eb">getUniqueNodeId</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160; <span class="comment">// End of nodeID group</span></div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;};</div>
 <div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160; </div>
 <div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00218"></a><span class="lineno"><a class="line" href="class_node_iterator.html">  218</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_node_iterator.html">NodeIterator</a> {</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;  std::unique_ptr&lt;BaseIteratorImpl&lt;T&gt;&gt; impl;</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160; </div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;  <span class="keyword">typedef</span> std::ptrdiff_t difference_type;</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;  <span class="keyword">typedef</span> T value_type;</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;  <span class="keyword">typedef</span> T *pointer;</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;  <span class="keyword">typedef</span> T &amp;reference;</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  <span class="keyword">typedef</span> std::forward_iterator_tag iterator_category;</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160; </div>
-<div class="line"><a name="l00231"></a><span class="lineno"><a class="line" href="class_node_iterator.html#a7badeb26e853a0f2445a0626ba77a792">  231</a></span>&#160;  <a class="code" href="class_node_iterator.html#a7badeb26e853a0f2445a0626ba77a792">NodeIterator</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160; </div>
-<div class="line"><a name="l00235"></a><span class="lineno"><a class="line" href="class_node_iterator.html#ae6c4171f307ac532a3409eaf619c9eca">  235</a></span>&#160;  <span class="keyword">explicit</span> <a class="code" href="class_node_iterator.html#ae6c4171f307ac532a3409eaf619c9eca">NodeIterator</a>(std::unique_ptr&lt;<a class="code" href="class_base_iterator_impl.html">BaseIteratorImpl&lt;T&gt;</a>&gt; impl) : impl(std::move(impl)) {};</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;<span class="keyword">class </span><a class="code" href="class_base_iterator_impl.html">BaseIteratorImpl</a>;</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160; </div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00222"></a><span class="lineno"><a class="line" href="class_node_iterator.html">  222</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_node_iterator.html">NodeIterator</a> {</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;  std::unique_ptr&lt;BaseIteratorImpl&lt;T&gt;&gt; impl;</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160; </div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  <span class="keyword">typedef</span> std::ptrdiff_t difference_type;</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;  <span class="keyword">typedef</span> T value_type;</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  <span class="keyword">typedef</span> T *pointer;</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;  <span class="keyword">typedef</span> T &amp;reference;</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  <span class="keyword">typedef</span> std::forward_iterator_tag iterator_category;</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160; </div>
+<div class="line"><a name="l00235"></a><span class="lineno"><a class="line" href="class_node_iterator.html#a7badeb26e853a0f2445a0626ba77a792">  235</a></span>&#160;  <a class="code" href="class_node_iterator.html#a7badeb26e853a0f2445a0626ba77a792">NodeIterator</a>() = <span class="keywordflow">default</span>;</div>
 <div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160; </div>
-<div class="line"><a name="l00238"></a><span class="lineno"><a class="line" href="class_node_iterator.html#a440f9335584de5b812e84a6a2a1a8360">  238</a></span>&#160;  <a class="code" href="class_node_iterator.html#a440f9335584de5b812e84a6a2a1a8360">NodeIterator</a>(<span class="keyword">const</span> <a class="code" href="class_node_iterator.html">NodeIterator</a> &amp;other) : impl(other.impl-&gt;clone()) {};</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160; </div>
-<div class="line"><a name="l00241"></a><span class="lineno"><a class="line" href="class_node_iterator.html#a4a8cab5f8bd19c4529cdef5665667588">  241</a></span>&#160;  <a class="code" href="class_node_iterator.html#a4a8cab5f8bd19c4529cdef5665667588">NodeIterator</a>(<a class="code" href="class_node_iterator.html">NodeIterator</a> &amp;&amp;other) noexcept: impl(std::move(other.impl)) {};</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160; </div>
-<div class="line"><a name="l00244"></a><span class="lineno"><a class="line" href="class_node_iterator.html#abbe99f32f549320c0a4b77a9c891a997">  244</a></span>&#160;  <a class="code" href="class_node_iterator.html">NodeIterator</a> &amp;<a class="code" href="class_node_iterator.html#abbe99f32f549320c0a4b77a9c891a997">operator=</a>(<span class="keyword">const</span> <a class="code" href="class_node_iterator.html">NodeIterator</a> &amp;other) {</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    impl = other.impl-&gt;clone(<span class="keyword">nullptr</span>);</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;  }</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160; </div>
-<div class="line"><a name="l00249"></a><span class="lineno"><a class="line" href="class_node_iterator.html#ad432400d9e17d4253b7c0f0121ff26d8">  249</a></span>&#160;  <a class="code" href="class_node_iterator.html">NodeIterator</a> &amp;<a class="code" href="class_node_iterator.html#ad432400d9e17d4253b7c0f0121ff26d8">operator=</a>(<a class="code" href="class_node_iterator.html">NodeIterator</a> &amp;&amp;other) noexcept {</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    impl = std::move(other.impl);</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  }</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160; </div>
-<div class="line"><a name="l00254"></a><span class="lineno"><a class="line" href="class_node_iterator.html#a260777e020b6e5b49d55ebdbbfdca49b">  254</a></span>&#160;  <a class="code" href="class_node_iterator.html">NodeIterator</a> &amp;<a class="code" href="class_node_iterator.html#a260777e020b6e5b49d55ebdbbfdca49b">operator++</a>() {</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;    impl-&gt;increment();</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;  }</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160; </div>
-<div class="line"><a name="l00262"></a><span class="lineno"><a class="line" href="class_node_iterator.html#a30589e93d2b021038bdb3627ae0cbb9a">  262</a></span>&#160;  <a class="code" href="class_node_iterator.html">NodeIterator&lt;T&gt;</a> <a class="code" href="class_node_iterator.html#a30589e93d2b021038bdb3627ae0cbb9a">operator++</a>(<span class="keywordtype">int</span>) &amp;{</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    <a class="code" href="class_node_iterator.html">NodeIterator</a> tmp(*<span class="keyword">this</span>);</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    impl-&gt;increment();</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    <span class="keywordflow">return</span> tmp;</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;  }</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160; </div>
-<div class="line"><a name="l00269"></a><span class="lineno"><a class="line" href="class_node_iterator.html#a2354e7d8dbe8b60c7d59f3911c4f7bbe">  269</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="class_node_iterator.html#a2354e7d8dbe8b60c7d59f3911c4f7bbe">operator==</a>(<span class="keyword">const</span> <a class="code" href="class_node_iterator.html">NodeIterator</a> &amp;other)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;    <span class="keywordflow">return</span> impl-&gt;equal(*other.impl);</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  }</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160; </div>
-<div class="line"><a name="l00274"></a><span class="lineno"><a class="line" href="class_node_iterator.html#a40979aeb6daeaf96a25fc8cb6998604f">  274</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="class_node_iterator.html#a40979aeb6daeaf96a25fc8cb6998604f">operator!=</a>(<span class="keyword">const</span> <a class="code" href="class_node_iterator.html">NodeIterator</a> &amp;other)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    <span class="keywordflow">return</span> !(this-&gt;<a class="code" href="class_node_iterator.html#a2354e7d8dbe8b60c7d59f3911c4f7bbe">operator==</a>(other));</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  }</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160; </div>
-<div class="line"><a name="l00279"></a><span class="lineno"><a class="line" href="class_node_iterator.html#a6802b9ae14e734b32f1ed70ac89acf68">  279</a></span>&#160;  T &amp;<a class="code" href="class_node_iterator.html#a6802b9ae14e734b32f1ed70ac89acf68">operator*</a>() {</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    <span class="keywordflow">return</span> **impl;</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;  }</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160; </div>
-<div class="line"><a name="l00284"></a><span class="lineno"><a class="line" href="class_node_iterator.html#a3edd33037b8c23f025a8b906f5aad732">  284</a></span>&#160;  T* <a class="code" href="class_node_iterator.html#a3edd33037b8c23f025a8b906f5aad732">operator-&gt;</a>() {</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    <span class="keywordflow">return</span> &amp;**impl;</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;  }</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160; </div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;};</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160; </div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00292"></a><span class="lineno"><a class="line" href="class_base_iterator_impl.html">  292</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_base_iterator_impl.html">BaseIteratorImpl</a> {</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="class_base_iterator_impl.html">BaseIteratorImpl</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  <span class="keyword">virtual</span> <span class="keyword">const</span> T &amp;getNode() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;  <span class="keyword">virtual</span> T &amp;getNode() = 0;</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  <span class="keyword">virtual</span> std::unique_ptr&lt;BaseIteratorImpl&gt; clone() = 0;</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> increment() = 0;</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> equal(<span class="keyword">const</span> <a class="code" href="class_base_iterator_impl.html">BaseIteratorImpl</a> &amp;other) = 0;</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;  <span class="keyword">virtual</span> T &amp;operator*() = 0;</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;};</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160; </div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00306"></a><span class="lineno"><a class="line" href="class_empty_iterator_impl.html">  306</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_empty_iterator_impl.html">EmptyIteratorImpl</a> : <span class="keyword">public</span> <a class="code" href="class_base_iterator_impl.html">BaseIteratorImpl</a>&lt;T&gt; {</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  T &amp;node;</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="class_empty_iterator_impl.html">EmptyIteratorImpl</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="class_empty_iterator_impl.html">EmptyIteratorImpl</a>(T &amp;node) : node(node) {};</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;  <span class="keyword">const</span> T &amp;getNode()<span class="keyword"> const override </span>{</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;    <span class="keywordflow">return</span> node;</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;  };</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;  T &amp;getNode()<span class="keyword"> override </span>{</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;    <span class="keywordflow">return</span> node;</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;  }</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;  std::unique_ptr&lt;BaseIteratorImpl&lt;T&gt;&gt; clone()<span class="keyword"> override </span>{</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;    <span class="keywordflow">return</span> std::make_unique&lt;EmptyIteratorImpl&lt;T&gt;&gt;(node);</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;  }</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;  <span class="keywordtype">void</span> increment()<span class="keyword"> override </span>{ <span class="comment">/* do nothing */</span> };</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;  <span class="keywordtype">bool</span> equal(<span class="keyword">const</span> <a class="code" href="class_base_iterator_impl.html">BaseIteratorImpl&lt;T&gt;</a> &amp;other)<span class="keyword"> override </span>{</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    <span class="keywordflow">return</span> getNode()==other.getNode();</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;  };</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  T &amp;operator*()<span class="keyword"> override </span>{</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    <span class="keywordflow">throw</span> std::logic_error(<span class="stringliteral">&quot;Cannot dereference dummy iterator EmptyIteratorImpl.&quot;</span>);</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;  };</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;};</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160; </div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;<span class="comment">// Designed to be instantiated only with T = (const) AbstractNode</span></div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> NodeType&gt;</div>
-<div class="line"><a name="l00334"></a><span class="lineno"><a class="line" href="class_position_iterator_impl.html">  334</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_position_iterator_impl.html">PositionIteratorImpl</a> : <span class="keyword">public</span> <a class="code" href="class_base_iterator_impl.html">BaseIteratorImpl</a>&lt;T&gt; {</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;  <span class="comment">// Select const NodeType / NodeType depending on whether or not T is const/non-const</span></div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;  <span class="keyword">typedef</span> <span class="keyword">typename</span> std::conditional&lt;std::is_const&lt;T&gt;::value, <span class="keyword">const</span> NodeType, NodeType&gt;::type N;</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160; </div>
-<div class="line"><a name="l00340"></a><span class="lineno"><a class="line" href="class_position_iterator_impl.html#a1d30b1749fbba04d322988d5845adc61">  340</a></span>&#160;  N &amp;<a class="code" href="class_position_iterator_impl.html#a1d30b1749fbba04d322988d5845adc61">node</a>;</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160; </div>
-<div class="line"><a name="l00343"></a><span class="lineno"><a class="line" href="class_position_iterator_impl.html#a3868fd37d7a19f31af2adf9219013fe5">  343</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="class_position_iterator_impl.html#a3868fd37d7a19f31af2adf9219013fe5">position</a> = 0;</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160; </div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;  T &amp;getNode()<span class="keyword"> override </span>{</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="class_position_iterator_impl.html#a1d30b1749fbba04d322988d5845adc61">node</a>;</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;  };</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  <span class="keyword">const</span> T &amp;getNode()<span class="keyword"> const override </span>{</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="class_position_iterator_impl.html#a1d30b1749fbba04d322988d5845adc61">node</a>;</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;  };</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160; </div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="class_position_iterator_impl.html">PositionIteratorImpl</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160; </div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;  <a class="code" href="class_position_iterator_impl.html">PositionIteratorImpl</a>(N &amp;<a class="code" href="class_position_iterator_impl.html#a1d30b1749fbba04d322988d5845adc61">node</a>, <span class="keywordtype">size_t</span> <a class="code" href="class_position_iterator_impl.html#a3868fd37d7a19f31af2adf9219013fe5">position</a>) : <a class="code" href="class_position_iterator_impl.html#a1d30b1749fbba04d322988d5845adc61">node</a>(<a class="code" href="class_position_iterator_impl.html#a1d30b1749fbba04d322988d5845adc61">node</a>), <a class="code" href="class_position_iterator_impl.html#a3868fd37d7a19f31af2adf9219013fe5">position</a>(<a class="code" href="class_position_iterator_impl.html#a3868fd37d7a19f31af2adf9219013fe5">position</a>) {};</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160; </div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;  <span class="keywordtype">void</span> increment()<span class="keyword"> override </span>{</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;    ++<a class="code" href="class_position_iterator_impl.html#a3868fd37d7a19f31af2adf9219013fe5">position</a>;</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;  }</div>
+<div class="line"><a name="l00239"></a><span class="lineno"><a class="line" href="class_node_iterator.html#ae6c4171f307ac532a3409eaf619c9eca">  239</a></span>&#160;  <span class="keyword">explicit</span> <a class="code" href="class_node_iterator.html#ae6c4171f307ac532a3409eaf619c9eca">NodeIterator</a>(std::unique_ptr&lt;<a class="code" href="class_base_iterator_impl.html">BaseIteratorImpl&lt;T&gt;</a>&gt; impl) : impl(std::move(impl)) {};</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160; </div>
+<div class="line"><a name="l00242"></a><span class="lineno"><a class="line" href="class_node_iterator.html#a440f9335584de5b812e84a6a2a1a8360">  242</a></span>&#160;  <a class="code" href="class_node_iterator.html#a440f9335584de5b812e84a6a2a1a8360">NodeIterator</a>(<span class="keyword">const</span> <a class="code" href="class_node_iterator.html">NodeIterator</a> &amp;other) : impl(other.impl-&gt;clone()) {};</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160; </div>
+<div class="line"><a name="l00245"></a><span class="lineno"><a class="line" href="class_node_iterator.html#a4a8cab5f8bd19c4529cdef5665667588">  245</a></span>&#160;  <a class="code" href="class_node_iterator.html#a4a8cab5f8bd19c4529cdef5665667588">NodeIterator</a>(<a class="code" href="class_node_iterator.html">NodeIterator</a> &amp;&amp;other) noexcept: impl(std::move(other.impl)) {};</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160; </div>
+<div class="line"><a name="l00248"></a><span class="lineno"><a class="line" href="class_node_iterator.html#abbe99f32f549320c0a4b77a9c891a997">  248</a></span>&#160;  <a class="code" href="class_node_iterator.html">NodeIterator</a> &amp;<a class="code" href="class_node_iterator.html#abbe99f32f549320c0a4b77a9c891a997">operator=</a>(<span class="keyword">const</span> <a class="code" href="class_node_iterator.html">NodeIterator</a> &amp;other) {</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    impl = other.impl-&gt;clone(<span class="keyword">nullptr</span>);</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;  }</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160; </div>
+<div class="line"><a name="l00253"></a><span class="lineno"><a class="line" href="class_node_iterator.html#ad432400d9e17d4253b7c0f0121ff26d8">  253</a></span>&#160;  <a class="code" href="class_node_iterator.html">NodeIterator</a> &amp;<a class="code" href="class_node_iterator.html#ad432400d9e17d4253b7c0f0121ff26d8">operator=</a>(<a class="code" href="class_node_iterator.html">NodeIterator</a> &amp;&amp;other) noexcept {</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    impl = std::move(other.impl);</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;  }</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160; </div>
+<div class="line"><a name="l00258"></a><span class="lineno"><a class="line" href="class_node_iterator.html#a260777e020b6e5b49d55ebdbbfdca49b">  258</a></span>&#160;  <a class="code" href="class_node_iterator.html">NodeIterator</a> &amp;<a class="code" href="class_node_iterator.html#a260777e020b6e5b49d55ebdbbfdca49b">operator++</a>() {</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    impl-&gt;increment();</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;  }</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160; </div>
+<div class="line"><a name="l00266"></a><span class="lineno"><a class="line" href="class_node_iterator.html#a30589e93d2b021038bdb3627ae0cbb9a">  266</a></span>&#160;  <a class="code" href="class_node_iterator.html">NodeIterator&lt;T&gt;</a> <a class="code" href="class_node_iterator.html#a30589e93d2b021038bdb3627ae0cbb9a">operator++</a>(<span class="keywordtype">int</span>) &amp;{</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    <a class="code" href="class_node_iterator.html">NodeIterator</a> tmp(*<span class="keyword">this</span>);</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;    impl-&gt;increment();</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;    <span class="keywordflow">return</span> tmp;</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  }</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160; </div>
+<div class="line"><a name="l00273"></a><span class="lineno"><a class="line" href="class_node_iterator.html#a2354e7d8dbe8b60c7d59f3911c4f7bbe">  273</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="class_node_iterator.html#a2354e7d8dbe8b60c7d59f3911c4f7bbe">operator==</a>(<span class="keyword">const</span> <a class="code" href="class_node_iterator.html">NodeIterator</a> &amp;other)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    <span class="keywordflow">return</span> impl-&gt;equal(*other.impl);</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  }</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160; </div>
+<div class="line"><a name="l00278"></a><span class="lineno"><a class="line" href="class_node_iterator.html#a40979aeb6daeaf96a25fc8cb6998604f">  278</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="class_node_iterator.html#a40979aeb6daeaf96a25fc8cb6998604f">operator!=</a>(<span class="keyword">const</span> <a class="code" href="class_node_iterator.html">NodeIterator</a> &amp;other)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    <span class="keywordflow">return</span> !(this-&gt;<a class="code" href="class_node_iterator.html#a2354e7d8dbe8b60c7d59f3911c4f7bbe">operator==</a>(other));</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  }</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160; </div>
+<div class="line"><a name="l00283"></a><span class="lineno"><a class="line" href="class_node_iterator.html#a6802b9ae14e734b32f1ed70ac89acf68">  283</a></span>&#160;  T &amp;<a class="code" href="class_node_iterator.html#a6802b9ae14e734b32f1ed70ac89acf68">operator*</a>() {</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;    <span class="keywordflow">return</span> **impl;</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  }</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160; </div>
+<div class="line"><a name="l00288"></a><span class="lineno"><a class="line" href="class_node_iterator.html#a3edd33037b8c23f025a8b906f5aad732">  288</a></span>&#160;  T* <a class="code" href="class_node_iterator.html#a3edd33037b8c23f025a8b906f5aad732">operator-&gt;</a>() {</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    <span class="keywordflow">return</span> &amp;**impl;</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  }</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160; </div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;};</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160; </div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00296"></a><span class="lineno"><a class="line" href="class_base_iterator_impl.html">  296</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_base_iterator_impl.html">BaseIteratorImpl</a> {</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="class_base_iterator_impl.html">BaseIteratorImpl</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;  <span class="keyword">virtual</span> <span class="keyword">const</span> T &amp;getNode() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;  <span class="keyword">virtual</span> T &amp;getNode() = 0;</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;  <span class="keyword">virtual</span> std::unique_ptr&lt;BaseIteratorImpl&gt; clone() = 0;</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> increment() = 0;</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> equal(<span class="keyword">const</span> <a class="code" href="class_base_iterator_impl.html">BaseIteratorImpl</a> &amp;other) = 0;</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  <span class="keyword">virtual</span> T &amp;operator*() = 0;</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;};</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160; </div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00310"></a><span class="lineno"><a class="line" href="class_empty_iterator_impl.html">  310</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_empty_iterator_impl.html">EmptyIteratorImpl</a> : <span class="keyword">public</span> <a class="code" href="class_base_iterator_impl.html">BaseIteratorImpl</a>&lt;T&gt; {</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;  T &amp;node;</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="class_empty_iterator_impl.html">EmptyIteratorImpl</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="class_empty_iterator_impl.html">EmptyIteratorImpl</a>(T &amp;node) : node(node) {};</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;  <span class="keyword">const</span> T &amp;getNode()<span class="keyword"> const override </span>{</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;    <span class="keywordflow">return</span> node;</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;  };</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;  T &amp;getNode()<span class="keyword"> override </span>{</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    <span class="keywordflow">return</span> node;</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;  }</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;  std::unique_ptr&lt;BaseIteratorImpl&lt;T&gt;&gt; clone()<span class="keyword"> override </span>{</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    <span class="keywordflow">return</span> std::make_unique&lt;EmptyIteratorImpl&lt;T&gt;&gt;(node);</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;  }</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  <span class="keywordtype">void</span> increment()<span class="keyword"> override </span>{ <span class="comment">/* do nothing */</span> };</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  <span class="keywordtype">bool</span> equal(<span class="keyword">const</span> <a class="code" href="class_base_iterator_impl.html">BaseIteratorImpl&lt;T&gt;</a> &amp;other)<span class="keyword"> override </span>{</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    <span class="keywordflow">return</span> getNode()==other.getNode();</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;  };</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;  T &amp;operator*()<span class="keyword"> override </span>{</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    <span class="keywordflow">throw</span> std::logic_error(<span class="stringliteral">&quot;Cannot dereference dummy iterator EmptyIteratorImpl.&quot;</span>);</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;  };</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;};</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160; </div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;<span class="comment">// Designed to be instantiated only with T = (const) AbstractNode</span></div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> NodeType&gt;</div>
+<div class="line"><a name="l00338"></a><span class="lineno"><a class="line" href="class_position_iterator_impl.html">  338</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_position_iterator_impl.html">PositionIteratorImpl</a> : <span class="keyword">public</span> <a class="code" href="class_base_iterator_impl.html">BaseIteratorImpl</a>&lt;T&gt; {</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160; <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;  <span class="comment">// Select const NodeType / NodeType depending on whether or not T is const/non-const</span></div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;  <span class="keyword">typedef</span> <span class="keyword">typename</span> std::conditional&lt;std::is_const&lt;T&gt;::value, <span class="keyword">const</span> NodeType, NodeType&gt;::type N;</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160; </div>
+<div class="line"><a name="l00344"></a><span class="lineno"><a class="line" href="class_position_iterator_impl.html#a1d30b1749fbba04d322988d5845adc61">  344</a></span>&#160;  N &amp;<a class="code" href="class_position_iterator_impl.html#a1d30b1749fbba04d322988d5845adc61">node</a>;</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160; </div>
+<div class="line"><a name="l00347"></a><span class="lineno"><a class="line" href="class_position_iterator_impl.html#a3868fd37d7a19f31af2adf9219013fe5">  347</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="class_position_iterator_impl.html#a3868fd37d7a19f31af2adf9219013fe5">position</a> = 0;</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160; </div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;  T &amp;getNode()<span class="keyword"> override </span>{</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="class_position_iterator_impl.html#a1d30b1749fbba04d322988d5845adc61">node</a>;</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;  };</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;  <span class="keyword">const</span> T &amp;getNode()<span class="keyword"> const override </span>{</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="class_position_iterator_impl.html#a1d30b1749fbba04d322988d5845adc61">node</a>;</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;  };</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160; </div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="class_position_iterator_impl.html">PositionIteratorImpl</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160; </div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;  <a class="code" href="class_position_iterator_impl.html">PositionIteratorImpl</a>(N &amp;<a class="code" href="class_position_iterator_impl.html#a1d30b1749fbba04d322988d5845adc61">node</a>, <span class="keywordtype">size_t</span> <a class="code" href="class_position_iterator_impl.html#a3868fd37d7a19f31af2adf9219013fe5">position</a>) : <a class="code" href="class_position_iterator_impl.html#a1d30b1749fbba04d322988d5845adc61">node</a>(<a class="code" href="class_position_iterator_impl.html#a1d30b1749fbba04d322988d5845adc61">node</a>), <a class="code" href="class_position_iterator_impl.html#a3868fd37d7a19f31af2adf9219013fe5">position</a>(<a class="code" href="class_position_iterator_impl.html#a3868fd37d7a19f31af2adf9219013fe5">position</a>) {};</div>
 <div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160; </div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;  <span class="keywordtype">bool</span> equal(<span class="keyword">const</span> <a class="code" href="class_base_iterator_impl.html">BaseIteratorImpl&lt;T&gt;</a> &amp;other)<span class="keyword"> override </span>{</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="class_position_iterator_impl.html#a1d30b1749fbba04d322988d5845adc61">node</a>==other.getNode()) {</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;      <span class="keyword">auto</span> otherNodePtr = <span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span><a class="code" href="class_position_iterator_impl.html">PositionIteratorImpl</a> *<span class="keyword">&gt;</span>(&amp;other);</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;      assert(otherNodePtr); <span class="comment">// If the other node has the same type, the Iterator must be the same type, too</span></div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;      <span class="keywordflow">return</span> (<a class="code" href="class_position_iterator_impl.html#a3868fd37d7a19f31af2adf9219013fe5">position</a>==otherNodePtr-&gt;position);</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;    }</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;  }</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160; </div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;  T &amp;operator*() <span class="keyword">override</span>  = 0;</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;  <span class="comment">/* The dereference function needs to be overridden, similar to the example below:</span></div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;<span class="comment">    switch (position) {</span></div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;<span class="comment">      case 0:</span></div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;<span class="comment">        if (node.hasTarget())</span></div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;<span class="comment">          return node.getTarget();</span></div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;<span class="comment">        else if (node.hasValue())</span></div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;<span class="comment">          return node.getValue();</span></div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;<span class="comment">        else</span></div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;<span class="comment">          throw std::runtime_error(&quot;Cannot dereference iterator since node has no children.&quot;);</span></div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;<span class="comment">      case 1:</span></div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;<span class="comment">        if (node.hasTarget())</span></div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;<span class="comment">          if (node.hasValue())</span></div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;<span class="comment">            return node.getValue();</span></div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;<span class="comment">        // If there is no target, then position 1 is past end even if value exists</span></div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;<span class="comment">        // If there is target, but no value, we&#39;re also past end, so just continue into default</span></div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;<span class="comment">      default:</span></div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;<span class="comment">        // calling dereference on higher elements is an error</span></div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;<span class="comment">        throw std::runtime_error(&quot;Trying to dereference iterator past end.&quot;);</span></div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;<span class="comment">    }</span></div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;<span class="comment">  }</span></div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;<span class="comment">  */</span></div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160; </div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;  std::unique_ptr&lt;BaseIteratorImpl&lt;T&gt;&gt; clone() <span class="keyword">override</span> = 0;</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;  <span class="comment">// Deriving class needs to implement this, returning a new copy of themselves</span></div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;};</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;  <span class="keywordtype">void</span> increment()<span class="keyword"> override </span>{</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;    ++<a class="code" href="class_position_iterator_impl.html#a3868fd37d7a19f31af2adf9219013fe5">position</a>;</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;  }</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160; </div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;  <span class="keywordtype">bool</span> equal(<span class="keyword">const</span> <a class="code" href="class_base_iterator_impl.html">BaseIteratorImpl&lt;T&gt;</a> &amp;other)<span class="keyword"> override </span>{</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="class_position_iterator_impl.html#a1d30b1749fbba04d322988d5845adc61">node</a>==other.getNode()) {</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;      <span class="keyword">auto</span> otherNodePtr = <span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span><a class="code" href="class_position_iterator_impl.html">PositionIteratorImpl</a> *<span class="keyword">&gt;</span>(&amp;other);</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;      assert(otherNodePtr); <span class="comment">// If the other node has the same type, the Iterator must be the same type, too</span></div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;      <span class="keywordflow">return</span> (<a class="code" href="class_position_iterator_impl.html#a3868fd37d7a19f31af2adf9219013fe5">position</a>==otherNodePtr-&gt;position);</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    }</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;  }</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160; </div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;  T &amp;operator*() <span class="keyword">override</span>  = 0;</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;  <span class="comment">/* The dereference function needs to be overridden, similar to the example below:</span></div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;<span class="comment">    switch (position) {</span></div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;<span class="comment">      case 0:</span></div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;<span class="comment">        if (node.hasTarget())</span></div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;<span class="comment">          return node.getTarget();</span></div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;<span class="comment">        else if (node.hasValue())</span></div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;<span class="comment">          return node.getValue();</span></div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;<span class="comment">        else</span></div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;<span class="comment">          throw std::runtime_error(&quot;Cannot dereference iterator since node has no children.&quot;);</span></div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;<span class="comment">      case 1:</span></div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;<span class="comment">        if (node.hasTarget())</span></div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;<span class="comment">          if (node.hasValue())</span></div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;<span class="comment">            return node.getValue();</span></div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;<span class="comment">        // If there is no target, then position 1 is past end even if value exists</span></div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;<span class="comment">        // If there is target, but no value, we&#39;re also past end, so just continue into default</span></div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;<span class="comment">      default:</span></div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;<span class="comment">        // calling dereference on higher elements is an error</span></div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;<span class="comment">        throw std::runtime_error(&quot;Trying to dereference iterator past end.&quot;);</span></div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;<span class="comment">    }</span></div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;<span class="comment">  }</span></div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;<span class="comment">  */</span></div>
 <div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160; </div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//AST_OPTIMIZER_INCLUDE_AST_OPT_AST_ABSTRACTNODE_H_</span></div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;  std::unique_ptr&lt;BaseIteratorImpl&lt;T&gt;&gt; clone() <span class="keyword">override</span> = 0;</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;  <span class="comment">// Deriving class needs to implement this, returning a new copy of themselves</span></div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;};</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160; </div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//AST_OPTIMIZER_INCLUDE_AST_OPT_AST_ABSTRACTNODE_H_</span></div>
 <div class="ttc" id="aclass_abstract_node_html"><div class="ttname"><a href="class_abstract_node.html">AbstractNode</a></div><div class="ttdef"><b>Definition:</b> AbstractNode.h:43</div></div>
 <div class="ttc" id="aclass_abstract_node_html_a15d03714b4b0e362da6d740f4c749205"><div class="ttname"><a href="class_abstract_node.html#a15d03714b4b0e362da6d740f4c749205">AbstractNode::accept</a></div><div class="ttdeci">virtual void accept(IVisitor &amp;v)=0</div></div>
 <div class="ttc" id="aclass_abstract_node_html_a3e4c9b9841c8b860e450b8eb089f9b85"><div class="ttname"><a href="class_abstract_node.html#a3e4c9b9841c8b860e450b8eb089f9b85">AbstractNode::~AbstractNode</a></div><div class="ttdeci">virtual ~AbstractNode()=0</div><div class="ttdoc">Virtual Destructor, force class to be abstract.</div></div>
 <div class="ttc" id="aclass_abstract_node_html_a756012d0c319f4ac9271f095efaba276"><div class="ttname"><a href="class_abstract_node.html#a756012d0c319f4ac9271f095efaba276">AbstractNode::operator==</a></div><div class="ttdeci">bool operator==(const AbstractNode &amp;other) const noexcept</div><div class="ttdef"><b>Definition:</b> AbstractNode.cpp:14</div></div>
 <div class="ttc" id="aclass_abstract_node_html_aa407fbdc74d3d019d75da5e8ae02b701"><div class="ttname"><a href="class_abstract_node.html#aa407fbdc74d3d019d75da5e8ae02b701">AbstractNode::operator!=</a></div><div class="ttdeci">bool operator!=(const AbstractNode &amp;other) const noexcept</div><div class="ttdef"><b>Definition:</b> AbstractNode.cpp:18</div></div>
 <div class="ttc" id="aclass_abstract_node_html_ac447b0cc9a1df5ec09c7893e64e3af2f"><div class="ttname"><a href="class_abstract_node.html#ac447b0cc9a1df5ec09c7893e64e3af2f">AbstractNode::clone</a></div><div class="ttdeci">std::unique_ptr&lt; AbstractNode &gt; clone(AbstractNode *parent=nullptr) const</div><div class="ttdef"><b>Definition:</b> AbstractNode.cpp:10</div></div>
-<div class="ttc" id="aclass_base_iterator_impl_html"><div class="ttname"><a href="class_base_iterator_impl.html">BaseIteratorImpl</a></div><div class="ttdoc">BaseIteratorImpl is an abstract class that simply specifies the functions required in the wrapper.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:292</div></div>
-<div class="ttc" id="aclass_empty_iterator_impl_html"><div class="ttname"><a href="class_empty_iterator_impl.html">EmptyIteratorImpl</a></div><div class="ttdef"><b>Definition:</b> AbstractNode.h:306</div></div>
+<div class="ttc" id="aclass_base_iterator_impl_html"><div class="ttname"><a href="class_base_iterator_impl.html">BaseIteratorImpl</a></div><div class="ttdoc">BaseIteratorImpl is an abstract class that simply specifies the functions required in the wrapper.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:296</div></div>
+<div class="ttc" id="aclass_empty_iterator_impl_html"><div class="ttname"><a href="class_empty_iterator_impl.html">EmptyIteratorImpl</a></div><div class="ttdef"><b>Definition:</b> AbstractNode.h:310</div></div>
 <div class="ttc" id="aclass_i_visitor_html"><div class="ttname"><a href="class_i_visitor.html">IVisitor</a></div><div class="ttdef"><b>Definition:</b> IVisitor.h:50</div></div>
-<div class="ttc" id="aclass_node_iterator_html"><div class="ttname"><a href="class_node_iterator.html">NodeIterator</a></div><div class="ttdoc">Forward Iterator that redirects all calls to a (polymorphic) BaseIteratorImpl iterator.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:218</div></div>
-<div class="ttc" id="aclass_node_iterator_html_a2354e7d8dbe8b60c7d59f3911c4f7bbe"><div class="ttname"><a href="class_node_iterator.html#a2354e7d8dbe8b60c7d59f3911c4f7bbe">NodeIterator::operator==</a></div><div class="ttdeci">bool operator==(const NodeIterator &amp;other) const</div><div class="ttdoc">Equality.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:269</div></div>
-<div class="ttc" id="aclass_node_iterator_html_a260777e020b6e5b49d55ebdbbfdca49b"><div class="ttname"><a href="class_node_iterator.html#a260777e020b6e5b49d55ebdbbfdca49b">NodeIterator::operator++</a></div><div class="ttdeci">NodeIterator &amp; operator++()</div><div class="ttdoc">Pre-increment.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:254</div></div>
-<div class="ttc" id="aclass_node_iterator_html_a30589e93d2b021038bdb3627ae0cbb9a"><div class="ttname"><a href="class_node_iterator.html#a30589e93d2b021038bdb3627ae0cbb9a">NodeIterator::operator++</a></div><div class="ttdeci">NodeIterator&lt; T &gt; operator++(int) &amp;</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:262</div></div>
-<div class="ttc" id="aclass_node_iterator_html_a3edd33037b8c23f025a8b906f5aad732"><div class="ttname"><a href="class_node_iterator.html#a3edd33037b8c23f025a8b906f5aad732">NodeIterator::operator-&gt;</a></div><div class="ttdeci">T * operator-&gt;()</div><div class="ttdoc">Arrow.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:284</div></div>
-<div class="ttc" id="aclass_node_iterator_html_a40979aeb6daeaf96a25fc8cb6998604f"><div class="ttname"><a href="class_node_iterator.html#a40979aeb6daeaf96a25fc8cb6998604f">NodeIterator::operator!=</a></div><div class="ttdeci">bool operator!=(const NodeIterator &amp;other) const</div><div class="ttdoc">Inequality.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:274</div></div>
-<div class="ttc" id="aclass_node_iterator_html_a440f9335584de5b812e84a6a2a1a8360"><div class="ttname"><a href="class_node_iterator.html#a440f9335584de5b812e84a6a2a1a8360">NodeIterator::NodeIterator</a></div><div class="ttdeci">NodeIterator(const NodeIterator &amp;other)</div><div class="ttdoc">Copy constructor.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:238</div></div>
-<div class="ttc" id="aclass_node_iterator_html_a4a8cab5f8bd19c4529cdef5665667588"><div class="ttname"><a href="class_node_iterator.html#a4a8cab5f8bd19c4529cdef5665667588">NodeIterator::NodeIterator</a></div><div class="ttdeci">NodeIterator(NodeIterator &amp;&amp;other) noexcept</div><div class="ttdoc">Move constructor.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:241</div></div>
-<div class="ttc" id="aclass_node_iterator_html_a6802b9ae14e734b32f1ed70ac89acf68"><div class="ttname"><a href="class_node_iterator.html#a6802b9ae14e734b32f1ed70ac89acf68">NodeIterator::operator*</a></div><div class="ttdeci">T &amp; operator*()</div><div class="ttdoc">Dereference.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:279</div></div>
+<div class="ttc" id="aclass_node_iterator_html"><div class="ttname"><a href="class_node_iterator.html">NodeIterator</a></div><div class="ttdoc">Forward Iterator that redirects all calls to a (polymorphic) BaseIteratorImpl iterator.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:222</div></div>
+<div class="ttc" id="aclass_node_iterator_html_a2354e7d8dbe8b60c7d59f3911c4f7bbe"><div class="ttname"><a href="class_node_iterator.html#a2354e7d8dbe8b60c7d59f3911c4f7bbe">NodeIterator::operator==</a></div><div class="ttdeci">bool operator==(const NodeIterator &amp;other) const</div><div class="ttdoc">Equality.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:273</div></div>
+<div class="ttc" id="aclass_node_iterator_html_a260777e020b6e5b49d55ebdbbfdca49b"><div class="ttname"><a href="class_node_iterator.html#a260777e020b6e5b49d55ebdbbfdca49b">NodeIterator::operator++</a></div><div class="ttdeci">NodeIterator &amp; operator++()</div><div class="ttdoc">Pre-increment.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:258</div></div>
+<div class="ttc" id="aclass_node_iterator_html_a30589e93d2b021038bdb3627ae0cbb9a"><div class="ttname"><a href="class_node_iterator.html#a30589e93d2b021038bdb3627ae0cbb9a">NodeIterator::operator++</a></div><div class="ttdeci">NodeIterator&lt; T &gt; operator++(int) &amp;</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:266</div></div>
+<div class="ttc" id="aclass_node_iterator_html_a3edd33037b8c23f025a8b906f5aad732"><div class="ttname"><a href="class_node_iterator.html#a3edd33037b8c23f025a8b906f5aad732">NodeIterator::operator-&gt;</a></div><div class="ttdeci">T * operator-&gt;()</div><div class="ttdoc">Arrow.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:288</div></div>
+<div class="ttc" id="aclass_node_iterator_html_a40979aeb6daeaf96a25fc8cb6998604f"><div class="ttname"><a href="class_node_iterator.html#a40979aeb6daeaf96a25fc8cb6998604f">NodeIterator::operator!=</a></div><div class="ttdeci">bool operator!=(const NodeIterator &amp;other) const</div><div class="ttdoc">Inequality.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:278</div></div>
+<div class="ttc" id="aclass_node_iterator_html_a440f9335584de5b812e84a6a2a1a8360"><div class="ttname"><a href="class_node_iterator.html#a440f9335584de5b812e84a6a2a1a8360">NodeIterator::NodeIterator</a></div><div class="ttdeci">NodeIterator(const NodeIterator &amp;other)</div><div class="ttdoc">Copy constructor.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:242</div></div>
+<div class="ttc" id="aclass_node_iterator_html_a4a8cab5f8bd19c4529cdef5665667588"><div class="ttname"><a href="class_node_iterator.html#a4a8cab5f8bd19c4529cdef5665667588">NodeIterator::NodeIterator</a></div><div class="ttdeci">NodeIterator(NodeIterator &amp;&amp;other) noexcept</div><div class="ttdoc">Move constructor.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:245</div></div>
+<div class="ttc" id="aclass_node_iterator_html_a6802b9ae14e734b32f1ed70ac89acf68"><div class="ttname"><a href="class_node_iterator.html#a6802b9ae14e734b32f1ed70ac89acf68">NodeIterator::operator*</a></div><div class="ttdeci">T &amp; operator*()</div><div class="ttdoc">Dereference.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:283</div></div>
 <div class="ttc" id="aclass_node_iterator_html_a7badeb26e853a0f2445a0626ba77a792"><div class="ttname"><a href="class_node_iterator.html#a7badeb26e853a0f2445a0626ba77a792">NodeIterator::NodeIterator</a></div><div class="ttdeci">NodeIterator()=default</div><div class="ttdoc">A default constructed iterator is uninitialized and should not be used.</div></div>
-<div class="ttc" id="aclass_node_iterator_html_abbe99f32f549320c0a4b77a9c891a997"><div class="ttname"><a href="class_node_iterator.html#abbe99f32f549320c0a4b77a9c891a997">NodeIterator::operator=</a></div><div class="ttdeci">NodeIterator &amp; operator=(const NodeIterator &amp;other)</div><div class="ttdoc">Copy assignment.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:244</div></div>
-<div class="ttc" id="aclass_node_iterator_html_ad432400d9e17d4253b7c0f0121ff26d8"><div class="ttname"><a href="class_node_iterator.html#ad432400d9e17d4253b7c0f0121ff26d8">NodeIterator::operator=</a></div><div class="ttdeci">NodeIterator &amp; operator=(NodeIterator &amp;&amp;other) noexcept</div><div class="ttdoc">Move assignment.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:249</div></div>
-<div class="ttc" id="aclass_node_iterator_html_ae6c4171f307ac532a3409eaf619c9eca"><div class="ttname"><a href="class_node_iterator.html#ae6c4171f307ac532a3409eaf619c9eca">NodeIterator::NodeIterator</a></div><div class="ttdeci">NodeIterator(std::unique_ptr&lt; BaseIteratorImpl&lt; T &gt;&gt; impl)</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:235</div></div>
-<div class="ttc" id="aclass_position_iterator_impl_html"><div class="ttname"><a href="class_position_iterator_impl.html">PositionIteratorImpl</a></div><div class="ttdef"><b>Definition:</b> AbstractNode.h:334</div></div>
-<div class="ttc" id="aclass_position_iterator_impl_html_a1d30b1749fbba04d322988d5845adc61"><div class="ttname"><a href="class_position_iterator_impl.html#a1d30b1749fbba04d322988d5845adc61">PositionIteratorImpl::node</a></div><div class="ttdeci">N &amp; node</div><div class="ttdoc">The node object that this iterator belongs to.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:340</div></div>
-<div class="ttc" id="aclass_position_iterator_impl_html_a3868fd37d7a19f31af2adf9219013fe5"><div class="ttname"><a href="class_position_iterator_impl.html#a3868fd37d7a19f31af2adf9219013fe5">PositionIteratorImpl::position</a></div><div class="ttdeci">size_t position</div><div class="ttdoc">Indicates the current position.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:343</div></div>
+<div class="ttc" id="aclass_node_iterator_html_abbe99f32f549320c0a4b77a9c891a997"><div class="ttname"><a href="class_node_iterator.html#abbe99f32f549320c0a4b77a9c891a997">NodeIterator::operator=</a></div><div class="ttdeci">NodeIterator &amp; operator=(const NodeIterator &amp;other)</div><div class="ttdoc">Copy assignment.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:248</div></div>
+<div class="ttc" id="aclass_node_iterator_html_ad432400d9e17d4253b7c0f0121ff26d8"><div class="ttname"><a href="class_node_iterator.html#ad432400d9e17d4253b7c0f0121ff26d8">NodeIterator::operator=</a></div><div class="ttdeci">NodeIterator &amp; operator=(NodeIterator &amp;&amp;other) noexcept</div><div class="ttdoc">Move assignment.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:253</div></div>
+<div class="ttc" id="aclass_node_iterator_html_ae6c4171f307ac532a3409eaf619c9eca"><div class="ttname"><a href="class_node_iterator.html#ae6c4171f307ac532a3409eaf619c9eca">NodeIterator::NodeIterator</a></div><div class="ttdeci">NodeIterator(std::unique_ptr&lt; BaseIteratorImpl&lt; T &gt;&gt; impl)</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:239</div></div>
+<div class="ttc" id="aclass_position_iterator_impl_html"><div class="ttname"><a href="class_position_iterator_impl.html">PositionIteratorImpl</a></div><div class="ttdef"><b>Definition:</b> AbstractNode.h:338</div></div>
+<div class="ttc" id="aclass_position_iterator_impl_html_a1d30b1749fbba04d322988d5845adc61"><div class="ttname"><a href="class_position_iterator_impl.html#a1d30b1749fbba04d322988d5845adc61">PositionIteratorImpl::node</a></div><div class="ttdeci">N &amp; node</div><div class="ttdoc">The node object that this iterator belongs to.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:344</div></div>
+<div class="ttc" id="aclass_position_iterator_impl_html_a3868fd37d7a19f31af2adf9219013fe5"><div class="ttname"><a href="class_position_iterator_impl.html#a3868fd37d7a19f31af2adf9219013fe5">PositionIteratorImpl::position</a></div><div class="ttdeci">size_t position</div><div class="ttdoc">Indicates the current position.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:347</div></div>
 <div class="ttc" id="agroup___d_a_g_html_ga27b40a34874c45bce9a30b4c92cdd746"><div class="ttname"><a href="group___d_a_g.html#ga27b40a34874c45bce9a30b4c92cdd746">AbstractNode::countChildren</a></div><div class="ttdeci">virtual size_t countChildren() const =0</div></div>
 <div class="ttc" id="agroup___d_a_g_html_ga4bc933321cb97fee4fb929e8f4d740a1"><div class="ttname"><a href="group___d_a_g.html#ga4bc933321cb97fee4fb929e8f4d740a1">AbstractNode::const_iterator</a></div><div class="ttdeci">NodeIterator&lt; const AbstractNode &gt; const_iterator</div><div class="ttdoc">Const Forward Iterator through Nodes.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:93</div></div>
 <div class="ttc" id="agroup___d_a_g_html_ga78701a0642b6bf9b58c615e83bd0d10a"><div class="ttname"><a href="group___d_a_g.html#ga78701a0642b6bf9b58c615e83bd0d10a">AbstractNode::begin</a></div><div class="ttdeci">virtual iterator begin()=0</div><div class="ttdoc">Forward Iterator marking begin of children.</div></div>
+<div class="ttc" id="agroup___d_a_g_html_ga7c740fb694a2f17cb20429aceaa37d5c"><div class="ttname"><a href="group___d_a_g.html#ga7c740fb694a2f17cb20429aceaa37d5c">AbstractNode::getParentPtr</a></div><div class="ttdeci">AbstractNode * getParentPtr()</div><div class="ttdef"><b>Definition:</b> AbstractNode.cpp:44</div></div>
 <div class="ttc" id="agroup___d_a_g_html_ga7d07d5bf1e0a7f1e87a42be354e12026"><div class="ttname"><a href="group___d_a_g.html#ga7d07d5bf1e0a7f1e87a42be354e12026">AbstractNode::setParent</a></div><div class="ttdeci">void setParent(AbstractNode &amp;newParent)</div><div class="ttdef"><b>Definition:</b> AbstractNode.cpp:24</div></div>
 <div class="ttc" id="agroup___d_a_g_html_ga87ef2c5c65cac9bf868298df39dc8613"><div class="ttname"><a href="group___d_a_g.html#ga87ef2c5c65cac9bf868298df39dc8613">AbstractNode::begin</a></div><div class="ttdeci">virtual const_iterator begin() const =0</div><div class="ttdoc">Forward Const Iterator marking begin of children.</div></div>
 <div class="ttc" id="agroup___d_a_g_html_ga9c815a4f2452e4294d6fdcdd2542535b"><div class="ttname"><a href="group___d_a_g.html#ga9c815a4f2452e4294d6fdcdd2542535b">AbstractNode::end</a></div><div class="ttdeci">virtual const_iterator end() const =0</div><div class="ttdoc">Forward Const Iterator marking end of children.</div></div>
@@ -358,13 +361,13 @@ $(function() {
 <div class="ttc" id="agroup___d_a_g_html_gaccb709a7ddc8e75788b44fbd0801d8de"><div class="ttname"><a href="group___d_a_g.html#gaccb709a7ddc8e75788b44fbd0801d8de">AbstractNode::hasParent</a></div><div class="ttdeci">bool hasParent() const</div><div class="ttdef"><b>Definition:</b> AbstractNode.cpp:32</div></div>
 <div class="ttc" id="agroup___d_a_g_html_gaf7ec06d875e1e500fcce725260057ec8"><div class="ttname"><a href="group___d_a_g.html#gaf7ec06d875e1e500fcce725260057ec8">AbstractNode::iterator</a></div><div class="ttdeci">NodeIterator&lt; AbstractNode &gt; iterator</div><div class="ttdoc">Forward Iterator through Nodes.</div><div class="ttdef"><b>Definition:</b> AbstractNode.h:90</div></div>
 <div class="ttc" id="agroup___d_a_g_html_gafd6ae8c0ed5552ec37fd83703a117118"><div class="ttname"><a href="group___d_a_g.html#gafd6ae8c0ed5552ec37fd83703a117118">AbstractNode::end</a></div><div class="ttdeci">virtual iterator end()=0</div><div class="ttdoc">Forward Iterator marking end of children.</div></div>
-<div class="ttc" id="agroup__node_i_d_html_ga27e3de10b856ef7ebc64e6382aec92eb"><div class="ttname"><a href="group__node_i_d.html#ga27e3de10b856ef7ebc64e6382aec92eb">AbstractNode::getUniqueNodeId</a></div><div class="ttdeci">std::string getUniqueNodeId() const</div><div class="ttdef"><b>Definition:</b> AbstractNode.cpp:114</div></div>
-<div class="ttc" id="agroup__node_i_d_html_ga7b59e2377b8841ec1762bbca9ba88d2d"><div class="ttname"><a href="group__node_i_d.html#ga7b59e2377b8841ec1762bbca9ba88d2d">AbstractNode::AbstractNode</a></div><div class="ttdeci">AbstractNode()</div><div class="ttdoc">Default Constructor, defines some default behavior for subclasses related to IDs.</div><div class="ttdef"><b>Definition:</b> AbstractNode.cpp:108</div></div>
+<div class="ttc" id="agroup__node_i_d_html_ga27e3de10b856ef7ebc64e6382aec92eb"><div class="ttname"><a href="group__node_i_d.html#ga27e3de10b856ef7ebc64e6382aec92eb">AbstractNode::getUniqueNodeId</a></div><div class="ttdeci">std::string getUniqueNodeId() const</div><div class="ttdef"><b>Definition:</b> AbstractNode.cpp:118</div></div>
+<div class="ttc" id="agroup__node_i_d_html_ga7b59e2377b8841ec1762bbca9ba88d2d"><div class="ttname"><a href="group__node_i_d.html#ga7b59e2377b8841ec1762bbca9ba88d2d">AbstractNode::AbstractNode</a></div><div class="ttdeci">AbstractNode()</div><div class="ttdoc">Default Constructor, defines some default behavior for subclasses related to IDs.</div><div class="ttdef"><b>Definition:</b> AbstractNode.cpp:112</div></div>
 <div class="ttc" id="agroup__output_html_ga46f4d6b6ae532260c283a6e5e6502fb8"><div class="ttname"><a href="group__output.html#ga46f4d6b6ae532260c283a6e5e6502fb8">AbstractNode::toJson</a></div><div class="ttdeci">virtual nlohmann::json toJson() const =0</div></div>
 <div class="ttc" id="agroup__output_html_ga8cc40127801e7777c8094f17a3b1efcb"><div class="ttname"><a href="group__output.html#ga8cc40127801e7777c8094f17a3b1efcb">AbstractNode::getNodeType</a></div><div class="ttdeci">virtual std::string getNodeType() const =0</div></div>
-<div class="ttc" id="agroup__output_html_gac17194268db99b9b8ba9b3a85563fb94"><div class="ttname"><a href="group__output.html#gac17194268db99b9b8ba9b3a85563fb94">AbstractNode::operator&lt;&lt;</a></div><div class="ttdeci">friend std::ostream &amp; operator&lt;&lt;(std::ostream &amp;os, const AbstractNode &amp;node)</div><div class="ttdef"><b>Definition:</b> AbstractNode.cpp:57</div></div>
-<div class="ttc" id="agroup__output_html_gac36ebbc674fc0241f43bbbace87537bc"><div class="ttname"><a href="group__output.html#gac36ebbc674fc0241f43bbbace87537bc">AbstractNode::toStringHelper</a></div><div class="ttdeci">std::string toStringHelper(bool printChildren, std::vector&lt; std::string &gt; attributes) const</div><div class="ttdef"><b>Definition:</b> AbstractNode.cpp:62</div></div>
-<div class="ttc" id="agroup__output_html_gaee58b60a470f2e494e0db1808c87b13d"><div class="ttname"><a href="group__output.html#gaee58b60a470f2e494e0db1808c87b13d">AbstractNode::toString</a></div><div class="ttdeci">virtual std::string toString(bool printChildren) const</div><div class="ttdef"><b>Definition:</b> AbstractNode.cpp:53</div></div>
+<div class="ttc" id="agroup__output_html_gac17194268db99b9b8ba9b3a85563fb94"><div class="ttname"><a href="group__output.html#gac17194268db99b9b8ba9b3a85563fb94">AbstractNode::operator&lt;&lt;</a></div><div class="ttdeci">friend std::ostream &amp; operator&lt;&lt;(std::ostream &amp;os, const AbstractNode &amp;node)</div><div class="ttdef"><b>Definition:</b> AbstractNode.cpp:61</div></div>
+<div class="ttc" id="agroup__output_html_gac36ebbc674fc0241f43bbbace87537bc"><div class="ttname"><a href="group__output.html#gac36ebbc674fc0241f43bbbace87537bc">AbstractNode::toStringHelper</a></div><div class="ttdeci">std::string toStringHelper(bool printChildren, std::vector&lt; std::string &gt; attributes) const</div><div class="ttdef"><b>Definition:</b> AbstractNode.cpp:66</div></div>
+<div class="ttc" id="agroup__output_html_gaee58b60a470f2e494e0db1808c87b13d"><div class="ttname"><a href="group__output.html#gaee58b60a470f2e494e0db1808c87b13d">AbstractNode::toString</a></div><div class="ttdeci">virtual std::string toString(bool printChildren) const</div><div class="ttdef"><b>Definition:</b> AbstractNode.cpp:57</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
