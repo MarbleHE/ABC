@@ -1,16 +1,16 @@
-#ifndef AST_OPTIMIZER_INCLUDE_AST_OPT_VISITOR_COMPILETIMEEXPRESSIONSIMPLIFIER_H_
-#define AST_OPTIMIZER_INCLUDE_AST_OPT_VISITOR_COMPILETIMEEXPRESSIONSIMPLIFIER_H_
+#ifndef AST_OPTIMIZER_INCLUDE_AST_OPT_VISITOR_ProgramTransformationVisitor_H_
+#define AST_OPTIMIZER_INCLUDE_AST_OPT_VISITOR_ProgramTransformationVisitor_H_
 
 #include <deque>
 #include <set>
 #include "ast_opt/utilities/Visitor.h"
 #include "ast_opt/runtime/RuntimeVisitor.h"
 
-class SpecialCompileTimeExpressionSimplifier;
+class SpecalProgramTransformationVisitor;
 
-typedef Visitor<SpecialCompileTimeExpressionSimplifier, ScopedVisitor> CompileTimeExpressionSimplifier;
+typedef Visitor<SpecalProgramTransformationVisitor, ScopedVisitor> ProgramTransformationVisitor;
 
-class SpecialCompileTimeExpressionSimplifier : public ScopedVisitor {
+class SpecalProgramTransformationVisitor : public ScopedVisitor {
  private:
 
   VariableMap<std::unique_ptr<AbstractExpression>> variableMap;
@@ -63,7 +63,7 @@ class SpecialCompileTimeExpressionSimplifier : public ScopedVisitor {
 //  /// loop unrollings. Otherwise returns False.
 //  bool isUnrollLoopAllowed() const;
 //
-//  /// A CompileTimeExpressionSimplifier configuration object containing configuration parameters.
+//  /// A ProgramTransformationVisitor configuration object containing configuration parameters.
 //  CtesConfiguration configuration;
 //
 //  /// A RuntimeVisitor instance that is used to evaluate parts of the AST in order to simplify them.
@@ -97,9 +97,9 @@ class SpecialCompileTimeExpressionSimplifier : public ScopedVisitor {
 //  void leftForLoop();
 
 // public:
-//  SpecialCompileTimeExpressionSimplifier() = default;
+//  SpecialProgramTransformationVisitor() = default;
 
-//  explicit SpecialCompileTimeExpressionSimplifier(CtesConfiguration  cfg);
+//  explicit SpecialProgramTransformationVisitor(CtesConfiguration  cfg);
 
 /// Stores the latest value of a variable while traversing through the AST. Entries in this map consist of a key
 /// (pair) that is made of a variable identifier (first) and the scope where the variable was declared in (second).
@@ -315,7 +315,7 @@ class SpecialCompileTimeExpressionSimplifier : public ScopedVisitor {
 //};
 //
 ///**
-// * A struct containing all configuration parameters that can be passed to the CompileTimeExpressionSimplifier.
+// * A struct containing all configuration parameters that can be passed to the ProgramTransformationVisitor.
 // */
 //struct CtesConfiguration {
 //  CtesConfiguration() = default;
@@ -339,4 +339,4 @@ class SpecialCompileTimeExpressionSimplifier : public ScopedVisitor {
 //  }
 //};
 
-#endif //AST_OPTIMIZER_INCLUDE_AST_OPT_VISITOR_COMPILETIMEEXPRESSIONSIMPLIFIER_H_
+#endif //AST_OPTIMIZER_INCLUDE_AST_OPT_VISITOR_ProgramTransformationVisitor_H_

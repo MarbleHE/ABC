@@ -1,4 +1,4 @@
-#include "ast_opt/visitor/CompileTimeExpressionSimplifier.h"
+#include "ast_opt/visitor/ProgramTransformationVisitor.h"
 #include <stdexcept>
 #include "ast_opt/visitor/ProgramPrintVisitor.h"
 
@@ -78,14 +78,14 @@ std::unique_ptr<TO> dynamic_cast_unique_ptr(std::unique_ptr<FROM> &&old) {
   //conversion: unique_ptr<FROM>->FROM*->TO*->unique_ptr<TO>
 }
 
-std::string SpecialCompileTimeExpressionSimplifier::printProgram(AbstractNode &node) {
+std::string SpecalProgramTransformationVisitor::printProgram(AbstractNode &node) {
   std::stringstream ss;
   ProgramPrintVisitor ppv(ss);
   node.accept(ppv);
   return ss.str();
 }
 
-void SpecialCompileTimeExpressionSimplifier::visit(BinaryExpression &elem) {
+void SpecalProgramTransformationVisitor::visit(BinaryExpression &elem) {
   std::string original_code = printProgram(elem);
   elem.getLeft().accept(*this);
   if (replacementExpression) {
@@ -130,7 +130,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(BinaryExpression &elem) {
   } // else: nothing needs to be done
 }
 
-void SpecialCompileTimeExpressionSimplifier::visit(UnaryExpression &elem) {
+void SpecalProgramTransformationVisitor::visit(UnaryExpression &elem) {
 
   // visit children
   elem.getOperand().accept(*this);
@@ -158,7 +158,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(UnaryExpression &elem) {
 
 }
 
-void SpecialCompileTimeExpressionSimplifier::visit(VariableDeclaration &elem) {
+void SpecalProgramTransformationVisitor::visit(VariableDeclaration &elem) {
   // Get the value, if it exists
   std::unique_ptr<AbstractExpression> expr_ptr = nullptr;
   if (elem.hasValue()) {
@@ -187,7 +187,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(VariableDeclaration &elem) {
   removeStatement = true;
 }
 
-void SpecialCompileTimeExpressionSimplifier::visit(Assignment &elem) {
+void SpecalProgramTransformationVisitor::visit(Assignment &elem) {
   // visit the value (rhs) expression to simplify it
   elem.getValue().accept(*this);
   if (replacementExpression) elem.setValue(std::move(replacementExpression));
@@ -274,7 +274,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(Assignment &elem) {
 
 }
 
-void SpecialCompileTimeExpressionSimplifier::visit(Variable &elem) {
+void SpecalProgramTransformationVisitor::visit(Variable &elem) {
   // take scope into account
   auto scopedIdentifier = getCurrentScope().resolveIdentifier(elem.getIdentifier());
 
@@ -291,7 +291,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(Variable &elem) {
 
 }
 
-void SpecialCompileTimeExpressionSimplifier::visit(Function &elem) {
+void SpecalProgramTransformationVisitor::visit(Function &elem) {
   enterScope(elem);
 
   // Register the Variables from the parameters in the variableMap & scope
@@ -311,7 +311,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(Function &elem) {
   exitScope();
 }
 
-void SpecialCompileTimeExpressionSimplifier::visit(Block &elem) {
+void SpecalProgramTransformationVisitor::visit(Block &elem) {
   enterScope(elem);
 
   // Iterate through statements
@@ -331,7 +331,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(Block &elem) {
   exitScope();
 }
 
-void SpecialCompileTimeExpressionSimplifier::visit(ExpressionList &elem) {
+void SpecalProgramTransformationVisitor::visit(ExpressionList &elem) {
   // Temporarily steal the expression vector
   auto vec = elem.takeExpressions();
 
@@ -345,7 +345,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(ExpressionList &elem) {
   elem.setExpressions(std::move(vec));
 }
 
-void SpecialCompileTimeExpressionSimplifier::visit(Return &elem) {
+void SpecalProgramTransformationVisitor::visit(Return &elem) {
   if (elem.hasValue()) {
     elem.getValue().accept(*this);
     if (replacementExpression) {
@@ -354,7 +354,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(Return &elem) {
   }
 }
 
-void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
+void SpecalProgramTransformationVisitor::visit(AbstractExpression &elem) {
   for (auto &c : elem) {
     c.accept(*this);
     replacementExpression = nullptr;
@@ -366,7 +366,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //#include "ast_opt/visitor/ControlFlowGraphVisitor.h"
 //#include "ast_opt/visitor/SecretTaintingVisitor.h"
 //#include "ast_opt/visitor/PrintVisitor.h"
-//#include "ast_opt/visitor/CompileTimeExpressionSimplifier.h"
+//#include "ast_opt/visitor/ProgramTransformationVisitor.h"
 //#include "ast_opt/utilities/NodeUtils.h"
 //#include "ast_opt/ast/ArithmeticExpr.h"
 //#include "ast_opt/ast/LogicalExpr.h"
@@ -392,11 +392,11 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //#include "ast_opt/ast/GetMatrixSize.h"
 //#include "ast_opt/ast/MatrixAssignm.h"
 //
-//CompileTimeExpressionSimplifier::CompileTimeExpressionSimplifier() : configuration(CtesConfiguration()) {
+//ProgramTransformationVisitor::ProgramTransformationVisitor() : configuration(CtesConfiguration()) {
 //  evalVisitor = EvaluationVisitor();
 //}
 //
-//CompileTimeExpressionSimplifier::CompileTimeExpressionSimplifier(CtesConfiguration cfg) : configuration(cfg) {
+//ProgramTransformationVisitor::ProgramTransformationVisitor(CtesConfiguration cfg) : configuration(cfg) {
 //  evalVisitor = EvaluationVisitor();
 //}
 //
@@ -404,23 +404,23 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //// AST objects that do not require or allow any simplifications
 //// =====================
 //
-//void CompileTimeExpressionSimplifier::visit(AbstractNode &elem) {
+//void ProgramTransformationVisitor::visit(AbstractNode &elem) {
 //  Visitor::visit(elem);
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
+//void ProgramTransformationVisitor::visit(AbstractExpression &elem) {
 //  Visitor::visit(elem);
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(AbstractStatement &elem) {
+//void ProgramTransformationVisitor::visit(AbstractStatement &elem) {
 //  Visitor::visit(elem);
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(Operator &elem) {
+//void ProgramTransformationVisitor::visit(Operator &elem) {
 //  Visitor::visit(elem);
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(Rotate &elem) {
+//void ProgramTransformationVisitor::visit(Rotate &elem) {
 //  Visitor::visit(elem);
 //  // if the Rotate's operand is known at compile-time, we can execute the rotation and replace this node by the
 //  // rotation's result (i.e., rotated operand)
@@ -439,7 +439,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  }
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(Transpose &elem) {
+//void ProgramTransformationVisitor::visit(Transpose &elem) {
 //  Visitor::visit(elem);
 //  // if the Transpose' operand is known at compile-time, we can execute the transpose cmd and replace this node by the
 //  // transpose result (i.e., transposed operand)
@@ -458,7 +458,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  }
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(MatrixAssignm &elem) {
+//void ProgramTransformationVisitor::visit(MatrixAssignm &elem) {
 //  // Do not visit the MatrixElementRef because it would replace the node by a copy of the retrieved value but in a
 //  // MatrixAssignm we need to modify the value at the given position instead. However, our implementation does not
 //  // allow to retrieve a real (assignable) reference using MatrixElementRef.
@@ -582,7 +582,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  }
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(MatrixElementRef &elem) {
+//void ProgramTransformationVisitor::visit(MatrixElementRef &elem) {
 //  Visitor::visit(elem);
 //  // if this is an expression like "matrix[a][b]" where the operand (matrix) as well as both indices (a,b) are known
 //  if (hasKnownValue(elem.getOperand()) && hasKnownValue(elem.getRowIndex()) && hasKnownValue(elem.getColumnIndex())) {
@@ -598,7 +598,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  }
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(GetMatrixSize &elem) {
+//void ProgramTransformationVisitor::visit(GetMatrixSize &elem) {
 //  Visitor::visit(elem);
 //
 //  // if this is an expression like "GetMatrixSize(M, N)" where the matrix M and the dimension N are known
@@ -620,7 +620,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  n->takeFromParent();
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(Ast &elem) {
+//void ProgramTransformationVisitor::visit(Ast &elem) {
 //  // clean up data structures from any possible previous run
 //  emittedVariableDeclarations.clear();
 //  emittedVariableAssignms.clear();
@@ -649,11 +649,11 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  for (auto node : nodesToDelete) { elem.deleteNode(&node, true); }
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(Datatype &elem) {
+//void ProgramTransformationVisitor::visit(Datatype &elem) {
 //  Visitor::visit(elem);
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(CallExternal &elem) {
+//void ProgramTransformationVisitor::visit(CallExternal &elem) {
 //  Visitor::visit(elem);
 //}
 //
@@ -661,23 +661,23 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //// Simplifiable Statements
 //// =====================
 //
-//void CompileTimeExpressionSimplifier::visit(LiteralBool &elem) {
+//void ProgramTransformationVisitor::visit(LiteralBool &elem) {
 //  Visitor::visit(elem);
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(LiteralInt &elem) {
+//void ProgramTransformationVisitor::visit(LiteralInt &elem) {
 //  Visitor::visit(elem);
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(LiteralString &elem) {
+//void ProgramTransformationVisitor::visit(LiteralString &elem) {
 //  Visitor::visit(elem);
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(LiteralFloat &elem) {
+//void ProgramTransformationVisitor::visit(LiteralFloat &elem) {
 //  Visitor::visit(elem);
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(Variable &elem) {
+//void ProgramTransformationVisitor::visit(Variable &elem) {
 //  // Variables have no AbstractNode children, so this should do nothing
 //  Visitor::visit(elem);
 //
@@ -689,7 +689,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  }
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(VarDecl &elem) {
+//void ProgramTransformationVisitor::visit(VarDecl &elem) {
 //  // Visit and simplify datatype and initializer (if present)
 //  Visitor::visit(elem);
 //
@@ -712,7 +712,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  enqueueNodeForDeletion(&elem);
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(VarAssignm &elem) {
+//void ProgramTransformationVisitor::visit(VarAssignm &elem) {
 //  Visitor::visit(elem);
 //  // store the variable's value
 //  auto var = variableValues.getVariableEntryDeclaredInThisOrOuterScope(elem.getVarTargetIdentifier(), curScope);
@@ -724,7 +724,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  enqueueNodeForDeletion(&elem);
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(ArithmeticExpr &elem) {
+//void ProgramTransformationVisitor::visit(ArithmeticExpr &elem) {
 //  // transform this ArithmeticExpr into an OperatorExpr
 //  if (elem.hasParent()) {
 //    auto op = elem.getOperator();
@@ -741,7 +741,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  }
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(LogicalExpr &elem) {
+//void ProgramTransformationVisitor::visit(LogicalExpr &elem) {
 //  // transform this LogicalExpr into an OperatorExpr
 //  if (elem.hasParent()) {
 //    auto op = elem.getOperator();
@@ -758,7 +758,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  }
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(UnaryExpr &elem) {
+//void ProgramTransformationVisitor::visit(UnaryExpr &elem) {
 //  Visitor::visit(elem);
 //
 //  // check if the unary expression can be evaluated such that we can replace the whole node by its evaluation result
@@ -779,7 +779,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  enqueueNodeForDeletion(&elem);
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(OperatorExpr &elem) {
+//void ProgramTransformationVisitor::visit(OperatorExpr &elem) {
 //  // In case that this OperatorExpr has been created recently by transforming an Arithmetic-/LogicalExpr into this
 //  // OperatorExpr, the operands will be visited again. This is needless but acceptable. In other cases it is
 //  // important to revisit the operands, for example, if this statement was modified or cloned (e.g., during loop
@@ -841,7 +841,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  }
 //}
 //
-//void CompileTimeExpressionSimplifier::simplifyLogicalExpr(OperatorExpr &elem) {
+//void ProgramTransformationVisitor::simplifyLogicalExpr(OperatorExpr &elem) {
 //  // Simplifying this OperatorExpr using Boolean laws is only applicable if this OperatorExpr contains a logical
 //  // operator and there are at least two operands because we'll potentially remove one operand. If there exists already
 //  // only one operand, the operand must be moved up to the parent instead (not handled by simplifyLogicalExpr).
@@ -894,14 +894,14 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  }
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(Block &elem) {
+//void ProgramTransformationVisitor::visit(Block &elem) {
 //  Visitor::visit(elem);
 //  cleanUpBlock(elem);
 //
 //  //TODO: If we come to the end of a scope, do we need to emit variables?
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(Call &elem) {
+//void ProgramTransformationVisitor::visit(Call &elem) {
 //  Return *returnStmt = (elem.getFunc()!=nullptr) ? dynamic_cast<Return *>(elem.getFunc()->getBodyStatements().back())
 //                                                 : nullptr;
 //  // only perform inlining if...
@@ -949,7 +949,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  Visitor::visit(elem);
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(ParameterList &elem) {
+//void ProgramTransformationVisitor::visit(ParameterList &elem) {
 //  Visitor::visit(elem);
 //  // if all of the FunctionParameter children are marked as known, remove this node
 //  bool allFunctionParametersAreKnown = true;
@@ -958,11 +958,11 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  }
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(Function &elem) {
+//void ProgramTransformationVisitor::visit(Function &elem) {
 //  Visitor::visit(elem);
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(FunctionParameter &elem) {
+//void ProgramTransformationVisitor::visit(FunctionParameter &elem) {
 //  // We cannot simply visit the Variable, as it would try to look it up when of course it does not exist yet
 //  // So instead of Visitor::visit(elem); we visit only the Datatype and inspect the Value manually
 //  elem.getDatatype()->accept(*this);
@@ -979,7 +979,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(If &elem) {
+//void ProgramTransformationVisitor::visit(If &elem) {
 //  // Bypass the base Visitor's logic and directly visit the condition only because we need to know whether it is
 //  // evaluable at runtime (or not) and its result.
 //  elem.getCondition()->accept(*this);
@@ -1105,7 +1105,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  }
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(While &elem) {
+//void ProgramTransformationVisitor::visit(While &elem) {
 //  // visit the condition only
 //  elem.getCondition()->accept(*this);
 //
@@ -1123,7 +1123,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //}
 //
 //std::set<ScopedVariable>
-//CompileTimeExpressionSimplifier::identifyReadWriteVariables(For &forLoop, VariableValuesMap VariableValues) {
+//ProgramTransformationVisitor::identifyReadWriteVariables(For &forLoop, VariableValuesMap VariableValues) {
 //
 //  /// Visitor to create Control- and Data-Flow Graphs used to analyze which variables are read and written in Block
 //  ControlFlowGraphVisitor cfgv;
@@ -1138,7 +1138,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  return cfgv.getVariablesReadAndWritten();
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(For &elem) {
+//void ProgramTransformationVisitor::visit(For &elem) {
 //  // Update LoopDepth tracking.
 //  enteredForLoop();
 //
@@ -1226,7 +1226,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //    // So we speculatively unroll the loop until its either too long or we cannot determine something at compile time
 //
 //    /// A separate Visitor, for isolation, brought up to date in terms of variables and scopes
-//    CompileTimeExpressionSimplifier loopCTES;
+//    ProgramTransformationVisitor loopCTES;
 //    loopCTES.forceScope(stmtToScopeMapper, curScope);
 //    loopCTES.variableValues = variableValues;
 //
@@ -1347,7 +1347,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //
 //
 //
-////AbstractNode *CompileTimeExpressionSimplifier::doPartialLoopUnrolling(For &elem) {
+////AbstractNode *ProgramTransformationVisitor::doPartialLoopUnrolling(For &elem) {
 ////  // create a new Block statemeny: necessary for cleanup loop and to avoid overriding user-defined variables that expect
 ////  // the initalizer to be within the for-loop's scope only
 ////  auto blockEmbeddingLoops = new Block();
@@ -1504,7 +1504,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 ////  return blockEmbeddingLoops;
 ////}
 //
-//void CompileTimeExpressionSimplifier::visit(Return &elem) {
+//void ProgramTransformationVisitor::visit(Return &elem) {
 //  Visitor::visit(elem);
 //}
 //
@@ -1512,7 +1512,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //// Helper methods
 //// =====================
 //
-//bool CompileTimeExpressionSimplifier::hasKnownValue(AbstractNode *node) {
+//bool ProgramTransformationVisitor::hasKnownValue(AbstractNode *node) {
 //  // A value is considered as known if...
 //  // i.) it is a Literal of a concrete type (e.g., not a LiteralInt matrix containing AbstractExprs)
 //  auto nodeAsLiteral = dynamic_cast<AbstractLiteral *>(node);
@@ -1530,7 +1530,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  return false;
 //}
 //
-//std::vector<AbstractLiteral *> CompileTimeExpressionSimplifier::evaluateNodeRecursive(
+//std::vector<AbstractLiteral *> ProgramTransformationVisitor::evaluateNodeRecursive(
 //    AbstractNode *node, std::unordered_map<std::string, AbstractLiteral *> valuesOfVariables) {
 //  // clean up the EvaluationVisitor from any previous run
 //  evalVisitor.reset();
@@ -1547,7 +1547,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  return clonedres;
 //}
 //
-//AbstractExpression *CompileTimeExpressionSimplifier::getKnownValue(AbstractNode *node) {
+//AbstractExpression *ProgramTransformationVisitor::getKnownValue(AbstractNode *node) {
 //  // if node is a Literal: return the node itself
 //  if (auto nodeAsLiteral = dynamic_cast<AbstractLiteral *>(node)) {
 //    return nodeAsLiteral;
@@ -1568,7 +1568,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  throw std::invalid_argument(ss.str());
 //}
 //
-//std::unordered_map<std::string, AbstractLiteral *> CompileTimeExpressionSimplifier::getTransformedVariableMap() {
+//std::unordered_map<std::string, AbstractLiteral *> ProgramTransformationVisitor::getTransformedVariableMap() {
 //  std::unordered_map<std::string, AbstractLiteral *> variableMap;
 //  for (auto &[k, v] : variableValues.getMap()) {
 //    if (auto varAsLiteral = dynamic_cast<AbstractLiteral *>(v.getValue())) {
@@ -1578,7 +1578,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  return variableMap;
 //}
 //
-//AbstractExpression *CompileTimeExpressionSimplifier::generateIfDependentValue(
+//AbstractExpression *ProgramTransformationVisitor::generateIfDependentValue(
 //    AbstractExpression *condition, AbstractExpression *trueValue, AbstractExpression *falseValue) {
 //  // We need to handle the case where trueValue or/and falseValue are null because in that case the dependent
 //  // statement can be simplified significantly by removing one/both operands of the arithmetic expression.
@@ -1632,7 +1632,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //                        {factorIsFalse, falseValue->clone()})});
 //}
 //
-//void CompileTimeExpressionSimplifier::appendVectorToMatrix(const std::string &variableIdentifier, int posIndex,
+//void ProgramTransformationVisitor::appendVectorToMatrix(const std::string &variableIdentifier, int posIndex,
 //                                                           AbstractLiteral *matrixRowOrColumn) {
 //  auto pMatrix = matrixRowOrColumn->getMatrix();
 //  AbstractMatrix *vec = pMatrix->clone();
@@ -1665,7 +1665,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //
 //}
 //
-//void CompileTimeExpressionSimplifier::setMatrixVariableValue(const std::string &variableIdentifier,
+//void ProgramTransformationVisitor::setMatrixVariableValue(const std::string &variableIdentifier,
 //                                                             int row,
 //                                                             int column,
 //                                                             AbstractExpression *matrixElementValue) {
@@ -1698,16 +1698,16 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //
 //}
 //
-//bool CompileTimeExpressionSimplifier::isQueuedForDeletion(const AbstractNode *node) {
+//bool ProgramTransformationVisitor::isQueuedForDeletion(const AbstractNode *node) {
 //  return std::find(nodesQueuedForDeletion.begin(), nodesQueuedForDeletion.end(), node)
 //      !=nodesQueuedForDeletion.end();
 //}
 //
-//void CompileTimeExpressionSimplifier::visit(AbstractMatrix &elem) {
+//void ProgramTransformationVisitor::visit(AbstractMatrix &elem) {
 //  Visitor::visit(elem);
 //}
 //
-//void CompileTimeExpressionSimplifier::emitVariableDeclaration(ScopedVariable variableToEmit) {
+//void ProgramTransformationVisitor::emitVariableDeclaration(ScopedVariable variableToEmit) {
 //  auto parent = variableToEmit.getScope()->getScopeOpener();
 //  auto children = parent->getChildren();
 //  auto varValue = variableValues.getVariableValue(variableToEmit);
@@ -1731,7 +1731,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  emittedVariableDeclarations.emplace(variableToEmit, new EmittedVariableData(newVarDeclaration));
 //}
 //
-//std::set<VarAssignm *> CompileTimeExpressionSimplifier::emitVariableAssignment(ScopedVariable variableToEmit) {
+//std::set<VarAssignm *> ProgramTransformationVisitor::emitVariableAssignment(ScopedVariable variableToEmit) {
 //  auto varValue = variableValues.getVariableValue(variableToEmit);
 //  std::set<VarAssignm *> result;
 //
@@ -1816,7 +1816,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  return result;
 //}
 //
-//std::set<VarAssignm *> CompileTimeExpressionSimplifier::emitVariableAssignments(std::set<ScopedVariable> variables) {
+//std::set<VarAssignm *> ProgramTransformationVisitor::emitVariableAssignments(std::set<ScopedVariable> variables) {
 //  std::set<VarAssignm *> result;
 //  for (auto &v : variables) {
 //    auto new_assignments = emitVariableAssignment(v);
@@ -1825,12 +1825,12 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  return result;
 //}
 //
-//void CompileTimeExpressionSimplifier::enqueueNodeForDeletion(AbstractNode *node) {
+//void ProgramTransformationVisitor::enqueueNodeForDeletion(AbstractNode *node) {
 //
 //   //TODO: Replace the deletion logic in CTES with something more efficient
 //}
 //
-//void CompileTimeExpressionSimplifier::leftForLoop() {
+//void ProgramTransformationVisitor::leftForLoop() {
 //  if (currentLoopDepth_maxLoopDepth.first==1) {
 //    // if the outermost loop is left, reset the loop depth tracking counter
 //    currentLoopDepth_maxLoopDepth = std::pair(0, 0);
@@ -1840,7 +1840,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  }
 //}
 //
-//void CompileTimeExpressionSimplifier::enteredForLoop() {
+//void ProgramTransformationVisitor::enteredForLoop() {
 //  // Only increase the maximum if we're currently in the deepest level
 //  // Otherwise, things like for() { for() {}; ...; for() {}; } would give wrong level
 //  if (currentLoopDepth_maxLoopDepth.first==currentLoopDepth_maxLoopDepth.second) {
@@ -1850,7 +1850,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //  ++currentLoopDepth_maxLoopDepth.first;
 //}
 //
-//void CompileTimeExpressionSimplifier::cleanUpBlock(Block &elem) {
+//void ProgramTransformationVisitor::cleanUpBlock(Block &elem) {
 //  // Since some children might have replaced themselves with nullptr, let's collect only the valid children
 //  auto newChildren = elem.getChildren();
 //  if (newChildren.empty()
@@ -1868,7 +1868,7 @@ void SpecialCompileTimeExpressionSimplifier::visit(AbstractExpression &elem) {
 //    }
 //  }
 //}
-//bool CompileTimeExpressionSimplifier::isUnrollLoopAllowed() const {
+//bool ProgramTransformationVisitor::isUnrollLoopAllowed() const {
 //  return configuration.allowsInfiniteLoopUnrollings()
 //      || (currentLoopDepth_maxLoopDepth.second - currentLoopDepth_maxLoopDepth.first
 //          < configuration.maxNumLoopUnrollings);

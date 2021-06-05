@@ -20,6 +20,7 @@ FetchContent_MakeAvailable(googletest)
 # TARGET: testing
 ##############################
 set(TEST_FILES
+ 		visitor/ProgramPrintVisitorTest.cpp
         ASTComparison.cpp
         ASTComparison.h
         AstTestingGenerator.cpp
@@ -59,10 +60,9 @@ set(TEST_FILES
         runtime/DummyCiphertextFactoryTest.cpp
         runtime/RuntimeVisitorTest.cpp
         runtime/SealCiphertextFactoryTest.cpp
-        visitor/CompileTimeExpressionSimplifierTest.cpp
         visitor/ControlFlowGraphVisitorTest.cpp
         visitor/PrintVisitorTest.cpp
- 		visitor/ProgramPrintVisitorTest.cpp
+        visitor/ProgramTransformationVisitorTest.cpp
         visitor/SecretBranchingVisitorTest.cpp
         visitor/TypeCheckingVisitorTest.cpp
         visitor/VisitorTest.cpp

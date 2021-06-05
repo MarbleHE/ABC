@@ -5,21 +5,21 @@
 #include "ast_opt/ast/Function.h"
 #include "ast_opt/ast/If.h"
 #include "ast_opt/ast/Return.h"
-#include "ast_opt/visitor/CompileTimeExpressionSimplifier.h"
+#include "ast_opt/visitor/ProgramTransformationVisitor.h"
 #include "ast_opt/visitor/ProgramPrintVisitor.h"
 #include "ast_opt/parser/Parser.h"
 #include "gtest/gtest.h"
 
-class CompileTimeExpressionSimplifierTest : public ::testing::Test {
+class ProgramTransformationVisitorTest : public ::testing::Test {
  protected:
   std::unique_ptr<AbstractNode> ast;
-  CompileTimeExpressionSimplifier ctes;
+  ProgramTransformationVisitor ctes;
   std::stringstream ss;
   ProgramPrintVisitor ppv = ProgramPrintVisitor(ss);
-  CompileTimeExpressionSimplifierTest() = default;
+  ProgramTransformationVisitorTest() = default;
 };
 
-TEST_F(CompileTimeExpressionSimplifierTest, arithmeticExpr_literalsOnly_fullyEvaluable) {
+TEST_F(ProgramTransformationVisitorTest, arithmeticExpr_literalsOnly_fullyEvaluable) {
   /// Input program
   const char *programCode = R""""(
   public int compute() {
@@ -49,7 +49,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, arithmeticExpr_literalsOnly_fullyEva
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, arithmeticExpr_variableUnknown_rhsOperandEvaluableOnly) {
+TEST_F(ProgramTransformationVisitorTest, arithmeticExpr_variableUnknown_rhsOperandEvaluableOnly) {
   /// Input program
   const char *programCode = R""""(
   public int compute(secret int encryptedA) {
@@ -81,7 +81,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, arithmeticExpr_variableUnknown_rhsOp
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, arithmeticExpr_variableKnown_fullyEvaluable) {
+TEST_F(ProgramTransformationVisitorTest, arithmeticExpr_variableKnown_fullyEvaluable) {
 
   /// Input program
   const char *programCode = R""""(
@@ -115,7 +115,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, arithmeticExpr_variableKnown_fullyEv
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, arithmeticExpr_variablesUnknown_notAnythingEvaluable) {
+TEST_F(ProgramTransformationVisitorTest, arithmeticExpr_variablesUnknown_notAnythingEvaluable) {
 
   /// Input program
   const char *programCode = R""""(
@@ -148,7 +148,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, arithmeticExpr_variablesUnknown_notA
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, logicalExpr_literalsOnly_fullyEvaluable) {
+TEST_F(ProgramTransformationVisitorTest, logicalExpr_literalsOnly_fullyEvaluable) {
 
   /// Input program
   const char *programCode = R""""(
@@ -182,7 +182,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, logicalExpr_literalsOnly_fullyEvalua
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_logicalExpr_variableUnknown_lhsOperandEvaluableOnly) {
+TEST_F(ProgramTransformationVisitorTest, DISABLED_logicalExpr_variableUnknown_lhsOperandEvaluableOnly) {
   //TODO: Implement short-circuiting logic
   /// Input program
   const char *programCode = R""""(
@@ -215,7 +215,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_logicalExpr_variableUnknown
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, logicalExpr_variableKnown_fullyEvaluable) {
+TEST_F(ProgramTransformationVisitorTest, logicalExpr_variableKnown_fullyEvaluable) {
   /// Input program
   const char *programCode = R""""(
    public int compute() {
@@ -249,7 +249,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, logicalExpr_variableKnown_fullyEvalu
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, logicalExpr_variablesUnknown_notAnythingEvaluable) {
+TEST_F(ProgramTransformationVisitorTest, logicalExpr_variablesUnknown_notAnythingEvaluable) {
   //  -- input --
   // public int compute(secret bool encryptedA, bool paramB) {
   //  bool alpha = encryptedA && (true ^ paramB);
@@ -288,7 +288,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, logicalExpr_variablesUnknown_notAnyt
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, unaryExpr_literalsOnly_fullyEvaluable) {
+TEST_F(ProgramTransformationVisitorTest, unaryExpr_literalsOnly_fullyEvaluable) {
   // public int compute() {
   //  bool truthValue = !false;
   // }
@@ -324,7 +324,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, unaryExpr_literalsOnly_fullyEvaluabl
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, unaryExpr_variableKnown_fullyEvaluable) {
+TEST_F(ProgramTransformationVisitorTest, unaryExpr_variableKnown_fullyEvaluable) {
   // public int compute() {
   //  bool alpha = true;
   //  bool beta = !alpha;
@@ -362,7 +362,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, unaryExpr_variableKnown_fullyEvaluab
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, unaryExpr_variableUnknown_notEvaluable) {
+TEST_F(ProgramTransformationVisitorTest, unaryExpr_variableUnknown_notEvaluable) {
   // public int compute(bool paramA) {
   //  bool beta = !paramA;
   // }
@@ -398,7 +398,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, unaryExpr_variableUnknown_notEvaluab
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, varAssignm_variablesKnown_fullyEvaluable) {
+TEST_F(ProgramTransformationVisitorTest, varAssignm_variablesKnown_fullyEvaluable) {
   // public int compute() {
   //  float alpha = 1.23;
   //  alpha = 2.75;
@@ -440,7 +440,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, varAssignm_variablesKnown_fullyEvalu
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, varAssignm_previouslyDeclaredNonInitializedVariable) {
+TEST_F(ProgramTransformationVisitorTest, varAssignm_previouslyDeclaredNonInitializedVariable) {
   // public int compute() {
   //  float alpha;
   //  alpha = 2.95;
@@ -480,7 +480,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, varAssignm_previouslyDeclaredNonInit
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, varAssignm_assignmentToParameter) {
+TEST_F(ProgramTransformationVisitorTest, varAssignm_assignmentToParameter) {
   // public int compute(float alpha) {
   //  alpha = 42.24;
   // }
@@ -518,7 +518,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, varAssignm_assignmentToParameter) {
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest,
+TEST_F(ProgramTransformationVisitorTest,
        DISABLED_varAssignm_symbolicTerms_circularDependency) {
   //TODO: Revisit once OperatorExpression support is added
 
@@ -566,7 +566,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, return_literalOnly_expectedNoChange) {
+TEST_F(ProgramTransformationVisitorTest, return_literalOnly_expectedNoChange) {
   // float compute() {
   //  return 42.24;
   // }
@@ -604,7 +604,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, return_literalOnly_expectedNoChange)
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest,
+TEST_F(ProgramTransformationVisitorTest,
        return_variableKnown_expectedSubstitutionAndStatementDeletion) {
   // int compute() {
   //  int b = 23;
@@ -647,7 +647,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest,
+TEST_F(ProgramTransformationVisitorTest,
        return_variableAndArithmeticExpressionKnown_expectedLiteralIntReturnValue) {
   // int compute() {
   //  int b = 23;
@@ -690,7 +690,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, return_variableUnknown_expectedNoChange) {
+TEST_F(ProgramTransformationVisitorTest, return_variableUnknown_expectedNoChange) {
   // int compute(int b) {
   //  return b + 99;
   // }
@@ -728,7 +728,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, return_variableUnknown_expectedNoCha
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, return_multipleReturnValues_expectedPartlyEvaluation) {
+TEST_F(ProgramTransformationVisitorTest, return_multipleReturnValues_expectedPartlyEvaluation) {
   // int,int,int compute(int a) {
   //  int b = 3 + 4;
   //  return a*b, 2-b, 21;
@@ -770,7 +770,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, return_multipleReturnValues_expected
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest,
+TEST_F(ProgramTransformationVisitorTest,
        DISABLED_ifStmt_conditionValueIsKnown_thenIsAlwaysExecutedNoElseIsPresent_expectedIfRemoval) {
   //TODO: Implement IfStatement rewriting
 
@@ -824,7 +824,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest,
+TEST_F(ProgramTransformationVisitorTest,
        DISABLED_ifStmt_conditionValueIsKnown_thenIsAlwaysExecutedAndElseIsPresent_expectedIfRemoval) {
 
   //TODO: Implement IfStatement rewriting
@@ -883,7 +883,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest,
+TEST_F(ProgramTransformationVisitorTest,
        DISABLED_ifStmt_conditionValueIsKnown_elseIsAlwaysExecuted_expectedIfRemoval) {
   //TODO: Implement IfStatement rewriting
 
@@ -941,7 +941,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest,
+TEST_F(ProgramTransformationVisitorTest,
        DISABLED_ifStmt_conditionValueIsUnknown_thenBranchOnlyExists_thenBranchEvaluable_expectedRewriting) {
   //TODO: Implement IfStatement rewriting
 
@@ -993,7 +993,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest,
+TEST_F(ProgramTransformationVisitorTest,
        DISABLED_ifStmt_conditionValueIsUnknown_thenBranchOnlyExists_expectedRemovalOfElseClauseInResultBecauseVariableBIsNull) {
   //TODO: Implement IfStatement rewriting
 
@@ -1048,7 +1048,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest,
+TEST_F(ProgramTransformationVisitorTest,
        DISABLED_ifStmt_conditionValueIsUnknown_thenBranchOnlyExists_varDeclInThenBranch_expectedRewritingOfIfStatement) {
   //TODO: Implement IfStatement rewriting
 
@@ -1103,7 +1103,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest,
+TEST_F(ProgramTransformationVisitorTest,
        DISABLED_ifStmt_conditionValueIsUnknown_thenAndElseExists_returnValueIsInputVariable_expectedRewritingOfIfStatement) {
   //TODO: Implement IfStatement rewriting
 
@@ -1159,7 +1159,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest,
+TEST_F(ProgramTransformationVisitorTest,
        DISABLED_ifStmt_nestedIfStatements_expectedRewritingOfBothIfStatement) {
   //TODO: Implement IfStatement rewriting
   //TODO: Update Test
@@ -1223,7 +1223,7 @@ TEST_F(CompileTimeExpressionSimplifierTest,
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_partiallyEvaluableOnly) {
+TEST_F(ProgramTransformationVisitorTest, symbolicTerms_partiallyEvaluableOnly) {
 
   //  -- input --
   // int f(int x) {
@@ -1269,7 +1269,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_partiallyEvaluableOnly
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_includingOperatorExprs) {
+TEST_F(ProgramTransformationVisitorTest, symbolicTerms_includingOperatorExprs) {
 
   //  -- input --
   // int f(int x, int a) {
@@ -1315,7 +1315,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_includingOperatorExprs
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedDivisionOperator) {
+TEST_F(ProgramTransformationVisitorTest, symbolicTerms_nestedDivisionOperator) {
 
   //  -- input --
   // int f(int a) {
@@ -1357,7 +1357,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedDivisionOperator
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedOperatorsSimplifiableOnOneSideOnly) {
+TEST_F(ProgramTransformationVisitorTest, symbolicTerms_nestedOperatorsSimplifiableOnOneSideOnly) {
 
   //  -- input --
   // int f(int a) {
@@ -1399,7 +1399,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedOperatorsSimplif
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedLogicalOperators) {
+TEST_F(ProgramTransformationVisitorTest, symbolicTerms_nestedLogicalOperators) {
 
   //  -- input --
   // int f(secret bool a, bool b, secret bool c) {
@@ -1441,7 +1441,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_nestedLogicalOperators
 
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplification_ANDtrue) {
+TEST_F(ProgramTransformationVisitorTest, symbolicTerms_logicalAndSimplification_ANDtrue) {
 
   //  -- input --
   // int f(secret bool a, bool b) {
@@ -1482,7 +1482,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplification_ANDfalse) {
+TEST_F(ProgramTransformationVisitorTest, symbolicTerms_logicalAndSimplification_ANDfalse) {
   //  -- input --
   // int f(secret bool a, bool b) {
   //  return a && (false && b);
@@ -1522,7 +1522,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplification_ORfalse) {
+TEST_F(ProgramTransformationVisitorTest, symbolicTerms_logicalAndSimplification_ORfalse) {
 
   //  -- input --
   // int f(secret bool a, bool b) {
@@ -1563,7 +1563,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplification_ORtrue) {
+TEST_F(ProgramTransformationVisitorTest, symbolicTerms_logicalAndSimplification_ORtrue) {
   //TODO: Update Test
 
   //  -- input --
@@ -1605,7 +1605,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplification_XORtrue) {
+TEST_F(ProgramTransformationVisitorTest, symbolicTerms_logicalAndSimplification_XORtrue) {
 
   //  -- input --
   // int f(secret bool a, bool b) {
@@ -1646,7 +1646,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplification_XORfalse) {
+TEST_F(ProgramTransformationVisitorTest, symbolicTerms_logicalAndSimplification_XORfalse) {
 
   //  -- input --
   // int f(secret bool a, bool b) {
@@ -1687,7 +1687,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, symbolicTerms_logicalAndSimplificati
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_WhileLoop_compileTimeKnownExpression_removalExpected) {
+TEST_F(ProgramTransformationVisitorTest, DISABLED_WhileLoop_compileTimeKnownExpression_removalExpected) {
   // TODO: Revisit once While loop support is added
 
   //  -- input --
@@ -1739,7 +1739,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_WhileLoop_compileTimeKnownE
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_Call_inliningExpected) {
+TEST_F(ProgramTransformationVisitorTest, DISABLED_Call_inliningExpected) {
   // TODO: Calls are currently not supported by the compiler
   //  -- input --
   // int f(int a) {
@@ -1784,7 +1784,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_Call_inliningExpected) {
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_Call_inliningExpected2) {
+TEST_F(ProgramTransformationVisitorTest, DISABLED_Call_inliningExpected2) {
   //TODO: Re-enable once arguments for Call are implemnted correctly
   //  -- input --
   // int f() {
@@ -1825,7 +1825,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_Call_inliningExpected2) {
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_Rotate_executionExpected) {
+TEST_F(ProgramTransformationVisitorTest, DISABLED_Rotate_executionExpected) {
   //TODO: Rotation syntax has changed, update once its done!
 
   //  -- input --
@@ -1869,7 +1869,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_Rotate_executionExpected) {
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_transpose) {
+TEST_F(ProgramTransformationVisitorTest, DISABLED_transpose) {
   //TODO: Matrices currently not supported
 
   //  -- input --
@@ -1911,7 +1911,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_transpose) {
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_getMatrixElementSimpleBool) {
+TEST_F(ProgramTransformationVisitorTest, DISABLED_getMatrixElementSimpleBool) {
   //TODO: Matrices currently not supported
 
   // -- input –-
@@ -1957,7 +1957,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_getMatrixElementSimpleBool)
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_partiallySimplifiableMatrix) {
+TEST_F(ProgramTransformationVisitorTest, DISABLED_partiallySimplifiableMatrix) {
   //TODO: Matrices currently not supported
 
   // -- input –-
@@ -2002,7 +2002,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, DISABLED_partiallySimplifiableMatrix
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, partialforLoopUnrolling) {
+TEST_F(ProgramTransformationVisitorTest, partialforLoopUnrolling) {
   //TODO: Update Test
 
   // -- input --
@@ -2062,7 +2062,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, partialforLoopUnrolling) {
 }
 
 
-TEST_F(CompileTimeExpressionSimplifierTest, fullForLoopUnrolling) {
+TEST_F(ProgramTransformationVisitorTest, fullForLoopUnrolling) {
   //TODO: Update Test
   //TODO: Why is the exepected output VarDecl, VarAssignm, Return(Variable) instead of Return(Expression)?
   // -- input --
@@ -2118,7 +2118,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, fullForLoopUnrolling) {
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, fourNestedLoopsLaplacianSharpeningFilter) {
+TEST_F(ProgramTransformationVisitorTest, fourNestedLoopsLaplacianSharpeningFilter) {
   //TODO: Update Test
 
   // -- input --
@@ -2182,7 +2182,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, fourNestedLoopsLaplacianSharpeningFi
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, trivialLoop) {
+TEST_F(ProgramTransformationVisitorTest, trivialLoop) {
   //TODO: Update Test
 
 
@@ -2224,7 +2224,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, trivialLoop) {
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, trivialNestedLoops) {
+TEST_F(ProgramTransformationVisitorTest, trivialNestedLoops) {
   //TODO: Update Test
 
   //  int trivialLoop() {
@@ -2267,7 +2267,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, trivialNestedLoops) {
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
+TEST_F(ProgramTransformationVisitorTest, maxNumUnrollings) {
   //TODO: Update Test
 
   //  int maxNumUnrollings() {
@@ -2351,7 +2351,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 }
 
 //TODO: Update AstTestingGenerator based tests
-//TEST_F(CompileTimeExpressionSimplifierTest, operatorExpr_fullyEvaluable) { 
+//TEST_F(ProgramTransformationVisitorTest, operatorExpr_fullyEvaluable) { 
 //  Ast ast;
 //  AstTestingGenerator::generateAst(35, ast);
 //
@@ -2364,7 +2364,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 //  EXPECT_TRUE(returnStatement->getReturnExpressions().front()->isEqual(expectedReturnExpr));
 //}
 //
-//TEST_F(CompileTimeExpressionSimplifierTest, operatorExpr_partiallyEvaluable) { 
+//TEST_F(ProgramTransformationVisitorTest, operatorExpr_partiallyEvaluable) { 
 //  Ast ast;
 //  AstTestingGenerator::generateAst(37, ast);
 //
@@ -2377,7 +2377,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 //  EXPECT_TRUE(returnStatement->getReturnExpressions().front()->isEqual(expectedReturnExpr));
 //}
 //
-//TEST_F(CompileTimeExpressionSimplifierTest, operatorExpr_logicalAndFalse) { 
+//TEST_F(ProgramTransformationVisitorTest, operatorExpr_logicalAndFalse) { 
 //  Ast ast;
 //  AstTestingGenerator::generateAst(38, ast);
 //
@@ -2390,7 +2390,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 //  EXPECT_TRUE(returnStatement->getReturnExpressions().front()->isEqual(expectedReturnExpr));
 //}
 //
-//TEST_F(CompileTimeExpressionSimplifierTest, operatorExpr_logicalAndTrue_oneRemainingOperand) { 
+//TEST_F(ProgramTransformationVisitorTest, operatorExpr_logicalAndTrue_oneRemainingOperand) { 
 //  Ast ast;
 //  AstTestingGenerator::generateAst(39, ast);
 //
@@ -2403,7 +2403,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 //  EXPECT_TRUE(returnStatement->getReturnExpressions().front()->isEqual(expectedReturnExpr));
 //}
 //
-//TEST_F(CompileTimeExpressionSimplifierTest, operatorExpr_logicalAndTrue_twoRemainingOperand) { 
+//TEST_F(ProgramTransformationVisitorTest, operatorExpr_logicalAndTrue_twoRemainingOperand) { 
 //  Ast ast;
 //  AstTestingGenerator::generateAst(40, ast);
 //
@@ -2416,7 +2416,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 //  EXPECT_TRUE(returnStatement->getReturnExpressions().front()->isEqual(expectedReturnExpr));
 //}
 //
-//TEST_F(CompileTimeExpressionSimplifierTest, operatorExpr_logicalOrTrue) { 
+//TEST_F(ProgramTransformationVisitorTest, operatorExpr_logicalOrTrue) { 
 //  Ast ast;
 //  AstTestingGenerator::generateAst(41, ast);
 //
@@ -2429,7 +2429,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 //  EXPECT_TRUE(returnStatement->getReturnExpressions().front()->isEqual(expectedReturnExpr));
 //}
 //
-//TEST_F(CompileTimeExpressionSimplifierTest, operatorExpr_logicalOrFalse_oneRemainingOperand) { 
+//TEST_F(ProgramTransformationVisitorTest, operatorExpr_logicalOrFalse_oneRemainingOperand) { 
 //  Ast ast;
 //  AstTestingGenerator::generateAst(42, ast);
 //
@@ -2442,7 +2442,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 //  EXPECT_TRUE(returnStatement->getReturnExpressions().front()->isEqual(expectedReturnExpr));
 //}
 //
-//TEST_F(CompileTimeExpressionSimplifierTest, operatorExpr_logicalOrFalse_twoRemainingOperand) { 
+//TEST_F(ProgramTransformationVisitorTest, operatorExpr_logicalOrFalse_twoRemainingOperand) { 
 //  Ast ast;
 //  AstTestingGenerator::generateAst(43, ast);
 //
@@ -2455,7 +2455,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 //  EXPECT_TRUE(returnStatement->getReturnExpressions().front()->isEqual(expectedReturnExpr));
 //}
 //
-//TEST_F(CompileTimeExpressionSimplifierTest, operatorExpr_logicalXorTrue) { 
+//TEST_F(ProgramTransformationVisitorTest, operatorExpr_logicalXorTrue) { 
 //  Ast ast;
 //  AstTestingGenerator::generateAst(44, ast);
 //
@@ -2468,7 +2468,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 //  EXPECT_TRUE(returnStatement->getReturnExpressions().front()->isEqual(expectedReturnExpr));
 //}
 //
-//TEST_F(CompileTimeExpressionSimplifierTest, operatorExpr_logicalXorFalse_oneRemainingOperand) { 
+//TEST_F(ProgramTransformationVisitorTest, operatorExpr_logicalXorFalse_oneRemainingOperand) { 
 //  Ast ast;
 //  AstTestingGenerator::generateAst(45, ast);
 //
@@ -2481,7 +2481,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 //  EXPECT_TRUE(returnStatement->getReturnExpressions().front()->isEqual(expectedReturnExpr));
 //}
 //
-//TEST_F(CompileTimeExpressionSimplifierTest, operatorExpr_logicalXorFalse_twoRemainingOperand) { 
+//TEST_F(ProgramTransformationVisitorTest, operatorExpr_logicalXorFalse_twoRemainingOperand) { 
 //  Ast ast;
 //  AstTestingGenerator::generateAst(46, ast);
 //
@@ -2494,7 +2494,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 //  EXPECT_TRUE(returnStatement->getReturnExpressions().front()->isEqual(expectedReturnExpr));
 //}
 //
-//TEST_F(CompileTimeExpressionSimplifierTest, nestedOperatorExprsTest) { 
+//TEST_F(ProgramTransformationVisitorTest, nestedOperatorExprsTest) { 
 //  auto func = new Function("sumVectorElements");
 //  // (27 / a / 12 / 3 / 1) or in prefix notation: (/ 27 (/ a 12) 3 1)
 //  auto opExpr0 = new OperatorExpr(new Operator(DIVISION), {new Variable("a"), new LiteralInt(12)});
@@ -2514,7 +2514,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 //      new OperatorExpr(new Operator(DIVISION), {new LiteralInt(27), new Variable("a"), new LiteralInt(4)})));
 //}
 //
-//TEST_F(CompileTimeExpressionSimplifierTest, getMatrixSizeOfKnownMatrix) { 
+//TEST_F(ProgramTransformationVisitorTest, getMatrixSizeOfKnownMatrix) { 
 //  Ast ast;
 //  AstTestingGenerator::generateAst(52, ast);
 //
@@ -2529,7 +2529,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 //  EXPECT_TRUE(simplifiedAst->isEqual(expectedFunction->getBody()));
 //}
 //
-//TEST_F(CompileTimeExpressionSimplifierTest, getMatrixSizeOfAbstractMatrix) { 
+//TEST_F(ProgramTransformationVisitorTest, getMatrixSizeOfAbstractMatrix) { 
 //  Ast ast;
 //  AstTestingGenerator::generateAst(53, ast);
 //
@@ -2546,7 +2546,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 //  EXPECT_TRUE(simplifiedAst->isEqual(expectedFunction->getBody()));
 //}
 //
-//TEST_F(CompileTimeExpressionSimplifierTest, getMatrixSizeOfUnknownMatrix) { 
+//TEST_F(ProgramTransformationVisitorTest, getMatrixSizeOfUnknownMatrix) { 
 //  Ast ast;
 //  AstTestingGenerator::generateAst(54, ast);
 //
@@ -2564,7 +2564,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 //  EXPECT_TRUE(simplifiedAst->isEqual(expectedFunction->getBody()));
 //}
 //
-//TEST_F(CompileTimeExpressionSimplifierTest, nestedFullLoopUnrolling_matrixAssignmAndGetMatrixSize) { 
+//TEST_F(ProgramTransformationVisitorTest, nestedFullLoopUnrolling_matrixAssignmAndGetMatrixSize) { 
 //  Ast ast;
 //  AstTestingGenerator::generateAst(55, ast);
 //  // Matrix<int> extendMatrixAddingElements() {
@@ -2593,7 +2593,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 //  EXPECT_TRUE(simplifiedAst->isEqual(expectedFunction->getBody()));
 //}
 //
-//TEST_F(CompileTimeExpressionSimplifierTest, matrixAssignmIncludingPushBack) { 
+//TEST_F(ProgramTransformationVisitorTest, matrixAssignmIncludingPushBack) { 
 //  Ast ast;
 //  AstTestingGenerator::generateAst(59, ast);
 //
@@ -2625,7 +2625,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 //  EXPECT_TRUE(simplifiedAst->isEqual(expectedFunction->getBody()));
 //}
 //
-//TEST_F(CompileTimeExpressionSimplifierTest, matrixAssignmentUnknownThenKnown) { 
+//TEST_F(ProgramTransformationVisitorTest, matrixAssignmentUnknownThenKnown) { 
 //  Ast ast;
 //  AstTestingGenerator::generateAst(56, ast);
 //
@@ -2660,7 +2660,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 //  EXPECT_TRUE(simplifiedAst->isEqual(expectedFunc->getBody()));
 //}
 //
-//TEST_F(CompileTimeExpressionSimplifierTest, matrixAssignmentKnownThenUnknown) { 
+//TEST_F(ProgramTransformationVisitorTest, matrixAssignmentKnownThenUnknown) { 
 //  Ast ast;
 //  AstTestingGenerator::generateAst(57, ast);
 //
@@ -2683,7 +2683,7 @@ TEST_F(CompileTimeExpressionSimplifierTest, maxNumUnrollings) {
 //  EXPECT_TRUE(simplifiedAst->isEqual(expectedFunc->getBody()));
 //}
 //
-//TEST_F(CompileTimeExpressionSimplifierTest, fullAssignmentToMatrix) { 
+//TEST_F(ProgramTransformationVisitorTest, fullAssignmentToMatrix) { 
 //  Ast ast;
 //  AstTestingGenerator::generateAst(58, ast);
 //
