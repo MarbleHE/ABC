@@ -57,7 +57,7 @@ class VariableMap {
     return map.find(s)->second;
   }
 
-  T erase(const ScopedIdentifier &s) {
+  void erase(const ScopedIdentifier &s) {
     // This is inefficient, but having "semantically" unique entries is worth it
     // If there already exists a ScopedIdentifier that's basically the same,
     // but wrapped int a different object, then use the existing value
@@ -65,19 +65,15 @@ class VariableMap {
       for (auto &[si, v] : map) {
         if (&si.getScope()==&s.getScope() && si.getId()==s.getId()) {
           auto it = map.find(si);
-          T v = it->second;
           map.erase(it);
           changed.erase(si);
-          return v;
         }
       }
     }
 
     auto it = map.find(s);
-    T v = it->second;
     map.erase(it);
     changed.erase(s);
-    return v;
   }
 
   void add(const ScopedIdentifier &s, T v) {
