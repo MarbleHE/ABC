@@ -22,11 +22,12 @@ bool AbstractNode::operator!=(const AbstractNode &other) const noexcept {
 /////////////////////////////// DAG  /////////////////////////////////
 
 void AbstractNode::setParent(AbstractNode &newParent) {
-  if (parent) {
-    throw std::logic_error("Cannot overwrite parent.");
-  } else {
-    parent = &newParent;
-  }
+  //TODO: Why did we want to prevent this again? It's necessary to std::move() children in a std::move() assignment!
+//  if (parent) {
+//    throw std::logic_error("Cannot overwrite parent.");
+//  } else {
+  parent = &newParent;
+//  }
 }
 
 bool AbstractNode::hasParent() const {
