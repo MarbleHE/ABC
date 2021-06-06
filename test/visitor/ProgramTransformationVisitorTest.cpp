@@ -2330,6 +2330,52 @@ TEST_F(ProgramTransformationVisitorTest, trivialNestedLoops) {
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
+TEST_F(ProgramTransformationVisitorTest, complexNestedLoops) {
+  //  int trivialLoop() {
+  //    int x = 0;
+  //    for(int j = 0; j < 3; j = j + 1) {
+  //      for(int i = 0; i < 3; i = i + 1) {
+  //        x = 42;
+  //      }
+  //    }
+  //    return x;
+  //  }
+  /// Input program
+  const char *programCode = R""""(
+   public int compute(int img) {
+      int x;
+      for(int j = 0; j < 2; j = j + 1) {
+        for(int i = 0; i < 2; i = i + 1) {
+          x[i+j] = img[i + j];
+        }
+      }
+      return x;
+    }
+)"""";
+  auto code = std::string(programCode);
+  ast = Parser::parse(code);
+
+  // perform the compile-time expression simplification
+  ast->accept(ctes);
+
+  // get the transformed code
+  ast->accept(ppv);
+  std::cout << ss.str() << std::endl;
+
+  /// Expected program
+  const char *expectedCode = R""""(
+{
+  int compute()
+  {
+    return {img[0], img[1], img[1], img[2]};
+  }
+}
+)"""";
+
+  EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
+}
+
+
 TEST_F(ProgramTransformationVisitorTest, maxNumUnrollings) {
   //TODO: Update Test
 
