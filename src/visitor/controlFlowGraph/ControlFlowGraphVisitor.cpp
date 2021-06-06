@@ -503,23 +503,10 @@ std::unordered_set<ScopedIdentifier> SpecialControlFlowGraphVisitor::buildDataFl
   // Traverse all graph nodes and collect all variable reads and writes to build variablesReadAndWritten
   // =================
 
-  /// Ugly hack: Variables in CFG that are both read and written to
   std::unordered_set<ScopedIdentifier> variablesReadAndWritten;
-  std::unordered_set<ScopedIdentifier> written;
-  std::unordered_set<ScopedIdentifier> read;
   for (auto &[name, node] : processedNodes) {
-    auto w = node.get().getVariableAccessesByType({VariableAccessType::WRITE});
-    for (auto &si: w) { written.insert(si); }
-    auto r = node.get().getVariableAccessesByType({VariableAccessType::READ});
-    for (auto &si: r) { read.insert(si); }
+    auto w_and_r = node.get().getVariableAccessesByType({VariableAccessType::READ_AND_WRITE});
+    for (auto &si: w_and_r) { variablesReadAndWritten.insert(si); }
   }
-
-  // determine the variables that were read and written (must be both!)
-  for (auto &w: written) {
-    if (read.find(w)!=read.end()) {
-      variablesReadAndWritten.insert(w);
-    }
-  }
-
   return variablesReadAndWritten;
 }

@@ -2179,9 +2179,9 @@ TEST_F(ProgramTransformationVisitorTest, foldLoop) {
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute(int img, int imgSize)
+  int compute(int x)
   {
-    return (0 + (1 * x) + (2 * x));
+    return ((((((0 + (1 * x)) + (1 * x)) + (2 * x)) + (2 * x)) + (2 * x)) + (3 * x));
   }
 }
 )"""";
