@@ -105,6 +105,7 @@ void SpecialProgramTransformationVisitor::visit(BinaryExpression &elem) {
   // if "lhs op rhs" can be computed at compile time
   // then we replace elem with a literal
   // does not use apply when implicit conversions would be required, because handling them is messy
+  // TODO: This needs to be split into operations that return bool and operations that return the input type!
   AbstractNode *lhs_ptr = &elem.getLeft();
   AbstractNode *rhs_ptr = &elem.getRight();
   if (auto literal_int_lhs_ptr = (dynamic_cast<LiteralInt *>(lhs_ptr))) {
@@ -533,9 +534,17 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
       condition_copy->accept(*this);
       if (replacementExpression) condition_copy = std::move(replacementExpression);
 
-      // Check if it's known
-      if (auto bool_ptr = dynamic_cast<LiteralBool *>(&condition)) {
+      // Check if it's known. TODO: Once BinaryExp handles this better, type should always be bool?
+      if (auto bool_ptr = dynamic_cast<LiteralBool *>(&*condition_copy)) {
         return bool_ptr->getValue();
+      } else if (auto char_ptr = dynamic_cast<LiteralChar *>(&*condition_copy)) {
+        return char_ptr->getValue();
+      } else if (auto int_ptr = dynamic_cast<LiteralInt *>(&*condition_copy)) {
+        return int_ptr->getValue();
+      } else if (auto float_ptr = dynamic_cast<LiteralFloat *>(&*condition_copy)) {
+        return (int)float_ptr->getValue();
+      } else if (auto double_ptr = dynamic_cast<LiteralDouble *>(&*condition_copy)) {
+        return (int)double_ptr->getValue();
       } else {
         return -1; //indicates  unknown at compile time
       }
