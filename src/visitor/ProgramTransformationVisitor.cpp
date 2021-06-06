@@ -315,7 +315,9 @@ void SpecialProgramTransformationVisitor::visit(Assignment &elem) {
 
       } else {
         // if index is a more general expression, we can't do anything
-        // TODO (inlining): Emit the declaration (ideally only if it hasn't been done before)
+        // TODO (inlining): since we're leaving this update statement here,
+        //  do we have to do something about the variableMap?
+        // TODO (inlining): Emit the declaration if one doesn't exist?
       }
 
     } else {
@@ -507,16 +509,22 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
 
   // Now, int i = 0 and similar things might have been deleted from AST and are in VariableValuesMap
   // We need to emit Assignments (or Declarations with value if needed) for each of the loop variables Variables into the initializer
-  // we also need to keep track of the declarations, so we can later remove those elements from the var map
-  // before we re-visit the initializer for unrolling (if unrolling happens)
+  // we also need to set those elements to "unknown" in the variableMap so that they don't cause issues later
+  // for decls, we actually have to erase them, but then visiting condition/update/body would throw undeclared var errors
+  // so we collect them and get rid of them *just* at the end
   std::unordered_set<ScopedIdentifier> declarationEmittedIntoInitializer;
   if (!elem.hasInitializer()) { elem.setBody(std::make_unique<Block>()); };
   for (auto &sv : loopVariables) {
     if (&sv.getScope()==&getCurrentScope()) {
       elem.getInitializer().prependStatement(generateVariableDeclaration(sv, &elem.getInitializer()));
-      declarationEmittedIntoInitializer.insert(sv);
+      // Erase any information about this from the variableMap
+      declarationEmittedIntoInitializer.insert(sv); // instead of variableMap.erase(sv);
+      variableMap.insert_or_assign(sv, {variableMap.get(sv).type, nullptr});
+
     } else {
       elem.getInitializer().prependStatement(generateVariableAssignment(sv, &elem.getInitializer()));
+      // Set the value to unknown in the variable map
+      variableMap.insert_or_assign(sv, {variableMap.get(sv).type, nullptr});
     }
   }
 
@@ -563,7 +571,20 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
       for (auto &loop_var : loopVariables) {
         if (tv.value && containsVariable(*tv.value, {loop_var.getId()})) {
           auto s = generateVariableAssignment(si, &elem.getBody());
+          // Identify the target of the assignment:
+          ScopedIdentifier target_sv;
+          if (auto var_ptr = dynamic_cast<Variable *>(&s->getTarget())) {
+            target_sv = getCurrentScope().resolveIdentifier(var_ptr->getIdentifier());
+          } else if (auto ind_ptr = dynamic_cast<IndexAccess *>(&s->getTarget())) {
+            if (auto ind_var_ptr = dynamic_cast<Variable *>(&s->getTarget())) {
+              target_sv = getCurrentScope().resolveIdentifier(ind_var_ptr->getIdentifier());
+            }
+          } else {
+            throw std::runtime_error("Nested index access is not supported: " + printProgram(*s));
+          }
           elem.getBody().appendStatement(std::move(s));
+          // set the value to "unknown" int the variableMap
+          variableMap.insert_or_assign(target_sv, {variableMap.get(target_sv).type, nullptr});
           break; // so we don't generate multiple copies for stmts that contain multiple loop variable
         }
       }
@@ -583,14 +604,22 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
   // TODO (inlining): This logic is borked! Not emitting stuff causes infinite loops since we don't emit, e.g. "i = i + 1".
   //  But emitting ALL loop variables causes duplicates when an assignment wasn't removed
   //  Actually, the issue seems to be that the variableMap value for, e.g., "sum" isn't set to nullptr!
-  
+  //  We should probably do that whenever we emit a variable Assignment or declaration?
+
   // We have potentially removed stmts from body and update (loop-variable init has already been re-emitted)
   // Go through and re-emit any loop variables into the body:
   if (!elem.hasBody()) { elem.setBody(std::make_unique<Block>()); };
   for (auto &si : loopVariables) {
     elem.getBody().appendStatement(generateVariableAssignment(si, &elem.getBody()));
+    // set the value to "unknown" int the variableMap
+    variableMap.insert_or_assign(si, {variableMap.get(si).type, nullptr});
   }
 
+  // We kept these in the variable map (as nullptr) to avoid undeclared variable issues
+  // but in fact, they are declared in the initializer so we need to completely remove them from the variableMap
+  for (auto &sv: declarationEmittedIntoInitializer) {
+    variableMap.erase(sv);
+  }
 
   // At this point, the loop has been visited and some parts have been simplified.
   // Now we are ready to analyze if this loop can additionally also be unrolled:
@@ -611,11 +640,6 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
 
     // Visit the initializer (this will load the loop variables back into variableValues)
     // Manually visit the statements in the block, since otherwise Visitor::visit would create a new scope!
-    // before we can do that, we need to remove the variables that have been emitted as declarations from variableMap
-    // or otherwise visit(VariableDeclaration) will crash because of a re-declaration
-    for (auto &sv: declarationEmittedIntoInitializer) {
-      variableMap.erase(sv);
-    }
     replaceStatement = false;
     for (auto &s: elem.getInitializer().getStatementPointers()) {
       if (s) {
@@ -747,6 +771,8 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
             //TODO: (inlining) Figure out which statements to emit and how, rather than dumping all
             auto s = generateVariableAssignment(si, &*unrolledBlock);
             unrolledBlock->prependStatement(std::move(s));
+            // set the value to "unknown" int the variableMap
+            variableMap.insert_or_assign(si, {variableMap.get(si).type, nullptr});
           }
         }
       }
