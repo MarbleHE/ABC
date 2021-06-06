@@ -515,9 +515,14 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
 
     // Visit the initializer (this will load the loop variables back into variableValues)
     // Manually visit the statements in the block, since otherwise Visitor::visit would create a new scope!
-    for (auto &s: elem.getInitializer().getStatements()) {
-      s.get().accept(*this);
+    removeStatement = false;
+    for (auto &s: elem.getInitializer().getStatementPointers()) {
+      if (s) {
+        s->accept(*this);
+        if (removeStatement) s = nullptr;
+      }
     }
+    elem.getInitializer().removeNullStatements();
 
     /// Evaluates (a copy of) the condition, returning either 0/1 or -1 if the condition is not compile time known
     auto evaluateCondition = [&](AbstractExpression &condition) -> int {
