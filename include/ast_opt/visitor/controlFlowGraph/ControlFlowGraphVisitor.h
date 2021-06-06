@@ -42,21 +42,8 @@ class SpecialControlFlowGraphVisitor : public ScopedVisitor {
   /// leaving a statement by calling storeAccessedVariables.
   VarAccessMapType variableAccesses;
 
-  // This class has implemented a way to deal with variables that are declared in a part of the program
-  // that is not in the given sub-AST and as such not visited by the visitor:
-  //   If the visitor is initialized with ControlFlowGraphVisitor(ignoreNonDeclaredVariables = true), then variables
-  // for which no declaration could be found will just be ignored. Consequently, also read/write accesses to them are
-  // not being tracked in the variableAccesses map.
-
-  /// Defines whether non-declared variables are ignored when calling Scope::resolveIdentifier. If this is not enabled
-  /// (ignoreNonDeclaredVariables = False), then Scope::resolveIdentifier will raise an exception. Note that if non-
-  /// declared variables are ignored, their read/write access is not tracked in the variableAccesses map.
-  bool ignoreNonDeclaredVariables = false;
-
  public:
   SpecialControlFlowGraphVisitor() = default;
-
-  explicit SpecialControlFlowGraphVisitor(bool ignoreNonDeclaredVariables);
 
   virtual ~SpecialControlFlowGraphVisitor() = default;
 

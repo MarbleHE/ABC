@@ -40,9 +40,9 @@ void SpecialControlFlowGraphVisitor::visit(Assignment &node) {
   // visit the right-hand side of the assignment
   node.getValue().accept(*this);
 
-  if (getCurrentScope().identifierExists(identifier) || !ignoreNonDeclaredVariables) {
-    markVariableAccess(getCurrentScope().resolveIdentifier(identifier), VariableAccessType::WRITE);
-  }
+  getCurrentScope().addIdentifier(identifier);
+
+  markVariableAccess(getCurrentScope().resolveIdentifier(identifier), VariableAccessType::WRITE);
 
   storeAccessedVariables(graphNode);
 }
@@ -107,7 +107,9 @@ void SpecialControlFlowGraphVisitor::visit(For &node) {
   auto lastStatementCondition = lastCreatedNodes;
 
   // body (e.g., For (-; -; -) { body statements ... })
-  node.getBody().accept(*this);
+  //TODO: Is opening a new scope here intended?
+  visitChildren(node.getBody());
+//  node.getBody().accept(*this);
   auto lastStatementInBody = lastCreatedNodes;
 
   // update statement (e.g., i=i+1;)
@@ -156,9 +158,11 @@ void SpecialControlFlowGraphVisitor::visit(Function &node) {
 void SpecialControlFlowGraphVisitor::visit(FunctionParameter &node) {
   SpecialControlFlowGraphVisitor::checkEntrypoint(node);
   ScopedVisitor::visit(node);
-  if (getCurrentScope().identifierExists(node.getIdentifier()) || !ignoreNonDeclaredVariables) {
-    markVariableAccess(getCurrentScope().resolveIdentifier(node.getIdentifier()), VariableAccessType::WRITE);
-  }
+
+  getCurrentScope().addIdentifier(node.getIdentifier());
+
+  markVariableAccess(getCurrentScope().resolveIdentifier(node.getIdentifier()), VariableAccessType::WRITE);
+
 }
 
 // ┌────────────────────────────────────────────────────────────────────┐
@@ -258,15 +262,8 @@ void SpecialControlFlowGraphVisitor::visit(VariableDeclaration &node) {
 
   getCurrentScope().addIdentifier(node.getTarget().getIdentifier());
 
-//  // Because if nested loops, we first need to see if this already exists TODO: Test local only?
-//  if (!getCurrentScope().identifierExists(node.getTarget().getIdentifier())) {
-//    getCurrentScope().addIdentifier(node.getTarget().getIdentifier());
-//  }
-
-  if (getCurrentScope().identifierExists(node.getTarget().getIdentifier()) || !ignoreNonDeclaredVariables) {
-    markVariableAccess(getCurrentScope().resolveIdentifier(node.getTarget().getIdentifier()),
-                       VariableAccessType::WRITE);
-  }
+  markVariableAccess(getCurrentScope().resolveIdentifier(node.getTarget().getIdentifier()),
+                     VariableAccessType::WRITE);
 
   storeAccessedVariables(graphNode);
 }
@@ -310,9 +307,10 @@ void SpecialControlFlowGraphVisitor::storeAccessedVariables(GraphNode &graphNode
 
 void SpecialControlFlowGraphVisitor::visit(Variable &node) {
   SpecialControlFlowGraphVisitor::checkEntrypoint(node);
-  if (getCurrentScope().identifierExists(node.getIdentifier()) || !ignoreNonDeclaredVariables) {
-    markVariableAccess(getCurrentScope().resolveIdentifier(node.getIdentifier()), VariableAccessType::READ);
-  }
+
+  getCurrentScope().addIdentifier(node.getIdentifier());
+
+  markVariableAccess(getCurrentScope().resolveIdentifier(node.getIdentifier()), VariableAccessType::READ);
 }
 
 void SpecialControlFlowGraphVisitor::markVariableAccess(const ScopedIdentifier &scopedIdentifier,
@@ -338,10 +336,6 @@ GraphNode &SpecialControlFlowGraphVisitor::getRootNode() {
 
 const GraphNode &SpecialControlFlowGraphVisitor::getRootNode() const {
   return *nodes.front().get();
-}
-
-SpecialControlFlowGraphVisitor::SpecialControlFlowGraphVisitor(bool ignoreNonDeclaredVariables)
-    : ignoreNonDeclaredVariables(ignoreNonDeclaredVariables) {
 }
 
 std::unordered_set<ScopedIdentifier> SpecialControlFlowGraphVisitor::buildDataFlowGraph() {

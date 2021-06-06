@@ -283,7 +283,7 @@ TEST(ControlFlowGraphVisitorTest, dfg_simpleReadWriteAssignment_ignoreNonResolve
   auto inputCode = std::string(inputChars);
   auto inputAST = Parser::parse(inputCode);
 
-  ControlFlowGraphVisitor cfgv(true);  // this flag let's the visitor ignore non-resolvable variables
+  ControlFlowGraphVisitor cfgv;
   inputAST->begin()->accept(cfgv);
 
   auto accessedVariables = getGraphNodeByChildrenIdxPath(cfgv.getRootNode(), {0}).getAccessedVariables();
