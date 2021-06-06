@@ -192,20 +192,18 @@ void SpecialProgramTransformationVisitor::visit(VariableDeclaration &elem) {
   }
 
   // Register the Variable in the variableMap
-  auto scopedIdentifier = ScopedIdentifier(this->getCurrentScope(), elem.getTarget().getIdentifier());
+  // Because our system currently dumps out declarations even if the variable has been declared before,
+  // check if it already exists. //TODO: fix the underlying issue so that we can have shadowing
+  ScopedIdentifier scopedIdentifier;
+  if (getCurrentScope().identifierExists(elem.getTarget().getIdentifier())) {
+    // Because of loop unrolling, duplicate stuff will happen
+    // for example, we'll often get many copies of int i = i + 1;
+    // In this case, reuse the ScopedIdentifier
+    scopedIdentifier = getCurrentScope().resolveIdentifier(elem.getTarget().getIdentifier());
+  } else {
+    scopedIdentifier = ScopedIdentifier(this->getCurrentScope(), elem.getTarget().getIdentifier());
+  }
 
-//  ScopedIdentifier scopedIdentifier;
-//  if (getCurrentScope().identifierExists(elem.getTarget().getIdentifier()) &&
-//      getCurrentScope().resolveIdentifier(elem.getTarget().getIdentifier()).getScope().getScopeName()==
-//          getCurrentScope().getScopeName()) {
-//    // Because of loop unrolling, duplicate stuff will happen
-//    // for example, we'll often get many copies of int i = i + 1;
-//    // In this case, reuse the ScopedIdentifier
-//    scopedIdentifier = getCurrentScope().resolveIdentifier(elem.getTarget().getIdentifier());
-//  } else {
-//    scopedIdentifier = ScopedIdentifier(this->getCurrentScope(), elem.getTarget().getIdentifier());
-//  }
-//
   // Because of loop unrolling, this kind of stuff will happen
   // for example, we'll often get many copies of int i = i + 1;
   //  if (variableMap.has(scopedIdentifier))

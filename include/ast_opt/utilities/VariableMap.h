@@ -50,6 +50,18 @@ class VariableMap {
   }
 
   void insert_or_assign(ScopedIdentifier s, T &&v) {
+    //TODO: This is inefficient, but having "semantically" unique entries is worth it
+
+    // If there already exists a ScopedIdentifier that's basically the same,
+    // but wrapped int a different object, then use the existing value
+    if (map.find(s) == map.end()) {
+      for (auto &[si, v] : map) {
+        if (&si.getScope()==&s.getScope() && si.getId()==s.getId()) {
+          s = si;
+        }
+      }
+    }
+    
     map.insert_or_assign(s, std::move(v));
     changed.insert(s);
   }
