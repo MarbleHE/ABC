@@ -37,7 +37,7 @@ void SpecialProgramPrintVisitor::visit(Call &elem) {
 }
 void SpecialProgramPrintVisitor::visit(ExpressionList &elem) {
   os << "{";
-  auto& vec = elem.getExpressionPtrs();
+  auto &vec = elem.getExpressionPtrs();
   if (!vec.empty()) {
     if (vec[0]) {
       vec[0]->accept(*this);
@@ -182,9 +182,11 @@ void SpecialProgramPrintVisitor::visit(UnaryExpression &elem) {
 }
 void SpecialProgramPrintVisitor::visit(Assignment &elem) {
   os << getIndentation();
-  elem.getTarget().accept(*this);
+  if(elem.hasTarget()) elem.getTarget().accept(*this);
+  else os << "MISSING";
   os << " = ";
-  elem.getValue().accept(*this);
+  if (elem.hasValue()) elem.getValue().accept(*this);
+  else os << "MISSING";
   os << ";\n";
 }
 void SpecialProgramPrintVisitor::visit(VariableDeclaration &elem) {
