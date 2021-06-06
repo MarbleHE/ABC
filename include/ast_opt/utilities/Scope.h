@@ -112,10 +112,6 @@ class Scope {
   /// \param parentScope The scope to be set as parent of this scope.
   void setParent(Scope *parentScope);
 
-  /// Adds a nested scope to this scope's nestedScopes vector.
-  /// \param scope The scope to add as nested scope in this scope.
-  void addNestedScope(std::unique_ptr<Scope> &&scope);
-
   /// Gets the parent scope of this scope.
   /// \return (A reference to) the parent scope of this scope.
   Scope &getParentScope();

@@ -193,6 +193,19 @@ void SpecialProgramTransformationVisitor::visit(VariableDeclaration &elem) {
 
   // Register the Variable in the variableMap
   auto scopedIdentifier = ScopedIdentifier(this->getCurrentScope(), elem.getTarget().getIdentifier());
+
+//  ScopedIdentifier scopedIdentifier;
+//  if (getCurrentScope().identifierExists(elem.getTarget().getIdentifier()) &&
+//      getCurrentScope().resolveIdentifier(elem.getTarget().getIdentifier()).getScope().getScopeName()==
+//          getCurrentScope().getScopeName()) {
+//    // Because of loop unrolling, duplicate stuff will happen
+//    // for example, we'll often get many copies of int i = i + 1;
+//    // In this case, reuse the ScopedIdentifier
+//    scopedIdentifier = getCurrentScope().resolveIdentifier(elem.getTarget().getIdentifier());
+//  } else {
+//    scopedIdentifier = ScopedIdentifier(this->getCurrentScope(), elem.getTarget().getIdentifier());
+//  }
+//
   // Because of loop unrolling, this kind of stuff will happen
   // for example, we'll often get many copies of int i = i + 1;
   //  if (variableMap.has(scopedIdentifier))
@@ -687,7 +700,7 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
         //  and why do those duplicates still contain loop variables??
         for (auto&[si, expr] : variableMap) {
           // Don't emit loop variables, since we just got rid of them!
-          if(loopVariables.find(si) == loopVariables.end()) {
+          if (loopVariables.find(si)==loopVariables.end()) {
             auto s = generateVariableDeclarationOrAssignment(si, &*unrolledBlock);
             unrolledBlock->prependStatement(std::move(s));
           }
@@ -758,7 +771,8 @@ SpecialProgramTransformationVisitor::identifyReadWriteVariables(For &forLoop) {
 
   // Temporarily "give away" our scope hierarchy to the CFGV
   cfgv.setRootScope(std::move(takeRootScope()));
-  cfgv.overrideCurrentScope(&getCurrentScope());
+  // The parent scope is necessary, as the visit would otherwise create a new for block inside this for block!
+  cfgv.overrideCurrentScope(&getCurrentScope().getParentScope());
 
   // Create Control-Flow Graph for blockStmt
   cfgv.visit(forLoop);

@@ -258,6 +258,11 @@ void SpecialControlFlowGraphVisitor::visit(VariableDeclaration &node) {
 
   getCurrentScope().addIdentifier(node.getTarget().getIdentifier());
 
+//  // Because if nested loops, we first need to see if this already exists TODO: Test local only?
+//  if (!getCurrentScope().identifierExists(node.getTarget().getIdentifier())) {
+//    getCurrentScope().addIdentifier(node.getTarget().getIdentifier());
+//  }
+
   if (getCurrentScope().identifierExists(node.getTarget().getIdentifier()) || !ignoreNonDeclaredVariables) {
     markVariableAccess(getCurrentScope().resolveIdentifier(node.getTarget().getIdentifier()),
                        VariableAccessType::WRITE);
