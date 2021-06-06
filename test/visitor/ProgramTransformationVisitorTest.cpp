@@ -2365,9 +2365,9 @@ TEST_F(ProgramTransformationVisitorTest, complexNestedLoops) {
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute()
+  int compute(int img)
   {
-    return {img[0], img[1], img[1], img[2]};
+    return {img[0], img[1], img[2]};
   }
 }
 )"""";

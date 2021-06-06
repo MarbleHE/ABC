@@ -592,6 +592,14 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
           replaceStatement = false;
           s->accept(*this);
           if (replaceStatement) {
+            // Empty Block merging
+            if (replacementStatement) {
+              if (auto block_ptr = dynamic_cast<Block *>(&*replacementStatement)) {
+                if (block_ptr->isEmpty()) {
+                  replacementStatement = nullptr;
+                }
+              }
+            }
             s = std::move(replacementStatement);
             replaceStatement = false;
           }
@@ -600,6 +608,12 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
 
         // If there are any stmts left, transfer them to the unrolledBlock
         for (auto &s: clonedBody->getStatementPointers()) {
+          // Empty Block merging
+          if (auto block_ptr = dynamic_cast<Block *>(&*s)) {
+            if (block_ptr->isEmpty()) {
+              s = nullptr;
+            }
+          }
           unrolledBlock->appendStatement(std::move(s));
         }
       }
