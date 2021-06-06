@@ -97,13 +97,15 @@ class SpecialProgramTransformationVisitor : public ScopedVisitor {
   /// uses the value from variableMap, if the value is not nullptr
   /// \param variable variable to emit
   /// \return
-  void emitVariableDeclaration(const ScopedIdentifier &variable);
+  std::unique_ptr<VariableDeclaration> generateVariableDeclaration(const ScopedIdentifier &variable,
+                                                                   AbstractNode *parent);
 
   /// Builds an Assignment for the variable
   /// uses the value from variableMap (if not nullptr, otherwise this returns nullptr, too)
   /// \param variable variable to assign to
   /// \return (unique ptr to) Assignment or nullptr (if no value in variableMap)
-  std::unique_ptr<Assignment> generateVariableAssignment(const ScopedIdentifier& variable);
+  std::unique_ptr<Assignment> generateVariableAssignment(const ScopedIdentifier &variable,
+                                                         AbstractNode *parent);
 
  public:
 

@@ -2332,7 +2332,7 @@ TEST_F(ProgramTransformationVisitorTest, fullForLoopUnrolling) {
   // get the transformed code
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
-  
+
   /// Expected program
   const char *expectedCode = R""""(
 {
