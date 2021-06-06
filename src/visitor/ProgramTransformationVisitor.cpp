@@ -507,6 +507,20 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
   }
   elem.getInitializer().removeNullStatements();
 
+
+  // The CFGV also returns variables that are read&written in inner loops, which we might not yet be aware of
+  { // scope to delete temp variable
+    std::unordered_set<ScopedIdentifier> filteredLoopVariables;
+    for (const auto &si : loopVariables) {
+      if (getCurrentScope().identifierExists(si.getId())) {
+        if (getCurrentScope().resolveIdentifier(si.getId()).getScope().getScopeName()==si.getScope().getScopeName()) {
+          filteredLoopVariables.insert(si);
+        }
+      }
+    }
+    loopVariables = filteredLoopVariables;
+  }
+
   // Now, int i = 0 and similar things might have been deleted from AST and are in VariableValuesMap
   // We need to emit Assignments (or Declarations with value if needed) for each of the loop variables Variables into the initializer
   // we also need to set those elements to "unknown" in the variableMap so that they don't cause issues later
@@ -528,18 +542,6 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
     }
   }
 
-  // The CFGV also returns variables that are read&written in inner loops, which we might not yet be aware of
-  { // scope to delete temp variable
-    std::unordered_set<ScopedIdentifier> filteredLoopVariables;
-    for (const auto &si : loopVariables) {
-      if (getCurrentScope().identifierExists(si.getId())) {
-        if (getCurrentScope().resolveIdentifier(si.getId()).getScope().getScopeName()==si.getScope().getScopeName()) {
-          filteredLoopVariables.insert(si);
-        }
-      }
-    }
-    loopVariables = filteredLoopVariables;
-  }
 
   // The values of loop variables we got from the initializer should not be substituted inside the loop
   // Since they will be different in each iteration, CTES should treat them as "compile time unknown"

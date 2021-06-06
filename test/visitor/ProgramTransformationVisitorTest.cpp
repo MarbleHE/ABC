@@ -2257,13 +2257,12 @@ TEST_F(ProgramTransformationVisitorTest, nestedFold) {
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
-  //TODO: add expected code
   /// Expected program
   const char *expectedCode = R""""(
 {
-  int compute(int img, int imgSize, int x, int y)
+  int compute(int img, int imgSize)
   {
-    return;
+    return (((((((((0 + img[((imgSize * 0) + 0)]) + img[((imgSize * 1) + 0)]) + img[((imgSize * 2) + 0)]) + img[((imgSize * 0) + 1)]) + img[((imgSize * 1) + 1)]) + img[((imgSize * 2) + 1)]) + img[((imgSize * 0) + 2)]) + img[((imgSize * 1) + 2)]) + img[((imgSize * 2) + 2)]);
   }
 }
 )"""";
