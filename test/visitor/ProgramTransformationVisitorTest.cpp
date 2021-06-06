@@ -2082,6 +2082,194 @@ TEST_F(ProgramTransformationVisitorTest, DISABLED_partialforLoopUnrolling) {
 }
 
 
+TEST_F(ProgramTransformationVisitorTest, trivialLoop) {
+/// Input program
+  const char *programCode = R""""(
+   public int compute() {
+      int x = 0;
+      for(int i = 0; i < 3; i = i + 1) {
+        x = 42;
+      }
+      return x;
+   }
+)"""";
+  auto code = std::string(programCode);
+  ast = Parser::parse(code);
+
+  // perform the compile-time expression simplification
+  ast->accept(ctes);
+
+  // get the transformed code
+  ast->accept(ppv);
+  std::cout << ss.str() << std::endl;
+
+  /// Expected program
+  const char *expectedCode = R""""(
+{
+  int compute()
+  {
+    return 42;
+  }
+}
+)"""";
+
+  EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
+}
+
+
+TEST_F(ProgramTransformationVisitorTest, complexLoop) {
+  //TODO: Once OperatorExpressions are implemented, this can be simplified even further
+
+/// Input program
+  const char *programCode = R""""(
+  public int compute(int img, int imgSize) {
+    int img2;
+    for (int i = 0; i < 2; i = i + 1) {
+      img2[i] = img[i+1];
+    }
+    return img2;
+  }
+)"""";
+  auto code = std::string(programCode);
+  ast = Parser::parse(code);
+
+  // perform the compile-time expression simplification
+  ast->accept(ctes);
+
+  // get the transformed code
+  ast->accept(ppv);
+  std::cout << ss.str() << std::endl;
+
+  /// Expected program
+  const char *expectedCode = R""""(
+{
+  int compute(int img, int imgSize)
+  {
+    return {img[1], img[2]};
+  }
+}
+)"""";
+
+  EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
+}
+
+TEST_F(ProgramTransformationVisitorTest, foldLoop) {
+  //TODO: Once OperatorExpressions are implemented, this can be simplified even further
+
+/// Input program
+  const char *programCode = R""""(
+  public int compute(int x) {
+    int sum = 0;
+    for (int i = 1; i < 3; i = i + 1) {
+      sum = sum + i*x;
+    }
+    return sum;
+  }
+)"""";
+  auto code = std::string(programCode);
+  ast = Parser::parse(code);
+
+  // perform the compile-time expression simplification
+  ast->accept(ctes);
+
+  // get the transformed code
+  ast->accept(ppv);
+  std::cout << ss.str() << std::endl;
+
+  /// Expected program
+  const char *expectedCode = R""""(
+{
+  int compute(int img, int imgSize)
+  {
+    return (0 + (1 * x) + (2 * x));
+  }
+}
+)"""";
+
+  EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
+}
+
+TEST_F(ProgramTransformationVisitorTest, trivialNestedLoops) {
+  //  int trivialLoop() {
+  //    int x = 0;
+  //    for(int j = 0; j < 3; j = j + 1) {
+  //      for(int i = 0; i < 3; i = i + 1) {
+  //        x = 42;
+  //      }
+  //    }
+  //    return x;
+  //  }
+  /// Input program
+  const char *programCode = R""""(
+   public int compute() {
+      int x = 0;
+      for(int j = 0; j < 3; j = j + 1) {
+        for(int i = 0; i < 3; i = i + 1) {
+          x = 42;
+        }
+      }
+      return x;
+    }
+)"""";
+  auto code = std::string(programCode);
+  ast = Parser::parse(code);
+
+  // perform the compile-time expression simplification
+  ast->accept(ctes);
+
+  // get the transformed code
+  ast->accept(ppv);
+  std::cout << ss.str() << std::endl;
+
+  /// Expected program
+  const char *expectedCode = R""""(
+{
+  int compute()
+  {
+    return 42;
+  }
+}
+)"""";
+
+  EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
+}
+
+TEST_F(ProgramTransformationVisitorTest, complexNestedLoops) {
+  /// Input program
+  const char *programCode = R""""(
+   public int compute(int img) {
+      int x;
+      for(int j = 0; j < 2; j = j + 1) {
+        for(int i = 0; i < 2; i = i + 1) {
+          x[i+j] = img[i + j];
+        }
+      }
+      return x;
+    }
+)"""";
+  auto code = std::string(programCode);
+  ast = Parser::parse(code);
+
+  // perform the compile-time expression simplification
+  ast->accept(ctes);
+
+  // get the transformed code
+  ast->accept(ppv);
+  std::cout << ss.str() << std::endl;
+
+  /// Expected program
+  const char *expectedCode = R""""(
+{
+  int compute(int img)
+  {
+    return {img[0], img[1], img[2]};
+  }
+}
+)"""";
+
+  EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
+}
+
 TEST_F(ProgramTransformationVisitorTest, fullForLoopUnrolling) {
   /// Input program
   const char *programCode = R""""(
@@ -2187,159 +2375,6 @@ TEST_F(ProgramTransformationVisitorTest, fourNestedLoopsLaplacianSharpeningFilte
 
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
-
-TEST_F(ProgramTransformationVisitorTest, trivialLoop) {
-/// Input program
-  const char *programCode = R""""(
-   public int compute() {
-      int x = 0;
-      for(int i = 0; i < 3; i = i + 1) {
-        x = 42;
-      }
-      return x;
-   }
-)"""";
-  auto code = std::string(programCode);
-  ast = Parser::parse(code);
-
-  // perform the compile-time expression simplification
-  ast->accept(ctes);
-
-  // get the transformed code
-  ast->accept(ppv);
-  std::cout << ss.str() << std::endl;
-
-  /// Expected program
-  const char *expectedCode = R""""(
-{
-  int compute()
-  {
-    return 42;
-  }
-}
-)"""";
-
-  EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
-}
-
-
-TEST_F(ProgramTransformationVisitorTest, complexLoop) {
-  //TODO: Once OperatorExpressions are implemented, this can be simplified even further
-
-/// Input program
-  const char *programCode = R""""(
-  public int compute(int img, int imgSize) {
-    int img2;
-    for (int i = 0; i < 2; i = i + 1) {
-      img2[i] = img[i+1];
-    }
-    return img2;
-  }
-)"""";
-  auto code = std::string(programCode);
-  ast = Parser::parse(code);
-
-  // perform the compile-time expression simplification
-  ast->accept(ctes);
-
-  // get the transformed code
-  ast->accept(ppv);
-  std::cout << ss.str() << std::endl;
-
-  /// Expected program
-  const char *expectedCode = R""""(
-{
-  int compute(int img, int imgSize)
-  {
-    return {img[1], img[2]};
-  }
-}
-)"""";
-
-  EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
-}
-
-TEST_F(ProgramTransformationVisitorTest, trivialNestedLoops) {
-  //  int trivialLoop() {
-  //    int x = 0;
-  //    for(int j = 0; j < 3; j = j + 1) {
-  //      for(int i = 0; i < 3; i = i + 1) {
-  //        x = 42;
-  //      }
-  //    }
-  //    return x;
-  //  }
-  /// Input program
-  const char *programCode = R""""(
-   public int compute() {
-      int x = 0;
-      for(int j = 0; j < 3; j = j + 1) {
-        for(int i = 0; i < 3; i = i + 1) {
-          x = 42;
-        }
-      }
-      return x;
-    }
-)"""";
-  auto code = std::string(programCode);
-  ast = Parser::parse(code);
-
-  // perform the compile-time expression simplification
-  ast->accept(ctes);
-
-  // get the transformed code
-  ast->accept(ppv);
-  std::cout << ss.str() << std::endl;
-
-  /// Expected program
-  const char *expectedCode = R""""(
-{
-  int compute()
-  {
-    return 42;
-  }
-}
-)"""";
-
-  EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
-}
-
-TEST_F(ProgramTransformationVisitorTest, complexNestedLoops) {
-  /// Input program
-  const char *programCode = R""""(
-   public int compute(int img) {
-      int x;
-      for(int j = 0; j < 2; j = j + 1) {
-        for(int i = 0; i < 2; i = i + 1) {
-          x[i+j] = img[i + j];
-        }
-      }
-      return x;
-    }
-)"""";
-  auto code = std::string(programCode);
-  ast = Parser::parse(code);
-
-  // perform the compile-time expression simplification
-  ast->accept(ctes);
-
-  // get the transformed code
-  ast->accept(ppv);
-  std::cout << ss.str() << std::endl;
-
-  /// Expected program
-  const char *expectedCode = R""""(
-{
-  int compute(int img)
-  {
-    return {img[0], img[1], img[2]};
-  }
-}
-)"""";
-
-  EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
-}
-
 
 TEST_F(ProgramTransformationVisitorTest, DISABLED_maxNumUnrollings) {
   //TODO: Update Test and re-enable once there's an easy way to set maxUnrollings in the visitor
