@@ -90,16 +90,20 @@ std::string SpecialProgramTransformationVisitor::printProgram(AbstractNode &node
   return ss.str();
 }
 
-bool SpecialProgramTransformationVisitor::containsVariable(AbstractNode &node, std::string identifier) {
-  if (auto var_ptr = dynamic_cast<Variable *>(&node)) {
-    return var_ptr->getIdentifier()==identifier;
-  } else {
-    bool found = false;
-    for (auto &c: node) {
-      found = found || containsVariable(c, identifier);
+bool SpecialProgramTransformationVisitor::containsVariable(const AbstractNode &node,
+                                                           const std::vector<std::string> &identifiers) {
+  if (auto var_ptr = dynamic_cast<const Variable *>(&node)) {
+    for (auto &id: identifiers) {
+      if (var_ptr->getIdentifier()==id)
+        return true;
     }
-    return found;
+  } else {
+    for (auto &c: node) {
+      if (containsVariable(c, identifiers))
+        return true;
+    }
   }
+  return false;
 }
 
 void SpecialProgramTransformationVisitor::visit(BinaryExpression &elem) {
@@ -117,7 +121,7 @@ void SpecialProgramTransformationVisitor::visit(BinaryExpression &elem) {
   // if "lhs op rhs" can be computed at compile time
   // then we replace elem with a literal
   // does not use apply when implicit conversions would be required, because handling them is messy
-  // TODO: This needs to be split into operations that return bool and operations that return the input type!
+  // TODO (constant folding): This needs to be split into operations that return bool and operations that return the input type!
   AbstractNode *lhs_ptr = &elem.getLeft();
   AbstractNode *rhs_ptr = &elem.getRight();
   if (auto literal_int_lhs_ptr = (dynamic_cast<LiteralInt *>(lhs_ptr))) {
@@ -177,6 +181,7 @@ void SpecialProgramTransformationVisitor::visit(UnaryExpression &elem) {
 }
 
 void SpecialProgramTransformationVisitor::visit(VariableDeclaration &elem) {
+  // TODO (inlining): Introduce a depth threshold (#nodes) to stop inlining if a variable's symbolic value reached a certain depth.
   // Get the value, if it exists
   std::unique_ptr<AbstractExpression> expr_ptr = nullptr;
   if (elem.hasValue()) {
@@ -193,7 +198,8 @@ void SpecialProgramTransformationVisitor::visit(VariableDeclaration &elem) {
 
   // Register the Variable in the variableMap
   // Because our system currently dumps out declarations even if the variable has been declared before,
-  // check if it already exists. //TODO: fix the underlying issue so that we can have shadowing
+  // check if it already exists.
+  // TODO (inlining): fix the underlying issue so that we can have shadowing
   ScopedIdentifier scopedIdentifier;
   if (getCurrentScope().identifierExists(elem.getTarget().getIdentifier())) {
     // Because of loop unrolling, duplicate stuff will happen
@@ -245,7 +251,7 @@ void SpecialProgramTransformationVisitor::visit(Assignment &elem) {
     if (replacementExpression) ind_ptr->setIndex(std::move(replacementExpression));
 
     // For now, we only support a single level of index access, so target must be a variable
-    // TODO: Support matrix accesses, i.e. x[i][j]!
+    // TODO (extension): Support matrix accesses, i.e. x[i][j]!
     if (auto ind_var_ptr = dynamic_cast<Variable *>(&ind_ptr->getTarget())) {
       if (!getCurrentScope().identifierExists(ind_var_ptr->getIdentifier())) {
         throw std::runtime_error("Cannot assign to non-declared variable: " + printProgram(elem));
@@ -262,7 +268,7 @@ void SpecialProgramTransformationVisitor::visit(Assignment &elem) {
         if (variableMap.has(scopedIdentifier) && variableMap.get(scopedIdentifier).value) { //update value
 
           // Create a copy of the value, since we sadly can't take it out of the variableMap :(
-          // TODO: Consider finding or creating a more unique_ptr-friendly data structure?
+          // TODO (extension): Consider finding or creating a more unique_ptr-friendly data structure?
           auto new_val = variableMap.get(scopedIdentifier).value->clone(&elem);
 
           // check if it's an expression list
@@ -312,7 +318,7 @@ void SpecialProgramTransformationVisitor::visit(Assignment &elem) {
 
       } else {
         // if index is a more general expression, we can't do anything
-        // TODO: Emit the declaration (ideally only if it hasn't been done before)
+        // TODO (inlining): Emit the declaration (ideally only if it hasn't been done before)
       }
 
     } else {
@@ -526,7 +532,7 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
     // Re-emit all the statements that contain a loop variable!
     for (auto&[si, tv] : variableMap) {
       for (auto &loop_var : loopVariables) {
-        if (tv.value && containsVariable(*tv.value, loop_var.getId())) {
+        if (tv.value && containsVariable(*tv.value, {loop_var.getId()})) {
           auto s = generateVariableDeclarationOrAssignment(si, &elem.getBody());
           elem.getBody().appendStatement(std::move(s));
         }
@@ -591,7 +597,8 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
       condition_copy->accept(*this);
       if (replacementExpression) condition_copy = std::move(replacementExpression);
 
-      // Check if it's known. TODO: Once BinaryExp handles this better, type should always be bool?
+      // Check if it's known.
+      // TODO (constant folding): Once BinaryExp handles this better, type should always be bool?
       if (auto bool_ptr = dynamic_cast<LiteralBool *>(&*condition_copy)) {
         return bool_ptr->getValue();
       } else if (auto char_ptr = dynamic_cast<LiteralChar *>(&*condition_copy)) {
@@ -692,10 +699,8 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
       // we currently emit everything, but probably only need to emit
       // statments that contain loop variables?
       if (currentLoopDepth_maxLoopDepth.first > 1) {
-        //TODO: Figure out which statements to emit and how, rather than dumping all
-        // TODO: How to figure out order/dependencies? Order in variable map?
-        // TODO: Why do we suddenly have duplicates in our variableMap??
-        //  and why do those duplicates still contain loop variables??
+        //TODO: (inlining) Figure out which statements to emit and how, rather than dumping all
+        // How to figure out order/dependencies? Order in variable map?
         for (auto&[si, expr] : variableMap) {
           // Don't emit loop variables, since we just got rid of them!
           if (loopVariables.find(si)==loopVariables.end()) {
@@ -791,7 +796,7 @@ std::unique_ptr<AbstractStatement> SpecialProgramTransformationVisitor::generate
     return nullptr;
   }
 
-  // TODO: properly check if a variable declaration statement was emitted before for this variable and only emit if not
+  // TODO (inlining): properly check if a variable declaration statement was emitted before for this variable and only emit if not
   bool emitDeclaration = true;
   auto &tv = variableMap.get(variable);
   auto var = std::make_unique<Variable>(variable.getId());
@@ -810,64 +815,7 @@ void SpecialProgramTransformationVisitor::visit(AbstractExpression &elem) {
 }
 
 // BELOW IS OLD CODE FOR REFERENCE!
-//#include <climits>
-//#include "ast_opt/visitor/ControlFlowGraphVisitor.h"
-//#include "ast_opt/visitor/SecretTaintingVisitor.h"
-//#include "ast_opt/visitor/PrintVisitor.h"
-//#include "ast_opt/visitor/ProgramTransformationVisitor.h"
-//#include "ast_opt/utilities/NodeUtils.h"
-//#include "ast_opt/ast/ArithmeticExpr.h"
-//#include "ast_opt/ast/LogicalExpr.h"
-//#include "ast_opt/ast/LiteralFloat.h"
-//#include "ast_opt/ast/VarDecl.h"
-//#include "ast_opt/ast/Variable.h"
-//#include "ast_opt/ast/VarAssignm.h"
-//#include "ast_opt/ast/UnaryExpr.h"
-//#include "ast_opt/ast/Block.h"
-//#include "ast_opt/ast/Return.h"
-//#include "ast_opt/ast/If.h"
-//#include "ast_opt/ast/Function.h"
-//#include "ast_opt/ast/FunctionParameter.h"
-//#include "ast_opt/ast/For.h"
-//#include "ast_opt/ast/ParameterList.h"
-//#include "ast_opt/ast/CallExternal.h"
-//#include "ast_opt/ast/While.h"
-//#include "ast_opt/ast/Call.h"
-//#include "ast_opt/ast/Rotate.h"
-//#include "ast_opt/ast/Transpose.h"
-//#include "ast_opt/ast/OperatorExpr.h"
-//#include "ast_opt/utilities/Scope.h"
-//#include "ast_opt/ast/GetMatrixSize.h"
-//#include "ast_opt/ast/MatrixAssignm.h"
-//
-//ProgramTransformationVisitor::ProgramTransformationVisitor() : configuration(CtesConfiguration()) {
-//  evalVisitor = EvaluationVisitor();
-//}
-//
-//ProgramTransformationVisitor::ProgramTransformationVisitor(CtesConfiguration cfg) : configuration(cfg) {
-//  evalVisitor = EvaluationVisitor();
-//}
-//
-//// =====================
-//// AST objects that do not require or allow any simplifications
-//// =====================
-//
-//void ProgramTransformationVisitor::visit(AbstractNode &elem) {
-//  Visitor::visit(elem);
-//}
-//
-//void ProgramTransformationVisitor::visit(AbstractExpression &elem) {
-//  Visitor::visit(elem);
-//}
-//
-//void ProgramTransformationVisitor::visit(AbstractStatement &elem) {
-//  Visitor::visit(elem);
-//}
-//
-//void ProgramTransformationVisitor::visit(Operator &elem) {
-//  Visitor::visit(elem);
-//}
-//
+
 //void ProgramTransformationVisitor::visit(Rotate &elem) {
 //  Visitor::visit(elem);
 //  // if the Rotate's operand is known at compile-time, we can execute the rotation and replace this node by the
@@ -969,11 +917,11 @@ void SpecialProgramTransformationVisitor::visit(AbstractExpression &elem) {
 //      auto targetVV = variableValues.getVariableValue(sv);
 //      if (auto m = dynamic_cast<AbstractLiteral *>(targetVV.getValue())) {
 //        // Matrix is currently stored as a Literal
-//        //TODO: Implement
+//        //OLD_TODO: Implement
 //        throw std::runtime_error("Updating Literal Matrix with AbstractExpr not yet implemented.");
 //      } else if (auto m = dynamic_cast<AbstractMatrix *>(targetVV.getValue())) {
 //        // Matrix already contains expr elements
-//        //TODO: Implement, should be simpler
+//        //OLD_TODO: Implement, should be simpler
 //        throw std::runtime_error("Updating AbstractExpr Matrix not yet implemented.");
 //      } else {
 //        throw std::logic_error("CTES encountered an unexpected Matrix state while trying to perform MatrixAssignm.");
@@ -1010,7 +958,7 @@ void SpecialProgramTransformationVisitor::visit(AbstractExpression &elem) {
 //      auto varAssignm = emitVariableAssignment(
 //          variableValues.getVariableEntryDeclaredInThisOrOuterScope(operandAsVariable->getIdentifier(), curScope));
 //
-//      //TODO: THIS CAUSES ITERATOR INVALIDATION ISSUES!!
+//      //OLD_TODO: THIS CAUSES ITERATOR INVALIDATION ISSUES!!
 //      //  INSTEAD: REPLACE CURRENT ELEM WITH NEW BLOCK, LET PARENT DEAL WITH INLINING
 //      // and attach the assignment statement immediately before this MatrixAssignm
 //      if (auto parentAsBlock = dynamic_cast<Block *>(elem.getParent())) {
@@ -1063,79 +1011,9 @@ void SpecialProgramTransformationVisitor::visit(AbstractExpression &elem) {
 //  }
 //}
 //
-//void isolateNode(AbstractNode *n) {
-//  n->removeChildren();
-//  n->takeFromParent();
-//}
-//
-//void ProgramTransformationVisitor::visit(Ast &elem) {
-//  // clean up data structures from any possible previous run
-//  emittedVariableDeclarations.clear();
-//  emittedVariableAssignms.clear();
-//  nodesQueuedForDeletion.clear();
-//  variableValues = VariableValuesMap();
-//  currentLoopDepth_maxLoopDepth = {std::pair(0, 0)};
-//
-//  // takes care of creating root scope & visits entire AST, starting at rootNode
-//  Visitor::visit(elem);
-//
-//  // add all emitted VarDecls to nodesQueuedForDeletion that are not required anymore, i.e, there are no emitted
-//  // VarAssignms that depend on them
-//  for (auto &[identifierScope, varData] : emittedVariableDeclarations) {
-//    if (varData->hasNoReferringAssignments()) {
-//      nodesQueuedForDeletion.push_back(varData->getVarDeclStatement());
-//    }
-//  }
-//
-//  // Delete all noted queued for deletion after finishing the simplification traversal.
-//  // use a set to remove any duplicate nodes (should actually not be present)
-//  std::set<AbstractNode *> nodesToDelete(nodesQueuedForDeletion.begin(), nodesQueuedForDeletion.end());
-//  // isolate all nodes from their parent and children: this must be done for all nodes before starting to delete
-//  // because otherwise it might happen that we try to access nodes that have already been deleted
-//  for (auto &n : nodesToDelete) { isolateNode(n); }
-//  // now delete the nodes sequentially
-//  for (auto node : nodesToDelete) { elem.deleteNode(&node, true); }
-//}
-//
-//void ProgramTransformationVisitor::visit(Datatype &elem) {
-//  Visitor::visit(elem);
-//}
-//
-//void ProgramTransformationVisitor::visit(CallExternal &elem) {
-//  Visitor::visit(elem);
-//}
-//
 //// =====================
 //// Simplifiable Statements
 //// =====================
-//
-//void ProgramTransformationVisitor::visit(LiteralBool &elem) {
-//  Visitor::visit(elem);
-//}
-//
-//void ProgramTransformationVisitor::visit(LiteralInt &elem) {
-//  Visitor::visit(elem);
-//}
-//
-//void ProgramTransformationVisitor::visit(LiteralString &elem) {
-//  Visitor::visit(elem);
-//}
-//
-//void ProgramTransformationVisitor::visit(LiteralFloat &elem) {
-//  Visitor::visit(elem);
-//}
-//
-//void ProgramTransformationVisitor::visit(Variable &elem) {
-//  // Variables have no AbstractNode children, so this should do nothing
-//  Visitor::visit(elem);
-//
-//  // TODO: Introduce a depth threshold (#nodes) to stop inlining if a variable's symbolic value reached a certain depth.
-//  // if we know the variable's value (i.e., its value is either any subtype of AbstractLiteral or an AbstractExpr if
-//  // this is a symbolic value that defines on other variables), we can replace this variable node by its value
-//  if (auto value = variableValues.getVariableValueDeclaredInThisOrOuterScope(elem.getIdentifier(), curScope)) {
-//    if (elem.hasParent()) elem.getParent()->replaceChild(&elem, value->clone());
-//  }
-//}
 //
 //void ProgramTransformationVisitor::visit(VarDecl &elem) {
 //  // Visit and simplify datatype and initializer (if present)
@@ -1346,7 +1224,7 @@ void SpecialProgramTransformationVisitor::visit(AbstractExpression &elem) {
 //  Visitor::visit(elem);
 //  cleanUpBlock(elem);
 //
-//  //TODO: If we come to the end of a scope, do we need to emit variables?
+//  //OLD_TODO: If we come to the end of a scope, do we need to emit variables?
 //}
 //
 //void ProgramTransformationVisitor::visit(Call &elem) {
@@ -1397,42 +1275,12 @@ void SpecialProgramTransformationVisitor::visit(AbstractExpression &elem) {
 //  Visitor::visit(elem);
 //}
 //
-//void ProgramTransformationVisitor::visit(ParameterList &elem) {
-//  Visitor::visit(elem);
-//  // if all of the FunctionParameter children are marked as known, remove this node
-//  bool allFunctionParametersAreKnown = true;
-//  for (auto &fp : elem.getParameters()) {
-//    if (!hasKnownValue(fp)) allFunctionParametersAreKnown = false;
-//  }
-//}
-//
-//void ProgramTransformationVisitor::visit(Function &elem) {
-//  Visitor::visit(elem);
-//}
-//
-//void ProgramTransformationVisitor::visit(FunctionParameter &elem) {
-//  // We cannot simply visit the Variable, as it would try to look it up when of course it does not exist yet
-//  // So instead of Visitor::visit(elem); we visit only the Datatype and inspect the Value manually
-//  elem.getDatatype()->accept(*this);
-//
-//  // The value in a FunctionParamter must be a single Variable
-//  auto valueAsVar = dynamic_cast<Variable *>(elem.getValue());
-//  if (valueAsVar) {
-//    variableValues
-//        .addDeclaredVariable(ScopedVariable(valueAsVar->getIdentifier(), curScope), VariableValue(*elem.getDatatype(),
-//                                                                                                  nullptr));
-//  } else {
-//    throw std::runtime_error("Function parameter " + elem.getUniqueNodeId() + " contained invalid Variable value.");
-//  }
-//
-//}
-//
 //void ProgramTransformationVisitor::visit(If &elem) {
 //  // Bypass the base Visitor's logic and directly visit the condition only because we need to know whether it is
 //  // evaluable at runtime (or not) and its result.
 //  elem.getCondition()->accept(*this);
 //
-//  // TODO: Rewriting should only happen if the condition is runtime-known and secret.
+//  // OLD_TODO: Rewriting should only happen if the condition is runtime-known and secret.
 //  //  If the condition is public and runtime-known, the If-statement should NOT be rewritten because can be handled
 //  //  more efficient by the runtime system. This check requires information from the ControlFlowGraphVisitor that
 //  //  does not support variable-scoping yet.
@@ -1676,7 +1524,7 @@ void SpecialProgramTransformationVisitor::visit(AbstractExpression &elem) {
 ////  elem.replaceChild(originalCondition, new OperatorExpr(new Operator(LOGICAL_AND), newConds));
 ////  enqueueNodeForDeletion(originalCondition);
 ////
-////  // TODO: Future work:  Make this entire thing flexible with regard to num_slots_in_ctxt, i.e., allow changing how long
+////  // OLD_TODO: Future work:  Make this entire thing flexible with regard to num_slots_in_ctxt, i.e., allow changing how long
 ////  //  unrolled loops are. Idea: generate all loops (see below cleanup loop ideas) starting from ludacriously large
 ////  //  number, later disable/delete the ones that are larger than actually selected cipheretxt size determined from
 ////  //  parameters?
@@ -1684,7 +1532,7 @@ void SpecialProgramTransformationVisitor::visit(AbstractExpression &elem) {
 ////
 ////  // find all variables that were changed in the for-loop's body - even iteration vars (important for condition!) - and
 ////  // emit them, i.e, create a new variable assignment for each variable
-////  // TODO: Do not emit any variable assignments in the for-loop's body if a variable's maximum depth is reached as this
+////  // OLD_TODO: Do not emit any variable assignments in the for-loop's body if a variable's maximum depth is reached as this
 ////  //  leads to wrong results. This must be considered when introducing the cut-off for "deep variables".
 ////  auto bodyChangedVariables = getChangedVariables(variableValuesBeforeVisitingLoopBody);
 ////  std::list<AbstractNode *> emittedVarAssignms;
@@ -1711,7 +1559,7 @@ void SpecialProgramTransformationVisitor::visit(AbstractExpression &elem) {
 ////  elem.getBody()->castTo<Block>()->addChildren(
 ////      std::vector<AbstractNode *>(emittedVarAssignms.begin(), emittedVarAssignms.end()), true);
 ////
-////  // TODO: Future work (maybe): for large enough num_..., e.g. 128 or 256, it might make sense to have a binary series
+////  // OLD_TODO: Future work (maybe): for large enough num_..., e.g. 128 or 256, it might make sense to have a binary series
 ////  //  of cleanup loops, e.g., if 127 iterations are left, go to 64-unrolled loop, 32-unrolled loop, etc.
 ////  //  When to cut off? -> empirical decision?
 ////
@@ -1727,79 +1575,9 @@ void SpecialProgramTransformationVisitor::visit(AbstractExpression &elem) {
 ////  return blockEmbeddingLoops;
 ////}
 //
-//void ProgramTransformationVisitor::visit(Return &elem) {
-//  Visitor::visit(elem);
-//}
-//
 //// =====================
 //// Helper methods
 //// =====================
-//
-//bool ProgramTransformationVisitor::hasKnownValue(AbstractNode *node) {
-//  // A value is considered as known if...
-//  // i.) it is a Literal of a concrete type (e.g., not a LiteralInt matrix containing AbstractExprs)
-//  auto nodeAsLiteral = dynamic_cast<AbstractLiteral *>(node);
-//  if (nodeAsLiteral!=nullptr /*&&  !nodeAsLiteral->getMatrix()->containsAbstractExprs() */) return true;
-//
-//  // ii.) it is a variable with a known value (in variableValues)
-//  if (auto abstractExprAsVariable = dynamic_cast<Variable *>(node)) {
-//    // check that the variable has a value
-//    auto var =
-//        variableValues.getVariableValueDeclaredInThisOrOuterScope(abstractExprAsVariable->getIdentifier(), curScope);
-//    return var!=nullptr
-//        // and its value is not symbolic (i.e., contains no variables for which the value is unknown)
-//        && var->getVariableIdentifiers().empty();
-//  }
-//  return false;
-//}
-//
-//std::vector<AbstractLiteral *> ProgramTransformationVisitor::evaluateNodeRecursive(
-//    AbstractNode *node, std::unordered_map<std::string, AbstractLiteral *> valuesOfVariables) {
-//  // clean up the EvaluationVisitor from any previous run
-//  evalVisitor.reset();
-//
-//  // perform evaluation by passing the required parameter values
-//  evalVisitor.updateVarValues(std::move(valuesOfVariables));
-//  node->accept(evalVisitor);
-//
-//  // retrieve and return results
-//  std::vector<AbstractLiteral *> clonedres;
-//  for (auto &r :evalVisitor.getResults()) {
-//    clonedres.emplace_back(r->clone());
-//  }
-//  return clonedres;
-//}
-//
-//AbstractExpression *ProgramTransformationVisitor::getKnownValue(AbstractNode *node) {
-//  // if node is a Literal: return the node itself
-//  if (auto nodeAsLiteral = dynamic_cast<AbstractLiteral *>(node)) {
-//    return nodeAsLiteral;
-//  }
-//  // if node is a variable: search the variable's value in the map of known variable values
-//  auto nodeAsVariable = dynamic_cast<Variable *>(node);
-//  if (nodeAsVariable!=nullptr) {
-//    auto val = variableValues.getVariableValueDeclaredInThisOrOuterScope(nodeAsVariable->getIdentifier(), curScope);
-//    if (val!=nullptr) {
-//      // return a clone of the variable's value
-//      return val->clone();
-//    }
-//  }
-//  // in any other case: throw an error
-//  std::stringstream ss;
-//  ss << "Cannot determine value for node " << node->getUniqueNodeId() << ". ";
-//  ss << "Use the method hasKnownValue before invoking this method.";
-//  throw std::invalid_argument(ss.str());
-//}
-//
-//std::unordered_map<std::string, AbstractLiteral *> ProgramTransformationVisitor::getTransformedVariableMap() {
-//  std::unordered_map<std::string, AbstractLiteral *> variableMap;
-//  for (auto &[k, v] : variableValues.getMap()) {
-//    if (auto varAsLiteral = dynamic_cast<AbstractLiteral *>(v.getValue())) {
-//      variableMap[k.getIdentifier()] = varAsLiteral;
-//    }
-//  }
-//  return variableMap;
-//}
 //
 //AbstractExpression *ProgramTransformationVisitor::generateIfDependentValue(
 //    AbstractExpression *condition, AbstractExpression *trueValue, AbstractExpression *falseValue) {
@@ -1921,15 +1699,6 @@ void SpecialProgramTransformationVisitor::visit(AbstractExpression &elem) {
 //
 //}
 //
-//bool ProgramTransformationVisitor::isQueuedForDeletion(const AbstractNode *node) {
-//  return std::find(nodesQueuedForDeletion.begin(), nodesQueuedForDeletion.end(), node)
-//      !=nodesQueuedForDeletion.end();
-//}
-//
-//void ProgramTransformationVisitor::visit(AbstractMatrix &elem) {
-//  Visitor::visit(elem);
-//}
-//
 //void ProgramTransformationVisitor::emitVariableDeclaration(ScopedVariable variableToEmit) {
 //  auto parent = variableToEmit.getScope()->getScopeOpener();
 //  auto children = parent->getChildren();
@@ -1949,41 +1718,8 @@ void SpecialProgramTransformationVisitor::visit(AbstractExpression &elem) {
 //
 //  // passing position in children vector is req. to prepend the new VarAssignm (i.e., as new first child of parent)
 //  auto parentAsBlock = parent->castTo<Block>();
-//  //TODO: Solve prepending invalidation issues/maybe not there because whenever we NULL something we leave a slot for re-insertion?
+//  //OLD_TODO: Solve prepending invalidation issues/maybe not there because whenever we NULL something we leave a slot for re-insertion?
 //  parentAsBlock->addStatement({newVarDeclaration});
 //  emittedVariableDeclarations.emplace(variableToEmit, new EmittedVariableData(newVarDeclaration));
 //}
 //
-//
-//std::set<VarAssignm *> ProgramTransformationVisitor::emitVariableAssignments(std::set<ScopedVariable> variables) {
-//  std::set<VarAssignm *> result;
-//  for (auto &v : variables) {
-//    auto new_assignments = emitVariableAssignment(v);
-//    result.insert(new_assignments.begin(), new_assignments.end());
-//  }
-//  return result;
-//}
-//
-//void ProgramTransformationVisitor::enqueueNodeForDeletion(AbstractNode *node) {
-//
-//   //TODO: Replace the deletion logic in CTES with something more efficient
-//}
-//
-//void ProgramTransformationVisitor::cleanUpBlock(Block &elem) {
-//  // Since some children might have replaced themselves with nullptr, let's collect only the valid children
-//  auto newChildren = elem.getChildren();
-//  if (newChildren.empty()
-//      && elem.hasParent()) { //sometimes, e.g. in loop unrolling, a block might not yet have a parent!
-//    // Block is empty => remove it from parents
-//    elem.getParent()->replaceChild(&elem, nullptr);
-//
-//    // mark for deletion
-//    enqueueNodeForDeletion(&elem);
-//  } else {
-//    elem.removeChildren();
-//    // not adding backreferences because they already exist
-//    for (auto c: newChildren) {
-//      elem.addStatement(c->castTo<AbstractStatement>());
-//    }
-//  }
-//}

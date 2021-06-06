@@ -8,18 +8,20 @@
 
 class SpecialProgramTransformationVisitor;
 
+/// The ProgramTransformationVisitor
 typedef Visitor<SpecialProgramTransformationVisitor, ScopedVisitor> ProgramTransformationVisitor;
-
-struct TypedVariableValue {
-  Datatype type;
-  std::unique_ptr<AbstractExpression> value;
-};
-
-typedef VariableMap<TypedVariableValue> TypedVariableValueMap;
 
 class SpecialProgramTransformationVisitor : public ScopedVisitor {
  private:
 
+  struct TypedVariableValue {
+    Datatype type;
+    std::unique_ptr<AbstractExpression> value;
+  };
+
+  typedef VariableMap<TypedVariableValue> TypedVariableValueMap;
+
+  /// A map from scoped identifiers to their datatype and value
   TypedVariableValueMap variableMap;
 
   /// Converts an AST into a string in our C-like input language
@@ -28,7 +30,12 @@ class SpecialProgramTransformationVisitor : public ScopedVisitor {
   /// \return C-like program representation of the AST
   static std::string printProgram(AbstractNode &node);
 
-  static bool containsVariable(AbstractNode& node, std::string identifier);
+  /// Iterates over an ast (using child iterators instead of visitor pattern)
+  /// and checks if there are any Variable(identifier) nodes present
+  /// \param node root of an ast or expression tree to check
+  /// \param identifier the identifiers to search for (use {"x"} to search for a single id)
+  /// \return true iff at least one of the identifiers appears in ast or its children
+  static bool containsVariable(const AbstractNode& node, const std::vector<std::string>& identifiers);
 
   /// This fakes "returns" from the visit calls
   /// This is only used for AbstractExpressions
@@ -119,108 +126,12 @@ class SpecialProgramTransformationVisitor : public ScopedVisitor {
   void visit(AbstractExpression &elem);
 };
 
-//  /// Determines whether the number of total allowed loop unrollings is already exhausted.
-//  /// \return True if the maxNumLoopUnrollings is not reached yet or if there is no limitation in the number of total
-//  /// loop unrollings. Otherwise returns False.
-//  bool isUnrollLoopAllowed() const;
-//
-//  /// A ProgramTransformationVisitor configuration object containing configuration parameters.
-//  CtesConfiguration configuration;
-//
-//  /// A RuntimeVisitor instance that is used to evaluate parts of the AST in order to simplify them.
-//  RuntimeVisitor runtimeVisitor;
-//
 //  /// Keeps track of all emitted variable declarations and maps each to an associated EmittedVariableData pointer.
 //  std::map<ScopedVariable, EmittedVariableData *> emittedVariableDeclarations;
 //
 //  /// Maps emitted Assignments to their corresponding VarDecl statement in emittedVariableDeclarations.
 //  std::map<AbstractNode *,
 //           std::map<ScopedVariable, EmittedVariableData *>::iterator> emittedAssignments;
-
-
-
-/// A method to be called immediately after entering the For-loop's visit method.
-/// updates currentLoopDepth_maxLoopDepth
-//  void enteredForLoop();
-
-/// A method to be called before leaving the For-loop's visit method.
-/// updates currentLoopDepth_maxLoopDepth
-//  void leftForLoop();
-
-// public:
-//  SpecialProgramTransformationVisitor() = default;
-
-//  explicit SpecialProgramTransformationVisitor(CtesConfiguration  cfg);
-
-/// Stores the latest value of a variable while traversing through the AST. Entries in this map consist of a key
-/// (pair) that is made of a variable identifier (first) and the scope where the variable was declared in (second).
-/// The entry of the variableValues map is the current value of the associated variable.
-//  TypedVariableValueMap variableValues;
-
-/// Contains pointer to those nodes for which full or partial evaluation could be performed and hence can be deleted
-/// at the end of this simplification traversal.
-/// For example, the arithmetic expression represented by ArithmeticExpr( LiteralInt(12), OpSymb::add, LiteralInt(42))
-/// will be evaluated to 12+42=54. The node ArithmeticExpr (and all of its children) will be deleted and replaced
-/// by a new node LiteralInt(54).
-//  std::deque<AbstractNode *> nodesQueuedForDeletion;
-
-/** @defgroup visit Methods implementing the logic of the visitor for each node type.
-*  @{
-*/
-//  void visit(BinaryExpression &elem);
-//  void visit(Block &elem);
-//  void visit(Call &elem);
-//  void visit(ExpressionList &elem);
-//  void visit(For &elem);
-//  void visit(Function &elem);
-//  void visit(FunctionParameter &elem);
-//  void visit(If &elem);
-//  void visit(IndexAccess &elem);
-//  void visit(LiteralBool &elem);
-//  void visit(LiteralChar &elem);
-//  void visit(LiteralInt &elem);
-//  void visit(LiteralFloat &elem);
-//  void visit(LiteralDouble &elem);
-//  void visit(LiteralString &elem);
-//  void visit(OperatorExpressionession &elem);
-//  void visit(Return &elem);
-//  void visit(TernaryOperator &elem);
-//  void visit(UnaryExpression &elem);
-//  void visit(Assignment &elem);
-//  void visit(VariableDeclaration &elem);
-//  void visit(Variable &elem);
-/** @} */ // End of visit group
-
-/// Checks whether the given node has a known value. A value is considered as known if
-///  - the node itself is any subtype of an AbstractLiteral this includes matrices of a concrete type (e.g.,
-///    LiteralInt containing Matrix<int>) but not matrices containing AbstractExprs,
-///  - the node is a Variable and the referred value is known
-///  - or the node's value is not relevant anymore as it is marked for deletion.
-/// \param node The node for which the presence of a value should be determined.
-/// \return True if the node's value is known, otherwise False.
-//  bool hasKnownValue(AbstractNode *node);
-
-/// Returns the value of the given node that is either the node itself if the node is an subtype of AbstractLiteral
-/// or the known value (AbstractExpr) stored previously in the variableValues map.
-/// \param node The node for which the value should be retrieved.
-/// \throws std::invalid_argument exception if the node does not have a known value. Must be checked before using the
-///         hasKnownValue method.
-/// \return The node's value as AbstractExpr.
-//  AbstractExpression *getKnownValue(AbstractNode *node);
-
-//  /// Evaluates a subtree, i.e., a node and all of its children by using the RuntimeVisitor.
-//  /// \param node The subtree's root node to be evaluated.
-//  /// \param valuesOfVariables The variable values required to evaluate this subtree.
-//  /// \return The evaluation's result as a vector of AbstractLiteral pointers. If the subtree does not include a Return
-//  ///         statement, then the result vector should always have one element only.
-//  std::vector<AbstractLiteral *> evaluateNodeRecursive(
-//      AbstractNode *node, std::unordered_map<std::string, AbstractLiteral *> valuesOfVariables);
-//
-//  /// Takes the variableValues map and creates a new map containing a copy of all AbstractLiteral values. This map
-//  /// can then be passed to the RuntimeVisitor to evaluate a given subtree. The original variableValues map, however,
-//  /// contains AbstractExprs of non-evaluable variables too, for example, x=y+7 where y is a function parameter.
-//  /// \return A map of (variable identifier, variable value) pairs where variable values are AbstractLiterals.
-//  std::unordered_map<std::string, AbstractLiteral *> getTransformedVariableMap();
 
 /// A helper method to transform an If statement into a dependent assignment, for example:
 ///     if (condition) { x = trueValue; } else { x = falseValue; }
@@ -238,11 +149,6 @@ class SpecialProgramTransformationVisitor : public ScopedVisitor {
 //  static AbstractExpression *generateIfDependentValue(
 //      AbstractExpression *condition, AbstractExpression *trueValue, AbstractExpression *falseValue);
 
-/// Checks whether the given node is queued for deletion. Deletion will be carried out at the end of the traversal.
-/// \param node The node to be checked for deletion.
-/// \return True if this node is enqueued for deletion, otherwise False.
-//  bool isQueuedForDeletion(const AbstractNode *node);
-
 /// Takes an OperatorExpression consisting of a logical operator (i.e., AND, XOR, OR) and applies the Boolean laws to
 /// simplify the expression. For example, the expression <anything> AND False always evaluates to False, hence we can
 /// replace this OperatorExpression by the boolean value (LiteralBool) False. Other considered rules include:
@@ -255,12 +161,6 @@ class SpecialProgramTransformationVisitor : public ScopedVisitor {
 /// where <anything> denotes an arbitrary logical expression of the same logical operator.
 /// \param elem The OperatorExpression that should be simplified using Boolean laws.
 //  static void simplifyLogicalExpr(OperatorExpression &elem);
-
-/// Identify all variables that are written and read from in the body + condition of a for-loop
-/// \param forLoop The for loop to investigate
-/// \param VariableValues Initial VariableValues BEFORE the block
-/// \return Variables, with their associated scopes, that match the criteria
-//  std::set<ScopedVariable> identifyReadWriteVariables(For &forLoop, TypedVariableValueMap VariableValues);
 
 /// Creates a new Assignment statement of the variable that the given iterator (variableToEmit) is pointing to.
 /// The method ensures that there exists a variable declaration statement (VarDecl) in the scope where this
@@ -286,9 +186,6 @@ class SpecialProgramTransformationVisitor : public ScopedVisitor {
 /// generated.
 //  void emitVariableDeclaration(ScopedVariable variableToEmit);
 
-/// Marks the given node for deletion. The node will be deleted after all nodes of the AST have been visited.
-/// \param node The node to be marked for deletion.
-//  void enqueueNodeForDeletion(AbstractNode *node);
 
 /// Sets a new value matrixElementValue to the position indicated by (row, column) in matrix referred by
 /// variableIdentifier. This implements variable assignments of the form M[rowIdx][colIdx] = value; where value is
@@ -320,25 +217,6 @@ class SpecialProgramTransformationVisitor : public ScopedVisitor {
 /// parent.
 //  AbstractNode *doPartialLoopUnrolling(For &elem);
 
-/// When a Block has been visited, some of its statements might have been replaced by nullptrs
-/// This function removes those nullptrs from the Block. If the resulting Block is empty,
-/// It also replaces the Block with nullptr in its parent
-//  void cleanUpBlock(Block &elem);
-
-//};
-///// Takes a Literal (e.g., LiteralInt) and checks whether its values are defined using a Matrix<AbstractExpr*>. In
-///// this case, checks if the value (e.g., of type int) is known of each element such that Matrix<AbstractExpr*> can
-///// be replaced by a Matrix<T> (e.g., Matrix<int>) where T is the Literal's associated primitive type (e.g., int).
-///// If the matrix could be simplified, the current Literal is replaced by a new Literal of type U containing the
-///// simplified matrix.
-///// \tparam T The type of the elements of the respective AbstractLiteral subtype, e.g., int, float.
-///// \tparam U The AbstractLiteral subtype, e.g., LiteralInt, LiteralFloat.
-///// \param elem The AbstractLiteral subtype that should be simplified.
-//template<typename T, typename U>
-//void simplifyAbstractExprMatrix(U &elem);
-
-
-
 ///**
 // * A helper struct that is used by emittedVariableDeclarations and helps to keep track of the relationship between a
 // * variable (given as pair of identifier an scope), the associated (emitted) variable declaration statement, and a
@@ -365,29 +243,5 @@ class SpecialProgramTransformationVisitor : public ScopedVisitor {
 //  AbstractNode *getVarDeclStatement() { return varDeclStatement; }
 //};
 //
-///**
-// * A struct containing all configuration parameters that can be passed to the ProgramTransformationVisitor.
-// */
-//struct CtesConfiguration {
-//  CtesConfiguration() = default;
-//
-//  explicit CtesConfiguration(int maxNumLoopUnrollings) : maxNumLoopUnrollings(maxNumLoopUnrollings) {};
-//
-//  /// Indicates the total number of allowed loop unrolling operations. If the maximum is reached, any further For-loops
-//  /// are simplified but not fully or partially unrolled.
-//  const int maxNumLoopUnrollings = -1;
-//
-//  /// Specifies up to which number of iterations a loop is fully unrolled.
-//  const int fullyUnrollLoopMaxNumIterations = 512;
-//
-//  /// Specifies the number of ciphertext slots that partial loop unrolling optimizes for.
-//  const int partiallyUnrollLoopNumCipherslots = 3;
-//
-//  /// Determines whether there is any limitation in the number of loop unrolling operations.
-//  /// \return True if there is no restriction w.r.t. number of loop unrollings.
-//  bool allowsInfiniteLoopUnrollings() const {
-//    return maxNumLoopUnrollings==-1;
-//  }
-//};
 
 #endif //AST_OPTIMIZER_INCLUDE_AST_OPT_VISITOR_ProgramTransformationVisitor_H_
