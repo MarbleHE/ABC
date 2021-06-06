@@ -101,12 +101,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:abaa63ddc542e0bbae868e117085c1cfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7a04068e6bc5f37c69515e6f126c73c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_scope.html#ad7a04068e6bc5f37c69515e6f126c73c">setParent</a> (<a class="el" href="class_scope.html">Scope</a> *parentScope)</td></tr>
 <tr class="separator:ad7a04068e6bc5f37c69515e6f126c73c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00b5624a6ace0186fd9bb4cf3bf1f2e2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_scope.html#a00b5624a6ace0186fd9bb4cf3bf1f2e2">addNestedScope</a> (std::unique_ptr&lt; <a class="el" href="class_scope.html">Scope</a> &gt; &amp;&amp;scope)</td></tr>
-<tr class="separator:a00b5624a6ace0186fd9bb4cf3bf1f2e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d9738ba520623f0b9bcc533bff412ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_scope.html">Scope</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_scope.html#a8d9738ba520623f0b9bcc533bff412ab">getParentScope</a> ()</td></tr>
 <tr class="separator:a8d9738ba520623f0b9bcc533bff412ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4662588b088af679667ad90717196efe"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_scope.html">Scope</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_scope.html#a4662588b088af679667ad90717196efe">getParentScope</a> () const</td></tr>
 <tr class="separator:a4662588b088af679667ad90717196efe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90315dde5192f2d6f36cc716c21bcc9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_abstract_node.html">AbstractNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_scope.html#a90315dde5192f2d6f36cc716c21bcc9d">getNodePtr</a> () const</td></tr>
+<tr class="separator:a90315dde5192f2d6f36cc716c21bcc9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6450830c68ad188f7abdcc7e119dee9"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_scoped_identifier.html">ScopedIdentifier</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_scope.html#af6450830c68ad188f7abdcc7e119dee9">resolveIdentifier</a> (const std::string &amp;id) const</td></tr>
 <tr class="separator:af6450830c68ad188f7abdcc7e119dee9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12a46e979fae6c8ef8818177e12e80ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_scoped_identifier.html">ScopedIdentifier</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_scope.html#a12a46e979fae6c8ef8818177e12e80ba">resolveIdentifier</a> (const std::string &amp;id)</td></tr>
@@ -261,30 +261,6 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a00b5624a6ace0186fd9bb4cf3bf1f2e2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a00b5624a6ace0186fd9bb4cf3bf1f2e2">&#9670;&nbsp;</a></span>addNestedScope()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Scope::addNestedScope </td>
-          <td>(</td>
-          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="class_scope.html">Scope</a> &gt; &amp;&amp;&#160;</td>
-          <td class="paramname"><em>scope</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Adds a nested scope to this scope's nestedScopes vector. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">scope</td><td>The scope to add as nested scope in this scope. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="ad95b5dc2bf9ad73c928e1384c6f41cc9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad95b5dc2bf9ad73c928e1384c6f41cc9">&#9670;&nbsp;</a></span>createNestedScope()</h2>
 
@@ -377,6 +353,24 @@ Static Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>(A const reference to) the scope created by the given node. </dd></dl>
+
+</div>
+</div>
+<a id="a90315dde5192f2d6f36cc716c21bcc9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90315dde5192f2d6f36cc716c21bcc9d">&#9670;&nbsp;</a></span>getNodePtr()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_abstract_node.html">AbstractNode</a> * Scope::getNodePtr </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Returns the pointer to the AST node this is associated with WARNING: This can be nullptr or it can even be INVALID! </p><dl class="section return"><dt>Returns</dt><dd>pointer to the AST node this is associated with </dd></dl>
 
 </div>
 </div>

@@ -82,9 +82,6 @@ Inheritance diagram for SpecialControlFlowGraphVisitor:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7d1d36b7d1d86074fa01205017ac771a"><td class="memItemLeft" align="right" valign="top"><a id="a7d1d36b7d1d86074fa01205017ac771a"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>SpecialControlFlowGraphVisitor</b> (bool ignoreNonDeclaredVariables)</td></tr>
-<tr class="separator:a7d1d36b7d1d86074fa01205017ac771a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a17539a20fc58dfcce5f10245dab266"><td class="memItemLeft" align="right" valign="top"><a id="a0a17539a20fc58dfcce5f10245dab266"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>visit</b> (<a class="el" href="class_assignment.html">Assignment</a> &amp;node) override</td></tr>
 <tr class="separator:a0a17539a20fc58dfcce5f10245dab266"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -214,7 +211,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>exitScope</b> ()</td>
 <p>01: if (c &gt; 100) { 02: a = 1; 03: else { 04: a = 0; 05: } 06: c = a*22;</p>
 <p>The data flow graph is constructed in two passes: In the first pass, we traverse the control flow graph in a breadth-first search (BFS) style and propagate the knowledge at which node a all variables seen so far have been written the last time. This also considers joint points (i.e., nodes with two incoming edges) properly. In case that a loop is involved, it might be necessary to visit the loops body twice. In the second pass, we iterate over all nodes that we have visited in the first pass and check whether the respective node reads a variable. <a class="el" href="class_if.html">If</a> yes, we lookup when the respective variable was written the last time (i.e., in which node) and add an backward edge (last_written_node -&gt; read_node).</p>
 <dl class="section return"><dt>Returns</dt><dd>Returns a list of all identifies that are BOTH written to AND read </dd></dl>
-<p>Ugly hack: Variables in CFG that are both read and written to</p>
 
 </div>
 </div>
