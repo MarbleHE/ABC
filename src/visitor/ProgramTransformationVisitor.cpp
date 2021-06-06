@@ -493,7 +493,7 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
   // Go through and re-emit any loop variables into the body:
   if (!elem.hasBody()) { elem.setBody(std::make_unique<Block>()); };
   for (auto &si : loopVariables) {
-    elem.getBody().prependStatement(generateVariableDeclarationOrAssignment(si, &elem.getBody()));
+    elem.getBody().appendStatement(generateVariableDeclarationOrAssignment(si, &elem.getBody()));
   }
 
 
