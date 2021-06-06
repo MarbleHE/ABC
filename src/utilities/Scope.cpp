@@ -85,12 +85,17 @@ Scope::Scope(AbstractNode &abstractNode) : astNode(&abstractNode) {}
 //}
 
 bool Scope::identifierExists(const std::string &id) const {
-  try {
-    auto scopedIdentifier = resolveIdentifier(id);
-  } catch (std::runtime_error &) {
-    return false;
+  const Scope *curScope = this;
+  while (curScope!=nullptr) {
+    auto it = std::find_if(curScope->identifiers.begin(),
+                           curScope->identifiers.end(),
+                           [&id](const auto &p) { return p->getId()==id; });
+    if (it!=curScope->identifiers.end()) {
+      return true;
+    }
+    curScope = curScope->parent;
   }
-  return true;
+  return false;
 }
 
 bool Scope::identifierIsLocal(const std::string &id) const {

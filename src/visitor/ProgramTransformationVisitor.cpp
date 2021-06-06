@@ -439,17 +439,6 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
   /// Loop Variables are variables that are both written to and read from during the loop
   auto loopVariables = identifyReadWriteVariables(elem);
 
-  // The CFGV also returns variables that are read&written in inner loops, which we might not yet be aware of
-  { // scope to delete temp variable
-    std::unordered_set<ScopedIdentifier> filteredLoopVariables;
-    for (const auto &si : loopVariables) {
-      if (!variableMap.has(si)) {
-        filteredLoopVariables.insert(si);
-      }
-    }
-    loopVariables = filteredLoopVariables;
-  }
-
 
   // INITIALIZER
 
@@ -472,6 +461,19 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
   if (!elem.hasInitializer()) { elem.setBody(std::make_unique<Block>()); };
   for (auto &sv : loopVariables) {
     elem.getInitializer().prependStatement(generateVariableDeclarationOrAssignment(sv, &elem.getInitializer()));
+  }
+
+  // The CFGV also returns variables that are read&written in inner loops, which we might not yet be aware of
+  { // scope to delete temp variable
+    std::unordered_set<ScopedIdentifier> filteredLoopVariables;
+    for (const auto &si : loopVariables) {
+      if (getCurrentScope().identifierExists(si.getId())) {
+        if (getCurrentScope().resolveIdentifier(si.getId()).getScope().getScopeName()==si.getScope().getScopeName()) {
+          filteredLoopVariables.insert(si);
+        }
+      }
+    }
+    loopVariables = filteredLoopVariables;
   }
 
   // The values of loop variables we got from the initializer should not be substituted inside the loop

@@ -2082,7 +2082,7 @@ TEST_F(ProgramTransformationVisitorTest, DISABLED_partialforLoopUnrolling) {
 }
 
 
-TEST_F(ProgramTransformationVisitorTest, fullForLoopUnrolling) {
+TEST_F(ProgramTransformationVisitorTest, DISABLED_fullForLoopUnrolling) {
   //TODO: Update Test
   //TODO: Why is the exepected output VarDecl, VarAssignm, Return(Variable) instead of Return(Expression)?
   // -- input --
