@@ -198,17 +198,8 @@ void SpecialProgramTransformationVisitor::visit(VariableDeclaration &elem) {
 
 
   // Build the ScopedIdentifier
-  auto scopedIdentifier = ScopedIdentifier(this->getCurrentScope(), elem.getTarget().getIdentifier());
+  auto scopedIdentifier =  ScopedIdentifier(getCurrentScope(), elem.getTarget().getIdentifier());
 
-  // Warning if local variable shadows an outer one
-  if (getCurrentScope().identifierExists(scopedIdentifier.getId())) {
-    auto si = getCurrentScope().resolveIdentifier(scopedIdentifier.getId());
-    if (&si.getScope()!=&getCurrentScope()) {
-      std::cout << "WARNING: Variable with name " << si.getId() << " already exists in scope "
-                << si.getScope().getScopeName() << " and the one in scope "
-                << scopedIdentifier.getScope().getScopeName() << " will shadow this one." << std::endl;
-    }
-  }
 
   // Check that variable wasn't declared before
   if (variableMap.has(scopedIdentifier))
@@ -218,7 +209,7 @@ void SpecialProgramTransformationVisitor::visit(VariableDeclaration &elem) {
   variableMap.insert_or_assign(scopedIdentifier, {elem.getDatatype(), std::move(expr_ptr)});
 
   // Register the Variable in the current scope (doesn't matter if its already there, because it's a set)
-  getCurrentScope().addIdentifier(elem.getTarget().getIdentifier());
+  getCurrentScope().addIdentifier(scopedIdentifier.getId());
 
   // This VariableDeclaration is now redundant and needs to be removed from the program.
   // However, our parent visit(Block&) will have to handle this

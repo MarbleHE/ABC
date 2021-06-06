@@ -40,8 +40,6 @@ void SpecialControlFlowGraphVisitor::visit(Assignment &node) {
   // visit the right-hand side of the assignment
   node.getValue().accept(*this);
 
-  getCurrentScope().addIdentifier(identifier);
-
   markVariableAccess(getCurrentScope().resolveIdentifier(identifier), VariableAccessType::WRITE);
 
   storeAccessedVariables(graphNode);
@@ -159,6 +157,7 @@ void SpecialControlFlowGraphVisitor::visit(FunctionParameter &node) {
   SpecialControlFlowGraphVisitor::checkEntrypoint(node);
   ScopedVisitor::visit(node);
 
+  // Scope will deal with duplicates, if this has been visited before
   getCurrentScope().addIdentifier(node.getIdentifier());
 
   markVariableAccess(getCurrentScope().resolveIdentifier(node.getIdentifier()), VariableAccessType::WRITE);
@@ -260,6 +259,7 @@ void SpecialControlFlowGraphVisitor::visit(VariableDeclaration &node) {
     node.getValue().accept(*this);
   }
 
+  // Scope will deal with duplicates, if this has been declared before
   getCurrentScope().addIdentifier(node.getTarget().getIdentifier());
 
   markVariableAccess(getCurrentScope().resolveIdentifier(node.getTarget().getIdentifier()),
@@ -308,7 +308,6 @@ void SpecialControlFlowGraphVisitor::storeAccessedVariables(GraphNode &graphNode
 void SpecialControlFlowGraphVisitor::visit(Variable &node) {
   SpecialControlFlowGraphVisitor::checkEntrypoint(node);
 
-  getCurrentScope().addIdentifier(node.getIdentifier());
 
   markVariableAccess(getCurrentScope().resolveIdentifier(node.getIdentifier()), VariableAccessType::READ);
 }

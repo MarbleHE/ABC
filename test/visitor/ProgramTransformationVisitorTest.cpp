@@ -2189,13 +2189,6 @@ TEST_F(ProgramTransformationVisitorTest, fourNestedLoopsLaplacianSharpeningFilte
 }
 
 TEST_F(ProgramTransformationVisitorTest, trivialLoop) {
-  //  int trivialLoop() {
-  //    int x = 0;
-  //    for(int i = 0; i < 3; i = i + 1) {
-  //      x = 42;
-  //    }
-  //    return x;
-  //  }
 /// Input program
   const char *programCode = R""""(
    public int compute() {
