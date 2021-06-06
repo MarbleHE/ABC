@@ -2082,9 +2082,7 @@ TEST_F(ProgramTransformationVisitorTest, DISABLED_partialforLoopUnrolling) {
 }
 
 
-TEST_F(ProgramTransformationVisitorTest, DISABLED_fullForLoopUnrolling) {
-  //TODO: Update Test
-  //TODO: Why is the exepected output VarDecl, VarAssignm, Return(Variable) instead of Return(Expression)?
+TEST_F(ProgramTransformationVisitorTest, fullForLoopUnrolling) {
   // -- input --
   //  VecInt2D runLaplacianSharpeningAlgorithm(Vector<int> img, int imgSize, int x, int y) {
   //     Matrix<int> weightMatrix = [1 1 1; 1 -8 1; 1 1 1];
@@ -2132,12 +2130,17 @@ TEST_F(ProgramTransformationVisitorTest, DISABLED_fullForLoopUnrolling) {
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
 
+  //TODO: finish inserting braces
   /// Expected program
   const char *expectedCode = R""""(
 {
   int compute(int img, int imgSize, int x, int y)
   {
-    return;
+    int img2;
+    img2[((imgSize * x) + y)] = img[((imgSize * x) + y)] - (img[((imgSize * (x - 1)) + (y - 1))] + img[imgSize*x+y-1]        + img[imgSize*(x+1)+y-1]
+          + img[imgSize*(x-1)+y]   + img[imgSize*x+y] * (-8)   + img[imgSize*(x+1)+y]
+          + img[imgSize*(x-1)+y+1] + img[imgSize*x+y+1]        + img[imgSize*(x+1)+y+1]  ) / 2;
+    return img2;
   }
 }
 )"""";
@@ -2331,15 +2334,6 @@ TEST_F(ProgramTransformationVisitorTest, trivialNestedLoops) {
 }
 
 TEST_F(ProgramTransformationVisitorTest, complexNestedLoops) {
-  //  int complexNestedLoops() {
-  //    int x = 0;
-  //    for(int j = 0; j < 3; j = j + 1) {
-  //      for(int i = 0; i < 3; i = i + 1) {
-  //        x = 42;
-  //      }
-  //    }
-  //    return x;
-  //  }
   /// Input program
   const char *programCode = R""""(
    public int compute(int img) {
@@ -2376,8 +2370,8 @@ TEST_F(ProgramTransformationVisitorTest, complexNestedLoops) {
 }
 
 
-TEST_F(ProgramTransformationVisitorTest, maxNumUnrollings) {
-  //TODO: Update Test
+TEST_F(ProgramTransformationVisitorTest, DISABLED_maxNumUnrollings) {
+  //TODO: Update Test and re-enable once there's an easy way to set maxUnrollings in the visitor
 
   //  int maxNumUnrollings() {
   //    int x = 0;
