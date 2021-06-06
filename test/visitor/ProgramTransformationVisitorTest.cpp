@@ -2234,6 +2234,43 @@ TEST_F(ProgramTransformationVisitorTest, trivialNestedLoops) {
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
+TEST_F(ProgramTransformationVisitorTest, nestedFold) {
+  /// Input program
+  const char *programCode = R""""(
+   public int compute(int img, int imgSize) {
+      int sum = 0;
+      for (int j = 0; j < 3; j = j + 1) {
+         for (int i = 0; i < 3; i = i + 1) {
+            sum = sum + img[imgSize*i+j];
+         }
+      }
+      return sum;
+   }
+)"""";
+  auto code = std::string(programCode);
+  ast = Parser::parse(code);
+
+  // perform the compile-time expression simplification
+  ast->accept(ctes);
+
+  // get the transformed code
+  ast->accept(ppv);
+  std::cout << ss.str() << std::endl;
+
+  //TODO: add expected code
+  /// Expected program
+  const char *expectedCode = R""""(
+{
+  int compute(int img, int imgSize, int x, int y)
+  {
+    return;
+  }
+}
+)"""";
+
+  EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
+}
+
 TEST_F(ProgramTransformationVisitorTest, complexNestedLoops) {
   /// Input program
   const char *programCode = R""""(
@@ -2295,8 +2332,7 @@ TEST_F(ProgramTransformationVisitorTest, fullForLoopUnrolling) {
   // get the transformed code
   ast->accept(ppv);
   std::cout << ss.str() << std::endl;
-
-  //TODO: finish inserting braces
+  
   /// Expected program
   const char *expectedCode = R""""(
 {
