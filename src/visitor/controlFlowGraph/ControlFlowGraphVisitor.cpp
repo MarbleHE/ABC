@@ -105,9 +105,7 @@ void SpecialControlFlowGraphVisitor::visit(For &node) {
   auto lastStatementCondition = lastCreatedNodes;
 
   // body (e.g., For (-; -; -) { body statements ... })
-  //TODO: Is opening a new scope here intended?
-  visitChildren(node.getBody());
-//  node.getBody().accept(*this);
+  node.getBody().accept(*this);
   auto lastStatementInBody = lastCreatedNodes;
 
   // update statement (e.g., i=i+1;)
@@ -307,7 +305,6 @@ void SpecialControlFlowGraphVisitor::storeAccessedVariables(GraphNode &graphNode
 
 void SpecialControlFlowGraphVisitor::visit(Variable &node) {
   SpecialControlFlowGraphVisitor::checkEntrypoint(node);
-
 
   markVariableAccess(getCurrentScope().resolveIdentifier(node.getIdentifier()), VariableAccessType::READ);
 }

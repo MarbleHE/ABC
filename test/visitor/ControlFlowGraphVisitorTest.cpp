@@ -274,7 +274,8 @@ TEST(ControlFlowGraphVisitorTest, dfg_simpleReadWriteAssignment_throwErrorOnNonR
   EXPECT_THROW(inputAST->begin()->accept(cfgv), std::runtime_error);
 }
 
-TEST(ControlFlowGraphVisitorTest, dfg_simpleReadWriteAssignment_ignoreNonResolvedVars) { /* NOLINT */
+TEST(ControlFlowGraphVisitorTest, DISABLED_dfg_simpleReadWriteAssignment_ignoreNonResolvedVars) { /* NOLINT */
+  //TODO: Ignoring unresolved variabls is no longer in thing in new style of CFGV
   const char *inputChars = R""""(
     {
       int q = a + 7;
@@ -294,7 +295,8 @@ TEST(ControlFlowGraphVisitorTest, dfg_simpleReadWriteAssignment_ignoreNonResolve
   EXPECT_TRUE(setContains(accessedVariables, "q", VariableAccessType::WRITE));
 }
 
-TEST(ControlFlowGraphVisitorTest, dfg_simpleReadWriteAssignment_takeOutOfScopeDeclaredVarsAsInput) { /* NOLINT */
+TEST(ControlFlowGraphVisitorTest, DISABLED_dfg_simpleReadWriteAssignment_takeOutOfScopeDeclaredVarsAsInput) { /* NOLINT */
+  // TODO: This needs to declare a, since taking undeclared vars is no longer a thing in new CFGV style
   const char *inputChars = R""""(
     {
       int q = a + 7;
