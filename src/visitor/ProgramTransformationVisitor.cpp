@@ -406,26 +406,50 @@ void SpecialProgramTransformationVisitor::visit(Block &elem) {
   enterScope(elem);
 
   // Iterate through statements
-  auto &statements = elem.getStatementPointers();
-  replaceStatement = false;
 
-  for (auto &statement : statements) {
-    statement->accept(*this);
-    if (replaceStatement) { /*NOLINT NOT always false */
-      // Collapse empty block
-      if (replacementStatement!=nullptr) {
-        if (auto block_ptr = dynamic_cast<Block *>(&*replacementStatement)) {
-          if (block_ptr->isEmpty()) {
-            replacementStatement = nullptr;
-          }
-        }
+  // Because recursive calls might end up re-introducing declarations into the scope (prependStatement),
+  // we can't use nice iterators here since they would get invalidated => Undefined Behaviour
+
+  // Instead, we iterate through by index
+  // we keep track of the current element we are about to visit
+  // and if the number of children changed, we go forward until we see that element again
+
+  auto &stmts = elem.getStatementPointers();
+  replaceStatement = false;
+  for (size_t i = 0; i < stmts.size(); ++i) {
+    if (stmts[i]!=nullptr) {
+      // save info
+      auto cur_size = stmts.size();
+      auto cur_stmt = &*stmts[i];
+
+      // visit child
+      cur_stmt->accept(*this);
+
+      // check if someone introduced something into the block
+      // if yes, forward our counter by however many were introduced
+      if (stmts.size()!=cur_size) {
+        // if is mostly pointless, but gives nice line for break point
+        i += (stmts.size() - cur_size);
       }
 
-      // Replace statement
-      statement = std::move(replacementStatement);
-      replaceStatement = false;
+      // Now perform the usual post-child cleanup
+      if (replaceStatement) { /*NOLINT NOT always false */
+        // Collapse empty block
+        if (replacementStatement!=nullptr) {
+          if (auto block_ptr = dynamic_cast<Block *>(&*replacementStatement)) {
+            if (block_ptr->isEmpty()) {
+              replacementStatement = nullptr;
+            }
+          }
+        }
+
+        // Replace statement
+        stmts[i] = std::move(replacementStatement);
+        replaceStatement = false;
+      }
     }
   }
+
   // Now let the Block itself perform actual removal
   elem.removeNullStatements();
 
