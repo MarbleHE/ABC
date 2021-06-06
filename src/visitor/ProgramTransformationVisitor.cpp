@@ -696,18 +696,20 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
         // Visit and simplify - again, have to do visit statements manually because of scopes
         for (auto &s: clonedBody->getStatementPointers()) {
           replaceStatement = false;
-          s->accept(*this);
-          if (replaceStatement) {
-            // Empty Block merging
-            if (replacementStatement) {
-              if (auto block_ptr = dynamic_cast<Block *>(&*replacementStatement)) {
-                if (block_ptr->isEmpty()) {
-                  replacementStatement = nullptr;
+          if(s) {
+            s->accept(*this);
+            if (replaceStatement) {
+              // Empty Block merging
+              if (replacementStatement) {
+                if (auto block_ptr = dynamic_cast<Block *>(&*replacementStatement)) {
+                  if (block_ptr->isEmpty()) {
+                    replacementStatement = nullptr;
+                  }
                 }
               }
+              s = std::move(replacementStatement);
+              replaceStatement = false;
             }
-            s = std::move(replacementStatement);
-            replaceStatement = false;
           }
         }
         clonedBody->removeNullStatements();

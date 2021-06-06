@@ -2181,7 +2181,7 @@ TEST_F(ProgramTransformationVisitorTest, foldLoop) {
 {
   int compute(int x)
   {
-    return ((((((0 + (1 * x)) + (1 * x)) + (2 * x)) + (2 * x)) + (2 * x)) + (3 * x));
+    return ((0 + (1 * x)) + (2 * x));
   }
 }
 )"""";
