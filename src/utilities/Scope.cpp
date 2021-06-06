@@ -65,6 +65,10 @@ const Scope &Scope::getParentScope() const {
   return *parent;
 }
 
+AbstractNode* Scope::getNodePtr() const {
+  return astNode;
+}
+
 Scope *Scope::createNestedScope(Scope &parentScope, AbstractNode &scopeOpener) {
 
   // if a scope already exists, return it

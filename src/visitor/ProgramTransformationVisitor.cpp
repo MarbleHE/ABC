@@ -512,7 +512,8 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
   // We need to emit Assignments (or Declarations with value if needed) for each of the loop variables Variables into the initializer
   if (!elem.hasInitializer()) { elem.setBody(std::make_unique<Block>()); };
   for (auto &sv : loopVariables) {
-    elem.getInitializer().prependStatement(generateVariableDeclarationOrAssignment(sv, &elem.getInitializer()));
+    //TODO (inlining): decide when to emit declaration
+    elem.getInitializer().prependStatement(generateVariableAssignment(sv));
   }
 
   // The CFGV also returns variables that are read&written in inner loops, which we might not yet be aware of
@@ -557,7 +558,8 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
     for (auto&[si, tv] : variableMap) {
       for (auto &loop_var : loopVariables) {
         if (tv.value && containsVariable(*tv.value, {loop_var.getId()})) {
-          auto s = generateVariableDeclarationOrAssignment(si, &elem.getBody());
+          // TODO (inlining): When do we need to emit declarations?
+          auto s = generateVariableAssignment(si);
           elem.getBody().appendStatement(std::move(s));
         }
       }
@@ -577,7 +579,8 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
   // Go through and re-emit any loop variables into the body:
   if (!elem.hasBody()) { elem.setBody(std::make_unique<Block>()); };
   for (auto &si : loopVariables) {
-    elem.getBody().appendStatement(generateVariableDeclarationOrAssignment(si, &elem.getBody()));
+    // TODO (inlining): Decide when to emit variables
+    elem.getBody().appendStatement(generateVariableAssignment(si));
   }
 
 
@@ -723,12 +726,13 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
       // we currently emit everything, but probably only need to emit
       // statments that contain loop variables?
       if (currentLoopDepth_maxLoopDepth.first > 1) {
-        //TODO: (inlining) Figure out which statements to emit and how, rather than dumping all
-        // How to figure out order/dependencies? Order in variable map?
+
+        // TODO (inlining) How to figure out order/dependencies? Order in variable map?
         for (auto&[si, expr] : variableMap) {
           // Don't emit loop variables, since we just got rid of them!
           if (loopVariables.find(si)==loopVariables.end()) {
-            auto s = generateVariableDeclarationOrAssignment(si, &*unrolledBlock);
+            //TODO: (inlining) Figure out which statements to emit and how, rather than dumping all
+            auto s = generateVariableAssignment(si);
             unrolledBlock->prependStatement(std::move(s));
           }
         }
@@ -813,22 +817,28 @@ SpecialProgramTransformationVisitor::identifyReadWriteVariables(For &forLoop) {
   return variablesReadAndWritten;
 }
 
-std::unique_ptr<AbstractStatement> SpecialProgramTransformationVisitor::generateVariableDeclarationOrAssignment(const ScopedIdentifier &variable,
-                                                                                                                AbstractNode *parent) {
-  // if the variable has no value, there's no need to create a variable assignment
-  if (!variableMap.has(variable) or variableMap.get(variable).value==nullptr) {
-    return nullptr;
-  }
-
-  // TODO (inlining): properly check if a variable declaration statement was emitted before for this variable and only emit if not
-  bool emitDeclaration = true;
+void SpecialProgramTransformationVisitor::emitVariableDeclaration(const ScopedIdentifier &variable) {
   auto &tv = variableMap.get(variable);
   auto var = std::make_unique<Variable>(variable.getId());
-  if (emitDeclaration) {
-    return std::make_unique<VariableDeclaration>(tv.type, std::move(var), std::move(tv.value->clone(parent)));
+  std::make_unique<VariableDeclaration>(tv.type,
+                                        std::move(var),
+                                        std::move(tv.value->clone(variable.getScope().getNodePtr())));
+
+  // TODO (inlining): prepend stmt to scope node (check if block or for! if for -> initializer)
+}
+
+std::unique_ptr<Assignment> SpecialProgramTransformationVisitor::generateVariableAssignment(const ScopedIdentifier &variable) {
+
+  if (!variableMap.has(variable) or variableMap.get(variable).value==nullptr) {
+    // if the variable has no value, there's no need to create a variable assignment
+    return nullptr;
   } else {
-    return std::make_unique<Assignment>(std::move(var), std::move(tv.value->clone(parent)));
+    // get the value and
+    auto &tv = variableMap.get(variable);
+    auto var = std::make_unique<Variable>(variable.getId());
+    return std::make_unique<Assignment>(std::move(var), std::move(tv.value->clone(variable.getScope().getNodePtr())));
   }
+
 }
 
 void SpecialProgramTransformationVisitor::visit(AbstractExpression &elem) {

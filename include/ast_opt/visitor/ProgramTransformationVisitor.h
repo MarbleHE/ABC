@@ -93,11 +93,17 @@ class SpecialProgramTransformationVisitor : public ScopedVisitor {
   /// \return Variables, with their associated scopes, that match the criteria
   std::unordered_set<ScopedIdentifier> identifyReadWriteVariables(For &forLoop);
 
-  /// TODO: Document this.
-  /// \param variable
+  /// Emits a variableDeclaration statement for variable into its origin scope
+  /// uses the value from variableMap, if the value is not nullptr
+  /// \param variable variable to emit
   /// \return
-  std::unique_ptr<AbstractStatement> generateVariableDeclarationOrAssignment(const ScopedIdentifier &variable,
-                                                                             AbstractNode *parent);
+  void emitVariableDeclaration(const ScopedIdentifier &variable);
+
+  /// Builds an Assignment for the variable
+  /// uses the value from variableMap (if not nullptr, otherwise this returns nullptr, too)
+  /// \param variable variable to assign to
+  /// \return (unique ptr to) Assignment or nullptr (if no value in variableMap)
+  std::unique_ptr<Assignment> generateVariableAssignment(const ScopedIdentifier& variable);
 
  public:
 
