@@ -196,24 +196,25 @@ void SpecialProgramTransformationVisitor::visit(VariableDeclaration &elem) {
     }
   }
 
-  // Register the Variable in the variableMap
-  // Because our system currently dumps out declarations even if the variable has been declared before,
-  // check if it already exists.
-  // TODO (inlining): fix the underlying issue so that we can have shadowing
-  ScopedIdentifier scopedIdentifier;
-  if (getCurrentScope().identifierExists(elem.getTarget().getIdentifier())) {
-    // Because of loop unrolling, duplicate stuff will happen
-    // for example, we'll often get many copies of int i = i + 1;
-    // In this case, reuse the ScopedIdentifier
-    scopedIdentifier = getCurrentScope().resolveIdentifier(elem.getTarget().getIdentifier());
-  } else {
-    scopedIdentifier = ScopedIdentifier(this->getCurrentScope(), elem.getTarget().getIdentifier());
+
+  // Build the ScopedIdentifier
+  auto scopedIdentifier = ScopedIdentifier(this->getCurrentScope(), elem.getTarget().getIdentifier());
+
+  // Warning if local variable shadows an outer one
+  if (getCurrentScope().identifierExists(scopedIdentifier.getId())) {
+    auto si = getCurrentScope().resolveIdentifier(scopedIdentifier.getId());
+    if (&si.getScope()!=&getCurrentScope()) {
+      std::cout << "WARNING: Variable with name " << si.getId() << " already exists in scope "
+                << si.getScope().getScopeName() << " and the one in scope "
+                << scopedIdentifier.getScope().getScopeName() << " will shadow this one." << std::endl;
+    }
   }
 
-  // Because of loop unrolling, this kind of stuff will happen
-  // for example, we'll often get many copies of int i = i + 1;
-  //  if (variableMap.has(scopedIdentifier))
-  //    throw std::runtime_error("Redeclaration of a variable that already exists in this scope: " + printProgram(elem));
+  // Check that variable wasn't declared before
+  if (variableMap.has(scopedIdentifier))
+    throw std::runtime_error("Redeclaration of a variable that already exists in this scope: " + printProgram(elem));
+
+  // Insert the variable
   variableMap.insert_or_assign(scopedIdentifier, {elem.getDatatype(), std::move(expr_ptr)});
 
   // Register the Variable in the current scope (doesn't matter if its already there, because it's a set)
@@ -233,6 +234,11 @@ void SpecialProgramTransformationVisitor::visit(Assignment &elem) {
   if (auto var_ptr = dynamic_cast<Variable *>(&elem.getTarget())) {
     // Resolve the identifier to a scopedVariable
     auto scopedIdentifier = getCurrentScope().resolveIdentifier(var_ptr->getIdentifier());
+
+    // Check that we know the type!
+    if (!variableMap.has(scopedIdentifier))
+      throw std::runtime_error("No type information found for " + scopedIdentifier.getId() + " (Scope: "
+                                   + scopedIdentifier.getScope().getScopeName() + ") in : " + printProgram(elem));
 
     // Update or insert the value
     // Since we're removing this statement after this call, we can "steal" the expression from elem
