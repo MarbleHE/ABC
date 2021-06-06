@@ -39,8 +39,15 @@ class SpecialProgramTransformationVisitor : public ScopedVisitor {
   /// This is only used for AbstractStatements
   /// If this is set to true
   /// after a child node has been visited
-  /// then the child node should be removed
-  bool removeStatement;
+  /// then the child node should be replaced with replacementStatement
+  bool replaceStatement;
+
+  /// This fakes "returns" from the visit calls
+  /// This is only used for AbstractStatements
+  /// If replaceStatement is true,
+  /// after a child node has been visited
+  //  then the child node should be replaced with replacementStatement
+  std::unique_ptr<AbstractStatement> replacementStatement;
 
   /// A counter that keeps track of the nesting level while visiting For-loops. The first value indicates the
   /// depth of the currently visiting loop body. The second value the depth of the deepest loop. For example:

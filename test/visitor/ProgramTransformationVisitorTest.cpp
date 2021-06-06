@@ -2331,7 +2331,7 @@ TEST_F(ProgramTransformationVisitorTest, trivialNestedLoops) {
 }
 
 TEST_F(ProgramTransformationVisitorTest, complexNestedLoops) {
-  //  int trivialLoop() {
+  //  int complexNestedLoops() {
   //    int x = 0;
   //    for(int j = 0; j < 3; j = j + 1) {
   //      for(int i = 0; i < 3; i = i + 1) {

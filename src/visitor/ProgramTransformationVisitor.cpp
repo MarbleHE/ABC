@@ -192,7 +192,8 @@ void SpecialProgramTransformationVisitor::visit(VariableDeclaration &elem) {
 
   // This VariableDeclaration is now redundant and needs to be removed from the program.
   // However, our parent visit(Block&) will have to handle this
-  removeStatement = true;
+  replaceStatement = true;
+  replacementStatement = nullptr;
 }
 
 void SpecialProgramTransformationVisitor::visit(Assignment &elem) {
@@ -211,7 +212,8 @@ void SpecialProgramTransformationVisitor::visit(Assignment &elem) {
 
     // This VariableDeclaration is now redundant and needs to be removed from the program.
     // However, our parent visit(Block&) will have to handle this
-    removeStatement = true;
+    replaceStatement = true;
+    replacementStatement = nullptr;
 
   } else if (auto ind_ptr = dynamic_cast<IndexAccess *>(&elem.getTarget())) {
 
@@ -275,14 +277,16 @@ void SpecialProgramTransformationVisitor::visit(Assignment &elem) {
           auto exprlist = std::make_unique<ExpressionList>(std::move(list));
           // and put it into the variableMap
           variableMap.insert_or_assign(scopedIdentifier, {variableMap.get(scopedIdentifier).type, std::move(exprlist)});
-
-          // This VariableDeclaration is now redundant and needs to be removed from the program.
-          // However, our parent visit(Block&) will have to handle this
-          removeStatement = true;
         } else {
           throw std::runtime_error(
               "Variable is assigned to but no information found in variableMap: " + printProgram(elem));
         }
+
+        // This VariableDeclaration is now redundant and needs to be removed from the program.
+        // However, our parent visit(Block&) will have to handle this
+        replaceStatement = true;
+        replacementStatement = nullptr;
+
       } else {
         // if index is a more general expression, we can't do anything
         // TODO: Emit the declaration (ideally only if it hasn't been done before)
@@ -374,13 +378,23 @@ void SpecialProgramTransformationVisitor::visit(Block &elem) {
 
   // Iterate through statements
   auto &statements = elem.getStatementPointers();
-  removeStatement = false;
+  replaceStatement = false;
+
   for (auto &statement : statements) {
     statement->accept(*this);
-    if (removeStatement) { /*NOLINT NOT always false */
-      // Don't remove yet, since that would invalidate iterators
-      statement = nullptr;
-      removeStatement = false;
+    if (replaceStatement) { /*NOLINT NOT always false */
+      // Collapse empty block
+      if (replacementStatement!=nullptr) {
+        if (auto block_ptr = dynamic_cast<Block *>(&*replacementStatement)) {
+          if (block_ptr->isEmpty()) {
+            replacementStatement = nullptr;
+          }
+        }
+      }
+
+      // Replace statement
+      statement = std::move(replacementStatement);
+      replaceStatement = false;
     }
   }
   // Now let the Block itself perform actual removal
@@ -442,12 +456,12 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
   // Visit initializer. Visiting this is important, in case it affects variables that won't be detected as "loop variables"
   // If we did not visit it, the recursive visit of the body might go wrong!
   // Manually visit the statements in the block, since otherwise Visitor::visit would create a new scope!
-  removeStatement = false;
+  replaceStatement = false;
   for (auto &s : elem.getInitializer().getStatementPointers()) {
     s->accept(*this);
-    if (removeStatement) { /*NOLINT not actually always false */
-      s = nullptr;
-      removeStatement = false;
+    if (replaceStatement) { /*NOLINT not actually always false */
+      s = std::move(replacementStatement);
+      replaceStatement = false;
     }
   }
   elem.getInitializer().removeNullStatements();
@@ -519,11 +533,14 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
 
     // Visit the initializer (this will load the loop variables back into variableValues)
     // Manually visit the statements in the block, since otherwise Visitor::visit would create a new scope!
-    removeStatement = false;
+    replaceStatement = false;
     for (auto &s: elem.getInitializer().getStatementPointers()) {
       if (s) {
         s->accept(*this);
-        if (removeStatement) s = nullptr;
+        if (replaceStatement) {
+          s = std::move(replacementStatement);
+          replaceStatement = false;
+        }
       }
     }
     elem.getInitializer().removeNullStatements();
@@ -562,7 +579,6 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
     /// Result of testing condition
     int condition = evaluateCondition(elem.getCondition());
     while (condition==1 && numIterations < fullyUnrollLoopMaxNumIterations) {
-      //TODO:  update executeLoopStmts
 
       // BODY
       if (elem.hasBody()) {
@@ -571,9 +587,12 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
 
         // Visit and simplify - again, have to do visit statements manually because of scopes
         for (auto &s: clonedBody->getStatementPointers()) {
-          removeStatement = false;
+          replaceStatement = false;
           s->accept(*this);
-          if (removeStatement) s = nullptr;
+          if (replaceStatement) {
+            s = std::move(replacementStatement);
+            replaceStatement = false;
+          }
         }
         clonedBody->removeNullStatements();
 
@@ -590,11 +609,11 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
 
         // Visit and simplify - again, have to do visit statements manually because of scopes
         for (auto &s: clonedUpdate->getStatementPointers()) {
-          removeStatement = false;
+          replaceStatement = false;
           s->accept(*this);
-          if (removeStatement) {
-            s = nullptr;
-            removeStatement = false;
+          if (replaceStatement) {
+            s = std::move(replacementStatement);
+            replaceStatement = false;
           }
         }
         clonedUpdate->removeNullStatements();
@@ -618,14 +637,10 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
     if (condition==0 && numIterations < fullyUnrollLoopMaxNumIterations) {
       // Loop unrolling was successful
 
-      // TODO replace elem with the unrolled Block instead of setting it as its body
-      elem.setBody(std::move(unrolledBlock));
+      // Inform the parent
+      replaceStatement = true;
+      replacementStatement = std::move(unrolledBlock);
 
-      // TODO: Mark the current For-Loop node (elem) for deletion
-      //removeForStatement = true;
-
-      // TODO: Note that if the parent of elem/unrolledBlock is a Block-like stmt,
-      //  our caller (e.g. visit(Block)) will have to deal with unpacking it
     } else if (numIterations > fullyUnrollLoopMaxNumIterations) {
       // PARTIAL UNROLLING
       throw std::runtime_error("Partial loop unrolling currently not supported.");
