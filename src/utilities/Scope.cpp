@@ -26,13 +26,22 @@ ScopedIdentifier &Scope::resolveIdentifier(const std::string &id) {
 }
 
 void Scope::addIdentifier(const std::string &id) {
+
   if (!identifierIsLocal(id)) {
+    // Warning if local variable shadows an outer one
+    if (identifierExists(id)) {
+      auto si = resolveIdentifier(id);
+      std::cout << "WARNING: Variable with name " << si.getId() << " already exists in scope "
+                << si.getScope().getScopeName() << " and the one in scope "
+                << getScopeName() << " will shadow this one." << std::endl;
+    }
+
     //std::cout << "Adding " << id << " to scope " << this->getScopeName() << "( scope: " << this << ", node: " << astNode
     //          << ")" << std::endl;
     identifiers.emplace(std::make_unique<ScopedIdentifier>(*this, id));
   } //else {
-    //std::cout << "Adding " << id << " is ignored since already exits in scope " << this->getScopeName() << std::endl;
-    //}
+  //std::cout << "Adding " << id << " is ignored since already exits in scope " << this->getScopeName() << std::endl;
+  //}
 }
 
 void Scope::addIdentifier(std::unique_ptr<ScopedIdentifier> &&scopedIdentifier) {
@@ -42,12 +51,20 @@ void Scope::addIdentifier(std::unique_ptr<ScopedIdentifier> &&scopedIdentifier) 
   }
 
   if (!identifierIsLocal(scopedIdentifier->getId())) {
+    // Warning if local variable shadows an outer one
+    if (identifierExists(scopedIdentifier->getId())) {
+      auto si = resolveIdentifier(scopedIdentifier->getId());
+      std::cout << "WARNING: Variable with name " << si.getId() << " already exists in scope "
+                << si.getScope().getScopeName() << " and the one in scope "
+                << getScopeName() << " will shadow this one." << std::endl;
+    }
+
     //std::cout << "Adding " << scopedIdentifier->getId() << " to scope " << this->getScopeName() << std::endl;
     identifiers.insert(std::move(scopedIdentifier));
   } //  else {
-    //  std::cout << "Adding " << scopedIdentifier->getId() << " is ignored since already exits in scope "
-    //            << this->getScopeName() << std::endl;
-    //  }
+  //  std::cout << "Adding " << scopedIdentifier->getId() << " is ignored since already exits in scope "
+  //            << this->getScopeName() << std::endl;
+  //  }
 
 }
 
@@ -65,7 +82,7 @@ const Scope &Scope::getParentScope() const {
   return *parent;
 }
 
-AbstractNode* Scope::getNodePtr() const {
+AbstractNode *Scope::getNodePtr() const {
   return astNode;
 }
 
