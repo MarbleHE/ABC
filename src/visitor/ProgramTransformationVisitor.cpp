@@ -90,6 +90,18 @@ std::string SpecialProgramTransformationVisitor::printProgram(AbstractNode &node
   return ss.str();
 }
 
+bool SpecialProgramTransformationVisitor::containsVariable(AbstractNode &node, std::string identifier) {
+  if (auto var_ptr = dynamic_cast<Variable *>(&node)) {
+    return var_ptr->getIdentifier()==identifier;
+  } else {
+    bool found = false;
+    for (auto &c: node) {
+      found = found || containsVariable(c, identifier);
+    }
+    return found;
+  }
+}
+
 void SpecialProgramTransformationVisitor::visit(BinaryExpression &elem) {
   std::string original_code = printProgram(elem);
   elem.getLeft().accept(*this);
@@ -454,9 +466,8 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
     }
   }
   elem.getInitializer().removeNullStatements();
+
   // Now, int i = 0 and similar things might have been deleted from AST and are in VariableValuesMap
-
-
   // We need to emit Assignments (or Declarations with value if needed) for each of the loop variables Variables into the initializer
   if (!elem.hasInitializer()) { elem.setBody(std::make_unique<Block>()); };
   for (auto &sv : loopVariables) {
@@ -497,8 +508,21 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
   // Visit Body to simplify it + recursively deal with nested loops
   // This will also update the maxLoopDepth in case there are nested loops
   // This in turn allows us to determine if this For-Loop should be unrolled - see isUnrollLoopAllowed()
-  if (elem.hasBody()) elem.getBody().accept(*this);
-  // Now, parts of the body statements (e.g. x++) might have been deleted and are only in VariableValuesMap
+  if (elem.hasBody()) {
+    elem.getBody().accept(*this);
+
+    // Now, parts of the body statements (e.g. x++) might have been deleted and are only in VariableValuesMap
+    // Re-emit all the statements that contain a loop variable!
+    for (auto&[si, tv] : variableMap) {
+      for (auto &loop_var : loopVariables) {
+        if (tv.value && containsVariable(*tv.value, loop_var.getId())) {
+          auto s = generateVariableDeclarationOrAssignment(si, &elem.getBody());
+          elem.getBody().appendStatement(std::move(s));
+        }
+      }
+    }
+
+  }
 
   // UPDATE
 
@@ -652,6 +676,24 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
 
     if (condition==0 && numIterations < fullyUnrollLoopMaxNumIterations) {
       // Loop unrolling was successful
+
+      // If we are not the outermost loop, we must re-emit statements
+      // we currently emit everything, but probably only need to emit
+      // statments that contain loop variables?
+      if (currentLoopDepth_maxLoopDepth.first > 1) {
+        //TODO: Figure out which statements to emit and how, rather than dumping all
+        // TODO: How to figure out order/dependencies? Order in variable map?
+        // TODO: Why do we suddenly have duplicates in our variableMap??
+        //  and why do those duplicates still contain loop variables??
+        for (auto&[si, expr] : variableMap) {
+          // Don't emit loop variables, since we just got rid of them!
+          if(loopVariables.find(si) == loopVariables.end()) {
+            auto s = generateVariableDeclarationOrAssignment(si, &*unrolledBlock);
+            unrolledBlock->prependStatement(std::move(s));
+          }
+        }
+      }
+      unrolledBlock->removeNullStatements();
 
       // Inform the parent
       replaceStatement = true;

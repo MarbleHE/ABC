@@ -2083,28 +2083,6 @@ TEST_F(ProgramTransformationVisitorTest, DISABLED_partialforLoopUnrolling) {
 
 
 TEST_F(ProgramTransformationVisitorTest, fullForLoopUnrolling) {
-  // -- input --
-  //  VecInt2D runLaplacianSharpeningAlgorithm(Vector<int> img, int imgSize, int x, int y) {
-  //     Matrix<int> weightMatrix = [1 1 1; 1 -8 1; 1 1 1];
-  //     Vector<int> img2;
-  //     int value = 0;
-  //     for (int j = -1; j < 2; ++j) {
-  //        for (int i = -1; i < 2; ++i) {
-  //           value = value + weightMatrix[i+1][j+1] * img[imgSize*(x+i)+y+j];
-  //        }
-  //     }
-  //     img2[imgSize*x+y] = img[imgSize*x+y] - (value/2);
-  //     return img2;
-  //  }
-  // -- expected --
-  // VecInt2D runLaplacianSharpeningAlgorithm(Vector<int> img, int imgSize, int x, int y) {
-  //   Matrix<int> img2;
-  //   img2[imgSize*x+y] = img[imgSize*x+y]
-  //      - (  img[imgSize*(x-1)+y-1] + img[imgSize*x+y-1]        + img[imgSize*(x+1)+y-1]
-  //         + img[imgSize*(x-1)+y]   + img[imgSize*x+y] * (-8)   + img[imgSize*(x+1)+y]
-  //         + img[imgSize*(x-1)+y+1] + img[imgSize*x+y+1]        + img[imgSize*(x+1)+y+1]  ) / 2;
-  //   return img2;
-  // }
   /// Input program
   const char *programCode = R""""(
    public int compute(int img, int imgSize, int x, int y) {

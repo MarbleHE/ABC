@@ -28,6 +28,8 @@ class SpecialProgramTransformationVisitor : public ScopedVisitor {
   /// \return C-like program representation of the AST
   static std::string printProgram(AbstractNode &node);
 
+  static bool containsVariable(AbstractNode& node, std::string identifier);
+
   /// This fakes "returns" from the visit calls
   /// This is only used for AbstractExpressions
   /// If this is set to something other than nullptr
