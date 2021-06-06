@@ -560,6 +560,7 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
         if (tv.value && containsVariable(*tv.value, {loop_var.getId()})) {
           auto s = generateVariableAssignment(si, &elem.getBody());
           elem.getBody().appendStatement(std::move(s));
+          break; // so we don't generate multiple copies for stmts that contain multiple loop variable
         }
       }
     }
@@ -602,6 +603,7 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
 
     // Visit the initializer (this will load the loop variables back into variableValues)
     // Manually visit the statements in the block, since otherwise Visitor::visit would create a new scope!
+    // TODO: This will crash in visit(VariableDeclaration), since the variables have already been initialized!
     replaceStatement = false;
     for (auto &s: elem.getInitializer().getStatementPointers()) {
       if (s) {
