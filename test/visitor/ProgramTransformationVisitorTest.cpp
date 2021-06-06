@@ -2277,9 +2277,7 @@ TEST_F(ProgramTransformationVisitorTest, complexLoop) {
 {
   int compute(int img, int imgSize)
   {
-    img2[0] = img[1];
-    img2[1] = img[2];
-    return img2;
+    return {img[1], img[2]};
   }
 }
 )"""";

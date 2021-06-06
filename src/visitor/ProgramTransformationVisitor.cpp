@@ -253,9 +253,12 @@ void SpecialProgramTransformationVisitor::visit(Assignment &elem) {
             // Put in the new value. Since we'll remove elem after this function, we can steal it
             vec.at(index) = elem.takeValue();
 
+            // put the vec back into list
+            list->setExpressions(std::move(vec));
+
             // Put new_val into the variableMap
             auto type = variableMap.get(scopedIdentifier).type;
-            variableMap.insert_or_assign(scopedIdentifier, {type, std::move(new_val)});
+            variableMap.insert_or_assign(scopedIdentifier, {type, std::move(list)});
           } else {
             // This can occur if we had, e.g., int x = 6; x[7] = 8; which we don't allow for now
             throw std::runtime_error(
@@ -542,9 +545,9 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
       } else if (auto int_ptr = dynamic_cast<LiteralInt *>(&*condition_copy)) {
         return int_ptr->getValue();
       } else if (auto float_ptr = dynamic_cast<LiteralFloat *>(&*condition_copy)) {
-        return (int)float_ptr->getValue();
+        return (int) float_ptr->getValue();
       } else if (auto double_ptr = dynamic_cast<LiteralDouble *>(&*condition_copy)) {
-        return (int)double_ptr->getValue();
+        return (int) double_ptr->getValue();
       } else {
         return -1; //indicates  unknown at compile time
       }
