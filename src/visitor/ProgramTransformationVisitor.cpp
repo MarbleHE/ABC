@@ -314,10 +314,35 @@ void SpecialProgramTransformationVisitor::visit(Assignment &elem) {
         replacementStatement = nullptr;
 
       } else {
-        // if index is a more general expression, we can't do anything
-        // TODO (inlining): since we're leaving this update statement here,
-        //  do we have to do something about the variableMap?
-        // TODO (inlining): Emit the declaration if one doesn't exist?
+        // if index is a more general expression, we can't do much
+
+        //  throw std::runtime_error("Currently unsupported");
+        //  // Emit the declaration if one doesn't exist?
+        //  // This needs to go *before* our current statement
+        //  // and it will include all the known state about it (if that exists)
+        //  if (&scopedIdentifier.getScope()==&getCurrentScope()) {
+        //    auto d = generateVariableDeclaration(scopedIdentifier, elem.getParentPtr());
+        //    if (auto block_ptr = dynamic_cast<Block *>(&elem.getParent())) {
+        //      block_ptr->prependStatement(std::move(d));
+        //      // TODO (inlining): This should do something with the variable map, right?
+        //    } else if (auto for_ptr = dynamic_cast<For *>(&elem.getParent())) {
+        //      for_ptr->getBody().prependStatement(std::move(d));
+        //      // TODO (inlining): Should this be erased from the variableMap?
+        //      //  that would probably lead to similar issues with undeclared variables
+        //      //  as when we did that for the initializer emits
+        //      //  instead, we might need to have a "fake return" for emitted declarations, too!
+        //
+        //      // TODO (inlining): updating the parent means we have to do the same annoying loop thing as in visit(Block&)
+        //      throw std::runtime_error("Currently unsupported, requires more handling in visit(For&)");
+        //    } else {
+        //      throw std::runtime_error("Unexpected parent for : " + printProgram(elem));
+        //    }
+        //
+        //  } else {
+        //    // since we're leaving this update statement here,
+        //    // we have to set the value (for the entire vector) to unknown in the variableMap
+        //  }
+
       }
 
     } else {
@@ -698,7 +723,7 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
         // Visit and simplify - again, have to do visit statements manually because of scopes
         for (auto &s: clonedBody->getStatementPointers()) {
           replaceStatement = false;
-          if(s) {
+          if (s) {
             s->accept(*this);
             if (replaceStatement) {
               // Empty Block merging
