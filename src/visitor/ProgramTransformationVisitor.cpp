@@ -507,10 +507,14 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
 
   // Now, int i = 0 and similar things might have been deleted from AST and are in VariableValuesMap
   // We need to emit Assignments (or Declarations with value if needed) for each of the loop variables Variables into the initializer
+  // we also need to keep track of the declarations, so we can later remove those elements from the var map
+  // before we re-visit the initializer for unrolling (if unrolling happens)
+  std::unordered_set<ScopedIdentifier> declarationEmittedIntoInitializer;
   if (!elem.hasInitializer()) { elem.setBody(std::make_unique<Block>()); };
   for (auto &sv : loopVariables) {
     if (&sv.getScope()==&getCurrentScope()) {
       elem.getInitializer().prependStatement(generateVariableDeclaration(sv, &elem.getInitializer()));
+      declarationEmittedIntoInitializer.insert(sv);
     } else {
       elem.getInitializer().prependStatement(generateVariableAssignment(sv, &elem.getInitializer()));
     }
@@ -575,11 +579,15 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
   if (elem.hasUpdate()) elem.getUpdate().accept(*this);
   // Now, parts of the body statements (e.g. x++) might have been deleted and are only in VariableValuesMap
 
+
+  // TODO (inlining): This logic is borked! Not emitting stuff causes infinite loops since we don't emit, e.g. "i = i + 1".
+  //  But emitting ALL loop variables causes duplicates when an assignment wasn't removed
+  //  Actually, the issue seems to be that the variableMap value for, e.g., "sum" isn't set to nullptr!
+  
   // We have potentially removed stmts from body and update (loop-variable init has already been re-emitted)
   // Go through and re-emit any loop variables into the body:
   if (!elem.hasBody()) { elem.setBody(std::make_unique<Block>()); };
   for (auto &si : loopVariables) {
-    // TODO (inlining): Decide when to emit variables
     elem.getBody().appendStatement(generateVariableAssignment(si, &elem.getBody()));
   }
 
@@ -603,7 +611,11 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
 
     // Visit the initializer (this will load the loop variables back into variableValues)
     // Manually visit the statements in the block, since otherwise Visitor::visit would create a new scope!
-    // TODO: This will crash in visit(VariableDeclaration), since the variables have already been initialized!
+    // before we can do that, we need to remove the variables that have been emitted as declarations from variableMap
+    // or otherwise visit(VariableDeclaration) will crash because of a re-declaration
+    for (auto &sv: declarationEmittedIntoInitializer) {
+      variableMap.erase(sv);
+    }
     replaceStatement = false;
     for (auto &s: elem.getInitializer().getStatementPointers()) {
       if (s) {
