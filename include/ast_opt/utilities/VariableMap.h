@@ -29,14 +29,50 @@ class VariableMap {
   VariableMap &operator=(VariableMap &&other) noexcept = default;
 
   [[nodiscard]] const T &get(const ScopedIdentifier &s) const {
+    // This is inefficient, but having "semantically" unique entries is worth it
+    // If there already exists a ScopedIdentifier that's basically the same,
+    // but wrapped int a different object, then use the existing value
+    if (map.find(s)==map.end()) {
+      for (auto &[si, v] : map) {
+        if (&si.getScope()==&s.getScope() && si.getId()==s.getId()) {
+          return map.find(si)->second;
+        }
+      }
+    }
+
     return map.find(s)->second;
   }
 
   [[nodiscard]] const T &at(const ScopedIdentifier &s) const {
+    // This is inefficient, but having "semantically" unique entries is worth it
+    // If there already exists a ScopedIdentifier that's basically the same,
+    // but wrapped int a different object, then use the existing value
+    if (map.find(s)==map.end()) {
+      for (auto &[si, v] : map) {
+        if (&si.getScope()==&s.getScope() && si.getId()==s.getId()) {
+          return map.find(si)->second;
+        }
+      }
+    }
     return map.find(s)->second;
   }
 
   T erase(const ScopedIdentifier &s) {
+    // This is inefficient, but having "semantically" unique entries is worth it
+    // If there already exists a ScopedIdentifier that's basically the same,
+    // but wrapped int a different object, then use the existing value
+    if (map.find(s)==map.end()) {
+      for (auto &[si, v] : map) {
+        if (&si.getScope()==&s.getScope() && si.getId()==s.getId()) {
+          auto it = map.find(si);
+          T v = it->second;
+          map.erase(it);
+          changed.erase(si);
+          return v;
+        }
+      }
+    }
+
     auto it = map.find(s);
     T v = it->second;
     map.erase(it);
@@ -45,23 +81,23 @@ class VariableMap {
   }
 
   void add(const ScopedIdentifier &s, T v) {
+
     map.insert({s, v});
     changed.insert(s);
   }
 
   void insert_or_assign(ScopedIdentifier s, T &&v) {
-    //TODO: This is inefficient, but having "semantically" unique entries is worth it
-
+    // This is inefficient, but having "semantically" unique entries is worth it
     // If there already exists a ScopedIdentifier that's basically the same,
     // but wrapped int a different object, then use the existing value
-    if (map.find(s) == map.end()) {
+    if (map.find(s)==map.end()) {
       for (auto &[si, v] : map) {
         if (&si.getScope()==&s.getScope() && si.getId()==s.getId()) {
           s = si;
         }
       }
     }
-    
+
     map.insert_or_assign(s, std::move(v));
     changed.insert(s);
   }
@@ -77,7 +113,13 @@ class VariableMap {
   }
 
   bool has(const ScopedIdentifier &s) {
-    return map.find(s)!=map.end();
+    // This is somewhat inefficient, but comparing by actual semantics is so much more useful
+    for (auto &[sv, expr] : map) {
+      if (&sv.getScope()==&s.getScope() && sv.getId()==s.getId()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   void resetChangeFlags() {
