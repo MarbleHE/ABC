@@ -60,6 +60,7 @@ set(TEST_FILES
         runtime/DummyCiphertextFactoryTest.cpp
         runtime/RuntimeVisitorTest.cpp
         runtime/SealCiphertextFactoryTest.cpp
+        visitor/BatchingVisitorTest.cpp
         visitor/ControlFlowGraphVisitorTest.cpp
         visitor/PrintVisitorTest.cpp
         visitor/ProgramTransformationVisitorTest.cpp

@@ -115,6 +115,7 @@ set(SOURCE_FILES
         ${ast_optimizer_SOURCE_DIR}/src/utilities/PlainVisitor.cpp
         ${ast_optimizer_SOURCE_DIR}/src/utilities/Scope.cpp
         ${ast_optimizer_SOURCE_DIR}/src/utilities/ScopedVisitor.cpp
+        ${ast_optimizer_SOURCE_DIR}/src/visitor/BatchingVisitor.cpp
         ${ast_optimizer_SOURCE_DIR}/src/visitor/HashVisitor.cpp
         ${ast_optimizer_SOURCE_DIR}/src/visitor/ParentSettingVisitor.cpp
         ${ast_optimizer_SOURCE_DIR}/src/visitor/PrintVisitor.cpp
@@ -182,6 +183,7 @@ set(PUBLIC_HEADERS
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/utilities/Scope.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/utilities/ScopedVisitor.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/utilities/VariableMap.h
+        ${ast_optimizer_SOURCE_DIR}/include/ast_opt/visitor/BatchingVisitor.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/visitor/HashVisitor.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/visitor/ParentSettingVisitor.h
         ${ast_optimizer_SOURCE_DIR}/include/ast_opt/visitor/PrintVisitor.h
