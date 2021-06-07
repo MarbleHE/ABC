@@ -1,5 +1,7 @@
 #include <cmath>
 #include <random>
+#include "ast_opt/visitor/ProgramPrintVisitor.h"
+#include "ast_opt/visitor/ProgramTransformationVisitor.h"
 #include "ast_opt/runtime/RuntimeVisitor.h"
 #include "ast_opt/utilities/Scope.h"
 #include "ast_opt/runtime/DummyCiphertextFactory.h"
@@ -301,3 +303,55 @@ TEST_F(GyKernelTest, clearTextEvaluationNaive) { /* NOLINT */
   auto result = srv.getOutput(*astOutput);
   assertResult(result, expectedResult);
 }
+
+
+
+TEST_F(GyKernelTest, DISABLED_programTransformation) { /* NOLINT */
+  /// input program
+  const char *program = R""""(
+    public int gy(secret int img, int imgSize) {
+      imgSize = 4;
+      int weightMatrix = {1, 0, -1, 2, 0,-2, 1, 0, -1};
+      int img2 = img;
+      for (int x = 1; x < imgSize-1; x = x + 1) {
+        for (int y = 1; y < imgSize-1; y = y + 1) {
+          int value = 0;
+          for (int j = -1; j < 2; j = j + 1) {
+            for (int i = -1; i < 2; i = i + 1) {
+              value = value + weightMatrix[(i + 1)*3 +j + 1]
+                  *img[((x + i)*imgSize + (y + j))];
+            }
+          }
+          img2[imgSize*x + y] = value;
+        }
+      }
+      return img2;
+    }
+    )"""";
+
+  auto ast = Parser::parse(std::string(program));
+
+  // perform the compile-time expression simplification
+  ProgramTransformationVisitor ptv;
+  ast->accept(ptv);
+
+  // get the transformed code
+  std::stringstream ss;
+  ProgramPrintVisitor ppv(ss);
+  ast->accept(ppv);
+  std::cout << ss.str() << std::endl;
+
+  /// Expected program
+  const char *expectedCode = R""""(
+{
+  int compute(secret int img, int imgSize)
+  {
+    return;
+  }
+}
+)"""";
+
+  EXPECT_EQ(ss.str(), expectedCode);
+}
+
+//TODO: Test for equivalency between normal program and unrolled program!

@@ -2306,7 +2306,50 @@ TEST_F(ProgramTransformationVisitorTest, complexNestedLoops) {
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
-TEST_F(ProgramTransformationVisitorTest, DISABLED_fullForLoopUnrolling) {
+TEST_F(ProgramTransformationVisitorTest, indicesfullForLoopUnrolling) {
+  /// Input program
+  const char *programCode = R""""(
+   public int compute(int img, int imgSize, int x, int y) {
+      int imgSize = 4;
+      int x = 2;
+      int y = 3;
+      int weightMatrix = {1, 1, 1, 1, -8, 1, 1, 1, 1};
+      int img2;
+      int value = 0;
+      for (int j = -1; j < 2; j = j + 1) {
+         for (int i = -1; i < 2; i = i + 1) {
+            value = value + weightMatrix[(i+1)*3 + j+1] * img[imgSize*(x+i)+y+j];
+         }
+      }
+      img2[imgSize*x+y] = 2 * img[imgSize*x+y] - (value);
+      return img2;
+   }
+)"""";
+  auto code = std::string(programCode);
+  ast = Parser::parse(code);
+
+  // perform the compile-time expression simplification
+  ast->accept(ctes);
+
+  // get the transformed code
+  ast->accept(ppv);
+  std::cout << ss.str() << std::endl;
+
+  /// Expected program
+  const char *expectedCode = R""""(
+{
+  int compute(int img, int imgSize, int x, int y)
+  {
+    return {-, -, -, -, -, -, -, -, -, -, -, ((2 * img[11]) - (((((((((0 + (1 * img[6])) + (1 * img[10])) + (1 * img[14])) + (1 * img[7])) + (-8 * img[11])) + (1 * img[15])) + (1 * img[8])) + (1 * img[12])) + (1 * img[16])))};
+  }
+}
+)"""";
+
+  EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
+}
+
+TEST_F(ProgramTransformationVisitorTest, DISABLED_dynamic_indicesfullForLoopUnrolling) {
+  //TODO: Re-enable once we can handle public-but-not-compile-time-known indices!
   /// Input program
   const char *programCode = R""""(
    public int compute(int img, int imgSize, int x, int y) {
@@ -2349,6 +2392,51 @@ TEST_F(ProgramTransformationVisitorTest, DISABLED_fullForLoopUnrolling) {
   EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
 }
 
+
+TEST_F(ProgramTransformationVisitorTest, fourNestedLoopsLaplacianSharpeningFilter) {
+  /// Input program
+  const char *programCode = R""""(
+   public int compute(int img, int imgSize, int x, int y) {
+      int imgSize = 4;
+      int weightMatrix = {1, 1, 1, 1, -8, 1, 1, 1, 1};
+      int img2;
+      for (int x = 1; x < imgSize - 1; x = x + 1) {
+         for (int y = 1; y < imgSize - 1; y = y + 1) {
+            int value = 0;
+            for (int j = -1; j < 2; j = j + 1) {
+               for (int i = -1; i < 2; i = i + 1) {
+                  value = value + weightMatrix[(i+1)*3 + j+1] * img[imgSize*(x+i)+y+j];
+               }
+            }
+         }
+      }
+      img2[imgSize*x+y] = 2 * img[imgSize*x+y] - (value);
+      return img2;
+   }
+)"""";
+  auto code = std::string(programCode);
+  ast = Parser::parse(code);
+
+  // perform the compile-time expression simplification
+  ast->accept(ctes);
+
+  // get the transformed code
+  ast->accept(ppv);
+  std::cout << ss.str() << std::endl;
+
+  /// Expected program
+  const char *expectedCode = R""""(
+{
+  int compute(int img, int imgSize, int x, int y)
+  {
+    return {-, -, -, -, -, -, -, -, -, -, -, ((2 * img[11]) - (((((((((0 + (1 * img[6])) + (1 * img[10])) + (1 * img[14])) + (1 * img[7])) + (-8 * img[11])) + (1 * img[15])) + (1 * img[8])) + (1 * img[12])) + (1 * img[16])))};
+  }
+}
+)"""";
+
+  EXPECT_EQ("\n" + ss.str(), std::string(expectedCode));
+}
+
 TEST_F(ProgramTransformationVisitorTest, DISABLED_fourNestedLoopsLaplacianSharpeningFilter) {
   //TODO: Update Test
 
@@ -2356,8 +2444,7 @@ TEST_F(ProgramTransformationVisitorTest, DISABLED_fourNestedLoopsLaplacianSharpe
   // VecInt2D runLaplacianSharpeningAlgorithm(Vector<int> img, int imgSize) {
   //     Vector<int> img2 = {0, 0, .... ,0};
   //     Matrix<int> weightMatrix = [1 1 1; 1 -8 1; 1 1 1];
-  //     for (int x = 1; x < imgSize - 1; ++x) {
-  //         for (int y = 1; y < imgSize - 1; ++y) {
+  //
   //             int value = 0;
   //             for (int j = -1; j < 2; ++j) {
   //                 for (int i = -1; i < 2; ++i) {

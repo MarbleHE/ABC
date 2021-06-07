@@ -790,7 +790,7 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
 
       // If we are not the outermost loop, we must re-emit statements
       // we currently emit everything, but probably only need to emit
-      // statments that contain loop variables?
+      // statements that contain loop variables?
       if (currentLoopDepth_maxLoopDepth.first > 1) {
 
         // TODO (inlining) How to figure out order/dependencies? Order in variable map?
@@ -800,8 +800,16 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
             //TODO: (inlining) Figure out which statements to emit and how, rather than dumping all
             auto s = generateVariableAssignment(si, &*unrolledBlock);
             unrolledBlock->prependStatement(std::move(s));
-            // set the value to "unknown" int the variableMap
+            // set the value to "unknown" in the variableMap
             variableMap.insert_or_assign(si, {variableMap.get(si).type, nullptr});
+          } else {
+            // TODO: We still have the loop variables in the variable map!
+            //  This will cause issues in parent loops!
+            //  But how do we differentiate between e.g. "int i" hat is no longer needed
+            //  and "sum" that is still very much relevant?
+
+            // TODO: also, this whole thing looks iffy - shouldn't we base our emit decision on "contains loop variable"?
+            // and then maybe emit those loop varaibles that WERE contained?
           }
         }
       }
@@ -828,6 +836,8 @@ void SpecialProgramTransformationVisitor::visit(For &elem) {
       /// Restore the initializer
       elem.setInitializer(std::move(initializerBackup));
     }
+  } else {
+    std::cout << "NOT UNROLLING LOOP" << std::endl;
   }
 
   // Manual scope handling
@@ -896,8 +906,13 @@ std::unique_ptr<VariableDeclaration> SpecialProgramTransformationVisitor::genera
 std::unique_ptr<Assignment> SpecialProgramTransformationVisitor::generateVariableAssignment(const ScopedIdentifier &variable,
                                                                                             AbstractNode *parent) {
 
-  if (!variableMap.has(variable) or variableMap.get(variable).value==nullptr) {
+  if (!variableMap.has(variable)) {
     // if the variable has no value, there's no need to create a variable assignment
+    return nullptr;
+  }
+  //separated for debugging reasons
+  auto &x = variableMap.get(variable);
+  if (x.value==nullptr) {
     return nullptr;
   } else {
     // get the value and
