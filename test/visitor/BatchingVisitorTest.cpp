@@ -13,21 +13,22 @@
 class BatchingTest : public ::testing::Test {
  protected:
   std::unique_ptr<AbstractNode> ast;
-  BatchingVisitor bv;
+  BatchingVisitor bv = BatchingVisitor();
   std::stringstream ss;
   ProgramPrintVisitor ppv = ProgramPrintVisitor(ss);
   BatchingTest() = default;
 };
 
-TEST_F(BatchingTest, setConstantValueAllSlots) {
+TEST_F(BatchingTest, setSameValueAllSlots) {
   /// Input program
   const char *programCode = R""""(
-  public int compute(secret int vec) {
-    vec[0] = 5;
-    vec[1] = 5;
-    vec[2] = 5;
-    vec[3] = 5;
-    return vec;
+    secret int vec;
+    int x;
+    vec[0] = x;
+    vec[1] = x;
+    vec[2] = x;
+    vec[3] = x;
+    return x;
   }
 )"""";
   auto code = std::string(programCode);
@@ -45,7 +46,8 @@ TEST_F(BatchingTest, setConstantValueAllSlots) {
 {
   int compute(secret int vec)
   {
-    return {5,5,5,5};
+    vec = x;
+    return vec;
   }
 }
 )"""";
