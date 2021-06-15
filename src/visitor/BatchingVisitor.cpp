@@ -12,7 +12,7 @@ std::string SpecialBatchingVisitor::printProgram(AbstractNode &node) {
 }
 
 
-void SpecialBatchingVisitor::visit(Block &elem) {
+void SpecialBatchingVisitor::visit(Block &) {
 //  enterScope(elem);
 //
 //  // Iterate through statements
@@ -65,8 +65,8 @@ void SpecialBatchingVisitor::visit(Block &elem) {
 //  exitScope();
 }
 
-bool SpecialBatchingVisitor::containsVariable(const AbstractNode &node,
-                                              const std::vector<std::string> &identifiers) {
+bool SpecialBatchingVisitor::containsVariable(const AbstractNode &,
+                                              const std::vector<std::string> &) {
 //  if (auto var_ptr = dynamic_cast<const Variable *>(&node)) {
 //    for (auto &id: identifiers) {
 //      if (var_ptr->getIdentifier()==id)
@@ -78,10 +78,10 @@ bool SpecialBatchingVisitor::containsVariable(const AbstractNode &node,
 //        return true;
 //    }
 //  }
-//  return false;
+  return false;
 }
 
-void SpecialBatchingVisitor::visit(VariableDeclaration &elem) {
+void SpecialBatchingVisitor::visit(VariableDeclaration &) {
 //  // Build the ScopedIdentifier
 //  auto scopedIdentifier = ScopedIdentifier(getCurrentScope(), elem.getTarget().getIdentifier());
 //
@@ -97,7 +97,7 @@ void SpecialBatchingVisitor::visit(VariableDeclaration &elem) {
 //  getCurrentScope().addIdentifier(scopedIdentifier.getId());
 }
 
-void SpecialBatchingVisitor::visit(Assignment &elem) {
+void SpecialBatchingVisitor::visit(Assignment &) {
 //  // visit the value (rhs) expression to simplify it
 //  elem.getValue().accept(*this);
 //  if (replacementExpression) elem.setValue(std::move(replacementExpression));
@@ -214,7 +214,7 @@ void SpecialBatchingVisitor::visit(Assignment &elem) {
 
 }
 
-void SpecialBatchingVisitor::visit(IndexAccess &elem) {
+void SpecialBatchingVisitor::visit(IndexAccess &) {
 //
 //  // try to simplify the index
 //  elem.getIndex().accept(*this);
