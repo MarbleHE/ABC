@@ -158,7 +158,7 @@ $(function() {
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="comment">// If there already exists a ScopedIdentifier that&#39;s basically the same,</span></div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="comment">// but wrapped int a different object, then use the existing value</span></div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordflow">if</span> (map.find(s)==map.end()) {</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;      <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;[si, v] : map) {</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;      <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;[si, v_ignored] : map) {</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;        <span class="keywordflow">if</span> (&amp;si.getScope()==&amp;s.<a class="code" href="class_scoped_identifier.html#a5566f8ce17f45942fa47997125efbf69">getScope</a>() &amp;&amp; si.getId()==s.<a class="code" href="class_scoped_identifier.html#a2896187623643d18c1157b2f28c9042d">getId</a>()) {</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;          s = si;</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        }</div>
