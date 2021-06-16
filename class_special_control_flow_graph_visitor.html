@@ -82,9 +82,6 @@ Inheritance diagram for SpecialControlFlowGraphVisitor:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7d1d36b7d1d86074fa01205017ac771a"><td class="memItemLeft" align="right" valign="top"><a id="a7d1d36b7d1d86074fa01205017ac771a"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>SpecialControlFlowGraphVisitor</b> (bool ignoreNonDeclaredVariables)</td></tr>
-<tr class="separator:a7d1d36b7d1d86074fa01205017ac771a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a17539a20fc58dfcce5f10245dab266"><td class="memItemLeft" align="right" valign="top"><a id="a0a17539a20fc58dfcce5f10245dab266"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>visit</b> (<a class="el" href="class_assignment.html">Assignment</a> &amp;node) override</td></tr>
 <tr class="separator:a0a17539a20fc58dfcce5f10245dab266"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -122,8 +119,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>visit</b> (<a class="
 <tr class="separator:a9664e48d41c0b3ef758db072934afbdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab35b2c221b2701c3ab2dd2f1ec41cf08"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_special_control_flow_graph_visitor.html#ab35b2c221b2701c3ab2dd2f1ec41cf08">checkEntrypoint</a> (<a class="el" href="class_abstract_node.html">AbstractNode</a> &amp;node)</td></tr>
 <tr class="separator:ab35b2c221b2701c3ab2dd2f1ec41cf08"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a90b53eb67e9a316426ffda3c17dd3233"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_special_control_flow_graph_visitor.html#a90b53eb67e9a316426ffda3c17dd3233">buildDataflowGraph</a> ()</td></tr>
-<tr class="separator:a90b53eb67e9a316426ffda3c17dd3233"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec3ec5cb79920d8e651f96bd28c770dc"><td class="memItemLeft" align="right" valign="top">std::unordered_set&lt; <a class="el" href="class_scoped_identifier.html">ScopedIdentifier</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_special_control_flow_graph_visitor.html#aec3ec5cb79920d8e651f96bd28c770dc">buildDataFlowGraph</a> ()</td></tr>
+<tr class="separator:aec3ec5cb79920d8e651f96bd28c770dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_scoped_visitor"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_scoped_visitor')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_scoped_visitor.html">ScopedVisitor</a></td></tr>
 <tr class="memitem:ab05a2e1e0227aa745108c3e2e60df3e7 inherit pub_methods_class_scoped_visitor"><td class="memItemLeft" align="right" valign="top"><a id="ab05a2e1e0227aa745108c3e2e60df3e7"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>visit</b> (<a class="el" href="class_binary_expression.html">BinaryExpression</a> &amp;elem) override</td></tr>
@@ -196,14 +193,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>exitScope</b> ()</td>
 <tr class="separator:acffbc54a36dd89aaa64b8d832ac1bc19 inherit pub_methods_class_scoped_visitor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a90b53eb67e9a316426ffda3c17dd3233"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a90b53eb67e9a316426ffda3c17dd3233">&#9670;&nbsp;</a></span>buildDataflowGraph()</h2>
+<a id="aec3ec5cb79920d8e651f96bd28c770dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec3ec5cb79920d8e651f96bd28c770dc">&#9670;&nbsp;</a></span>buildDataFlowGraph()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void SpecialControlFlowGraphVisitor::buildDataflowGraph </td>
+          <td class="memname">std::unordered_set&lt; <a class="el" href="class_scoped_identifier.html">ScopedIdentifier</a> &gt; SpecialControlFlowGraphVisitor::buildDataFlowGraph </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -212,7 +209,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>exitScope</b> ()</td>
 </div><div class="memdoc">
 <p>This method uses the information gained in the pass of this visitor (i.e., calling visit(..) on a node), in particular the information of variable reads and writes, and constructs a data flow graph. This graph has an edge from each statement where a variable is read to the last statement where the respective variable was written. By considering <a class="el" href="class_if.html">If</a> statements, there might potentially exist multiple of such last writes to a variable. The following example demonstrates a program where variable access to "a" in line 06 would have two backward edges (to line 02 and line 04) as both statements could cause a write to variable "a".</p>
 <p>01: if (c &gt; 100) { 02: a = 1; 03: else { 04: a = 0; 05: } 06: c = a*22;</p>
-<p>The data flow graph is constructed in two passes: In the first pass, we traverse the control flow graph in a breadth-first search (BFS) style and propagate the knowledge at which node a all variables seen so far have been written the last time. This also considers joint points (i.e., nodes with two incoming edges) properly. In case that a loop is involved, it might be necessary to visit the loops body twice. In the second pass, we iterate over all nodes that we have visited in the first pass and check whether the respective node reads a variable. <a class="el" href="class_if.html">If</a> yes, we lookup when the respective variable was written the last time (i.e., in which node) and add an backward edge (last_written_node -&gt; read_node). </p>
+<p>The data flow graph is constructed in two passes: In the first pass, we traverse the control flow graph in a breadth-first search (BFS) style and propagate the knowledge at which node a all variables seen so far have been written the last time. This also considers joint points (i.e., nodes with two incoming edges) properly. In case that a loop is involved, it might be necessary to visit the loops body twice. In the second pass, we iterate over all nodes that we have visited in the first pass and check whether the respective node reads a variable. <a class="el" href="class_if.html">If</a> yes, we lookup when the respective variable was written the last time (i.e., in which node) and add an backward edge (last_written_node -&gt; read_node).</p>
+<dl class="section return"><dt>Returns</dt><dd>Returns a list of all identifies that are BOTH written to AND read </dd></dl>
 
 </div>
 </div>
