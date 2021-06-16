@@ -86,6 +86,8 @@ $(function() {
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
 <div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="class_special_control_flow_graph_visitor.html">   16</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_special_control_flow_graph_visitor.html">SpecialControlFlowGraphVisitor</a> : <span class="keyword">public</span> <a class="code" href="class_scoped_visitor.html">ScopedVisitor</a> {</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="comment">// A list of all GraphNodes belonging to this CFG/DFG and created by this ControlFlowGraphVisitor.</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="comment">// Node at index 0 is the root node.</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  std::vector&lt;std::unique_ptr&lt;GraphNode&gt;&gt; nodes;</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  std::vector&lt;std::reference_wrapper&lt;GraphNode&gt;&gt; lastCreatedNodes;</div>
@@ -97,43 +99,53 @@ $(function() {
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  VarAccessMapType variableAccesses;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <a class="code" href="class_special_control_flow_graph_visitor.html">SpecialControlFlowGraphVisitor</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="class_special_control_flow_graph_visitor.html">SpecialControlFlowGraphVisitor</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordtype">void</span> visit(<a class="code" href="class_assignment.html">Assignment</a> &amp;node) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordtype">void</span> visit(<a class="code" href="class_block.html">Block</a> &amp;node) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keywordtype">void</span> visit(<a class="code" href="class_for.html">For</a> &amp;node) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="comment">// This class has implemented a way to deal with variables that are declared in a part of the program</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="comment">// that is not in the given sub-AST and as such not visited by the visitor:</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="comment">//   If the visitor is initialized with ControlFlowGraphVisitor(ignoreNonDeclaredVariables = false), then variables</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="comment">// for which no declaration could be found will just be ignored. Consequently, also read/write accesses to them are</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="comment">// not being tracked in the variableAccesses map.</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keywordtype">bool</span> ignoreNonDeclaredVariables = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordtype">void</span> visit(<a class="code" href="class_function.html">Function</a> &amp;node) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordtype">void</span> visit(<a class="code" href="class_function_parameter.html">FunctionParameter</a> &amp;node) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keywordtype">void</span> visit(<a class="code" href="class_if.html">If</a> &amp;node) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordtype">void</span> visit(<a class="code" href="class_return.html">Return</a> &amp;node) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordtype">void</span> visit(<a class="code" href="class_variable.html">Variable</a> &amp;node) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordtype">void</span> visit(<a class="code" href="class_variable_declaration.html">VariableDeclaration</a> &amp;node) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="class_special_control_flow_graph_visitor.html#a8b511883895123467f2b129e57349693">storeAccessedVariables</a>(<a class="code" href="class_graph_node.html">GraphNode</a> &amp;graphNode);</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="class_special_control_flow_graph_visitor.html#ab7432c2ec585ecdd4e060f7c699da3cc">markVariableAccess</a>(<span class="keyword">const</span> <a class="code" href="class_scoped_identifier.html">ScopedIdentifier</a> &amp;scopedIdentifier, VariableAccessType accessType);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <a class="code" href="class_special_control_flow_graph_visitor.html">SpecialControlFlowGraphVisitor</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="class_special_control_flow_graph_visitor.html">SpecialControlFlowGraphVisitor</a>(<span class="keywordtype">bool</span> ignoreNonDeclaredVariables);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="class_special_control_flow_graph_visitor.html">SpecialControlFlowGraphVisitor</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keywordtype">void</span> visit(<a class="code" href="class_assignment.html">Assignment</a> &amp;node) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordtype">void</span> visit(<a class="code" href="class_block.html">Block</a> &amp;node) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordtype">void</span> visit(<a class="code" href="class_for.html">For</a> &amp;node) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keywordtype">void</span> visit(<a class="code" href="class_function.html">Function</a> &amp;node) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keywordtype">void</span> visit(<a class="code" href="class_function_parameter.html">FunctionParameter</a> &amp;node) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keywordtype">void</span> visit(<a class="code" href="class_if.html">If</a> &amp;node) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordtype">void</span> visit(<a class="code" href="class_return.html">Return</a> &amp;node) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordtype">void</span> visit(<a class="code" href="class_variable.html">Variable</a> &amp;node) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  [[nodiscard]] <a class="code" href="class_graph_node.html">GraphNode</a> &amp;<a class="code" href="class_special_control_flow_graph_visitor.html#a9e58b9da0c23f52a10ed6d232aea8ff3">getRootNode</a>();</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  [[nodiscard]] <span class="keyword">const</span> <a class="code" href="class_graph_node.html">GraphNode</a> &amp;<a class="code" href="class_special_control_flow_graph_visitor.html#a9e58b9da0c23f52a10ed6d232aea8ff3">getRootNode</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordtype">void</span> visit(<a class="code" href="class_variable_declaration.html">VariableDeclaration</a> &amp;node) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="class_special_control_flow_graph_visitor.html#a8b511883895123467f2b129e57349693">storeAccessedVariables</a>(<a class="code" href="class_graph_node.html">GraphNode</a> &amp;graphNode);</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="class_special_control_flow_graph_visitor.html#ab35b2c221b2701c3ab2dd2f1ec41cf08">checkEntrypoint</a>(<a class="code" href="class_abstract_node.html">AbstractNode</a> &amp;node);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="class_special_control_flow_graph_visitor.html#ab7432c2ec585ecdd4e060f7c699da3cc">markVariableAccess</a>(<span class="keyword">const</span> <a class="code" href="class_scoped_identifier.html">ScopedIdentifier</a> &amp;scopedIdentifier, VariableAccessType accessType);</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  std::unordered_set&lt;ScopedIdentifier&gt; <a class="code" href="class_special_control_flow_graph_visitor.html#aec3ec5cb79920d8e651f96bd28c770dc">buildDataFlowGraph</a>();</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;};</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160; </div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//AST_OPTIMIZER_SRC_VISITOR_CONTROLFLOWGRAPHVISITOR_H_</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  [[nodiscard]] <a class="code" href="class_graph_node.html">GraphNode</a> &amp;<a class="code" href="class_special_control_flow_graph_visitor.html#a9e58b9da0c23f52a10ed6d232aea8ff3">getRootNode</a>();</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  [[nodiscard]] <span class="keyword">const</span> <a class="code" href="class_graph_node.html">GraphNode</a> &amp;<a class="code" href="class_special_control_flow_graph_visitor.html#a9e58b9da0c23f52a10ed6d232aea8ff3">getRootNode</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160; </div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="class_special_control_flow_graph_visitor.html#ab35b2c221b2701c3ab2dd2f1ec41cf08">checkEntrypoint</a>(<a class="code" href="class_abstract_node.html">AbstractNode</a> &amp;node);</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160; </div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="class_special_control_flow_graph_visitor.html#a90b53eb67e9a316426ffda3c17dd3233">buildDataflowGraph</a>();</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;};</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160; </div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//AST_OPTIMIZER_SRC_VISITOR_CONTROLFLOWGRAPHVISITOR_H_</span></div>
 <div class="ttc" id="aclass_abstract_node_html"><div class="ttname"><a href="class_abstract_node.html">AbstractNode</a></div><div class="ttdef"><b>Definition:</b> AbstractNode.h:43</div></div>
 <div class="ttc" id="aclass_assignment_html"><div class="ttname"><a href="class_assignment.html">Assignment</a></div><div class="ttdef"><b>Definition:</b> Assignment.h:12</div></div>
 <div class="ttc" id="aclass_block_html"><div class="ttname"><a href="class_block.html">Block</a></div><div class="ttdef"><b>Definition:</b> Block.h:10</div></div>
@@ -146,11 +158,11 @@ $(function() {
 <div class="ttc" id="aclass_scoped_identifier_html"><div class="ttname"><a href="class_scoped_identifier.html">ScopedIdentifier</a></div><div class="ttdef"><b>Definition:</b> Scope.h:11</div></div>
 <div class="ttc" id="aclass_scoped_visitor_html"><div class="ttname"><a href="class_scoped_visitor.html">ScopedVisitor</a></div><div class="ttdef"><b>Definition:</b> ScopedVisitor.h:10</div></div>
 <div class="ttc" id="aclass_special_control_flow_graph_visitor_html"><div class="ttname"><a href="class_special_control_flow_graph_visitor.html">SpecialControlFlowGraphVisitor</a></div><div class="ttdef"><b>Definition:</b> ControlFlowGraphVisitor.h:16</div></div>
-<div class="ttc" id="aclass_special_control_flow_graph_visitor_html_a8b511883895123467f2b129e57349693"><div class="ttname"><a href="class_special_control_flow_graph_visitor.html#a8b511883895123467f2b129e57349693">SpecialControlFlowGraphVisitor::storeAccessedVariables</a></div><div class="ttdeci">void storeAccessedVariables(GraphNode &amp;graphNode)</div><div class="ttdef"><b>Definition:</b> ControlFlowGraphVisitor.cpp:297</div></div>
-<div class="ttc" id="aclass_special_control_flow_graph_visitor_html_a9e58b9da0c23f52a10ed6d232aea8ff3"><div class="ttname"><a href="class_special_control_flow_graph_visitor.html#a9e58b9da0c23f52a10ed6d232aea8ff3">SpecialControlFlowGraphVisitor::getRootNode</a></div><div class="ttdeci">GraphNode &amp; getRootNode()</div><div class="ttdef"><b>Definition:</b> ControlFlowGraphVisitor.cpp:329</div></div>
-<div class="ttc" id="aclass_special_control_flow_graph_visitor_html_ab35b2c221b2701c3ab2dd2f1ec41cf08"><div class="ttname"><a href="class_special_control_flow_graph_visitor.html#ab35b2c221b2701c3ab2dd2f1ec41cf08">SpecialControlFlowGraphVisitor::checkEntrypoint</a></div><div class="ttdeci">void checkEntrypoint(AbstractNode &amp;node)</div><div class="ttdef"><b>Definition:</b> ControlFlowGraphVisitor.cpp:4</div></div>
-<div class="ttc" id="aclass_special_control_flow_graph_visitor_html_ab7432c2ec585ecdd4e060f7c699da3cc"><div class="ttname"><a href="class_special_control_flow_graph_visitor.html#ab7432c2ec585ecdd4e060f7c699da3cc">SpecialControlFlowGraphVisitor::markVariableAccess</a></div><div class="ttdeci">void markVariableAccess(const ScopedIdentifier &amp;scopedIdentifier, VariableAccessType accessType)</div><div class="ttdef"><b>Definition:</b> ControlFlowGraphVisitor.cpp:312</div></div>
-<div class="ttc" id="aclass_special_control_flow_graph_visitor_html_aec3ec5cb79920d8e651f96bd28c770dc"><div class="ttname"><a href="class_special_control_flow_graph_visitor.html#aec3ec5cb79920d8e651f96bd28c770dc">SpecialControlFlowGraphVisitor::buildDataFlowGraph</a></div><div class="ttdeci">std::unordered_set&lt; ScopedIdentifier &gt; buildDataFlowGraph()</div><div class="ttdef"><b>Definition:</b> ControlFlowGraphVisitor.cpp:337</div></div>
+<div class="ttc" id="aclass_special_control_flow_graph_visitor_html_a8b511883895123467f2b129e57349693"><div class="ttname"><a href="class_special_control_flow_graph_visitor.html#a8b511883895123467f2b129e57349693">SpecialControlFlowGraphVisitor::storeAccessedVariables</a></div><div class="ttdeci">void storeAccessedVariables(GraphNode &amp;graphNode)</div><div class="ttdef"><b>Definition:</b> ControlFlowGraphVisitor.cpp:309</div></div>
+<div class="ttc" id="aclass_special_control_flow_graph_visitor_html_a90b53eb67e9a316426ffda3c17dd3233"><div class="ttname"><a href="class_special_control_flow_graph_visitor.html#a90b53eb67e9a316426ffda3c17dd3233">SpecialControlFlowGraphVisitor::buildDataflowGraph</a></div><div class="ttdeci">void buildDataflowGraph()</div><div class="ttdef"><b>Definition:</b> ControlFlowGraphVisitor.cpp:355</div></div>
+<div class="ttc" id="aclass_special_control_flow_graph_visitor_html_a9e58b9da0c23f52a10ed6d232aea8ff3"><div class="ttname"><a href="class_special_control_flow_graph_visitor.html#a9e58b9da0c23f52a10ed6d232aea8ff3">SpecialControlFlowGraphVisitor::getRootNode</a></div><div class="ttdeci">GraphNode &amp; getRootNode()</div><div class="ttdef"><b>Definition:</b> ControlFlowGraphVisitor.cpp:343</div></div>
+<div class="ttc" id="aclass_special_control_flow_graph_visitor_html_ab35b2c221b2701c3ab2dd2f1ec41cf08"><div class="ttname"><a href="class_special_control_flow_graph_visitor.html#ab35b2c221b2701c3ab2dd2f1ec41cf08">SpecialControlFlowGraphVisitor::checkEntrypoint</a></div><div class="ttdeci">void checkEntrypoint(AbstractNode &amp;node)</div><div class="ttdef"><b>Definition:</b> ControlFlowGraphVisitor.cpp:14</div></div>
+<div class="ttc" id="aclass_special_control_flow_graph_visitor_html_ab7432c2ec585ecdd4e060f7c699da3cc"><div class="ttname"><a href="class_special_control_flow_graph_visitor.html#ab7432c2ec585ecdd4e060f7c699da3cc">SpecialControlFlowGraphVisitor::markVariableAccess</a></div><div class="ttdeci">void markVariableAccess(const ScopedIdentifier &amp;scopedIdentifier, VariableAccessType accessType)</div><div class="ttdef"><b>Definition:</b> ControlFlowGraphVisitor.cpp:326</div></div>
 <div class="ttc" id="aclass_variable_declaration_html"><div class="ttname"><a href="class_variable_declaration.html">VariableDeclaration</a></div><div class="ttdef"><b>Definition:</b> VariableDeclaration.h:13</div></div>
 <div class="ttc" id="aclass_variable_html"><div class="ttname"><a href="class_variable.html">Variable</a></div><div class="ttdef"><b>Definition:</b> Variable.h:9</div></div>
 <div class="ttc" id="aclass_visitor_html"><div class="ttname"><a href="class_visitor.html">Visitor</a></div><div class="ttdef"><b>Definition:</b> Visitor.h:84</div></div>
