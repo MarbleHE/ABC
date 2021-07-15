@@ -7,7 +7,10 @@
 #include "ast_opt/ast/AbstractExpression.h"
 #include "ast_opt/utilities/Operator.h"
 
-/// A OperatorExpression has two Operands (left and right) and an Operator
+/// A OperatorExpression has multiple Operands and an Operator
+/// E.g. if x+y is a binary expression +(x,y) would be the operator expression
+/// Other than a binary expression, it can extend to be n-ary
+/// i.e. +(x,y,z) or +(a,b,c,d,e)
 class OperatorExpression : public AbstractExpression {
 
  private:
