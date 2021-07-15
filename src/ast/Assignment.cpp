@@ -81,6 +81,9 @@ const AbstractExpression &Assignment::getValue() const {
 }
 
 std::unique_ptr<AbstractExpression> Assignment::takeValue() {
+  //TODO: Must set parent null! Currently no API
+  // add protected function in AbstractNode e.g. value.resetParent();
+  // same for all other takeX() methods here and in other classes!
   return std::move(value);
 }
 
