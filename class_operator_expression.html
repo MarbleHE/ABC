@@ -71,9 +71,6 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>A <a class="el" href="class_operator_expression.html" title="A OperatorExpression has two Operands (left and right) and an Operator.">OperatorExpression</a> has two Operands (left and right) and an <a class="el" href="class_operator.html">Operator</a>.  
- <a href="class_operator_expression.html#details">More...</a></p>
-
 <p><code>#include &lt;<a class="el" href="_operator_expression_8h_source.html">OperatorExpression.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for OperatorExpression:</div>
@@ -106,7 +103,7 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ad4d1d655237f6f9ad4ab9ee2ab1d1950"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa509d75aedd69c1377ac7802be321fe9"><td class="memItemLeft" align="right" valign="top"><a id="aa509d75aedd69c1377ac7802be321fe9"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_operator_expression.html#aa509d75aedd69c1377ac7802be321fe9">hasNullOperands</a> ()</td></tr>
-<tr class="memdesc:aa509d75aedd69c1377ac7802be321fe9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Does the current <a class="el" href="class_operator_expression.html" title="A OperatorExpression has two Operands (left and right) and an Operator.">OperatorExpression</a> contain null operands? <br /></td></tr>
+<tr class="memdesc:aa509d75aedd69c1377ac7802be321fe9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Does the current <a class="el" href="class_operator_expression.html">OperatorExpression</a> contain null operands? <br /></td></tr>
 <tr class="separator:aa509d75aedd69c1377ac7802be321fe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a889a74ec5be788baeaeae112b475c7d5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_operator.html">Operator</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_operator_expression.html#a889a74ec5be788baeaeae112b475c7d5">getOperator</a> ()</td></tr>
 <tr class="separator:a889a74ec5be788baeaeae112b475c7d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -202,7 +199,7 @@ typedef <a class="el" href="class_node_iterator.html">NodeIterator</a>&lt; const
 <tr class="separator:ga4bc933321cb97fee4fb929e8f4d740a1 inherit pub_types_class_abstract_node"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A <a class="el" href="class_operator_expression.html" title="A OperatorExpression has two Operands (left and right) and an Operator.">OperatorExpression</a> has two Operands (left and right) and an <a class="el" href="class_operator.html">Operator</a>. </p>
+<div class="textblock"><p>A <a class="el" href="class_operator_expression.html">OperatorExpression</a> has multiple Operands and an <a class="el" href="class_operator.html">Operator</a> E.g. if x+y is a binary expression +(x,y) would be the operator expression Other than a binary expression, it can extend to be n-ary i.e. +(x,y,z) or +(a,b,c,d,e) </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aef50e0193fc38b19b313e39dd124846a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aef50e0193fc38b19b313e39dd124846a">&#9670;&nbsp;</a></span>OperatorExpression() <span class="overload">[1/3]</span></h2>
@@ -229,10 +226,10 @@ typedef <a class="el" href="class_node_iterator.html">NodeIterator</a>&lt; const
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Create a <a class="el" href="class_operator_expression.html" title="A OperatorExpression has two Operands (left and right) and an Operator.">OperatorExpression</a> with operator and operands </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Create a <a class="el" href="class_operator_expression.html">OperatorExpression</a> with operator and operands </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">operator</td><td><a class="el" href="class_operator.html">Operator</a> for this expression </td></tr>
-    <tr><td class="paramname">operands</td><td>Operands for this expression (the <a class="el" href="class_operator_expression.html" title="A OperatorExpression has two Operands (left and right) and an Operator.">OperatorExpression</a> will take ownership) </td></tr>
+    <tr><td class="paramname">operands</td><td>Operands for this expression (the <a class="el" href="class_operator_expression.html">OperatorExpression</a> will take ownership) </td></tr>
   </table>
   </dd>
 </dl>
@@ -256,7 +253,7 @@ typedef <a class="el" href="class_node_iterator.html">NodeIterator</a>&lt; const
 </div><div class="memdoc">
 <p>Copy constructor </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">other</td><td><a class="el" href="class_operator_expression.html" title="A OperatorExpression has two Operands (left and right) and an Operator.">OperatorExpression</a> to copy </td></tr>
+    <tr><td class="paramname">other</td><td><a class="el" href="class_operator_expression.html">OperatorExpression</a> to copy </td></tr>
   </table>
   </dd>
 </dl>
@@ -288,7 +285,7 @@ typedef <a class="el" href="class_node_iterator.html">NodeIterator</a>&lt; const
 </div><div class="memdoc">
 <p>Move constructor </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">other</td><td><a class="el" href="class_operator_expression.html" title="A OperatorExpression has two Operands (left and right) and an Operator.">OperatorExpression</a> to copy </td></tr>
+    <tr><td class="paramname">other</td><td><a class="el" href="class_operator_expression.html">OperatorExpression</a> to copy </td></tr>
   </table>
   </dd>
 </dl>
@@ -347,7 +344,7 @@ typedef <a class="el" href="class_node_iterator.html">NodeIterator</a>&lt; const
 </div><div class="memdoc">
 <p>Add an operand as the last operand </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">operand</td><td>Operand to be appended, <a class="el" href="class_operator_expression.html" title="A OperatorExpression has two Operands (left and right) and an Operator.">OperatorExpression</a> will take ownership </td></tr>
+    <tr><td class="paramname">operand</td><td>Operand to be appended, <a class="el" href="class_operator_expression.html">OperatorExpression</a> will take ownership </td></tr>
   </table>
   </dd>
 </dl>
@@ -518,7 +515,7 @@ typedef <a class="el" href="class_node_iterator.html">NodeIterator</a>&lt; const
 </div><div class="memdoc">
 <p>Copy assignment </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">other</td><td><a class="el" href="class_operator_expression.html" title="A OperatorExpression has two Operands (left and right) and an Operator.">OperatorExpression</a> to copy </td></tr>
+    <tr><td class="paramname">other</td><td><a class="el" href="class_operator_expression.html">OperatorExpression</a> to copy </td></tr>
   </table>
   </dd>
 </dl>
@@ -551,7 +548,7 @@ typedef <a class="el" href="class_node_iterator.html">NodeIterator</a>&lt; const
 </div><div class="memdoc">
 <p>Move assignment </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">other</td><td><a class="el" href="class_operator_expression.html" title="A OperatorExpression has two Operands (left and right) and an Operator.">OperatorExpression</a> to move </td></tr>
+    <tr><td class="paramname">other</td><td><a class="el" href="class_operator_expression.html">OperatorExpression</a> to move </td></tr>
   </table>
   </dd>
 </dl>
@@ -576,7 +573,7 @@ typedef <a class="el" href="class_node_iterator.html">NodeIterator</a>&lt; const
 </div><div class="memdoc">
 <p>Add an operand as the first operand </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">operand</td><td>Operand to be prepended, <a class="el" href="class_operator_expression.html" title="A OperatorExpression has two Operands (left and right) and an Operator.">OperatorExpression</a> will take ownership </td></tr>
+    <tr><td class="paramname">operand</td><td>Operand to be prepended, <a class="el" href="class_operator_expression.html">OperatorExpression</a> will take ownership </td></tr>
   </table>
   </dd>
 </dl>
